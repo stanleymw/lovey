@@ -30,11 +30,6 @@ Desktop module `:desktop` : holds `build.gradle` for desktop dependencies & impl
     $./gradlew :desktop:copyJars
 ```
 
-
-Note that if you are releasing your app on the android play store it must be signed with an appropriate key, see
-https://developer.android.com/studio/build/building-cmdline for more details on how to produce such apks
-
-
 ### Distribute with a JRE
 
 Distributing with a JRE means you'll need to provide an operating specific bundle for each OS you are
@@ -67,8 +62,3 @@ References :
 => See JMonkeyEngine Desktop Example : https://github.com/Scrappers-glitch/basic-gradle-template
 
 => See JMonkeyEngine RPI armhf Desktop Example : https://github.com/Scrappers-glitch/JmeCarPhysicsTestRPI
-
-
-## txt vs md
-
-This readme is provided as a .txt as that is a common format openable on any machine. However, it would more normally be a .md, this will allow it to be nicely formatted by most git repositories (assuming you commit it to git). Just change the extension from .txt to .md, the syntax is already correct for an md file
