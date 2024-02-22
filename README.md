@@ -46,9 +46,9 @@ Backstory on Lovey for the uncultured and uneducated
         - intense music. idk how else to describe u got this ayushi
         - ends with lovey escaping guantanamo frantically swimming away
 * - [ ] Cayman Islands
-        - lovey realises he went the wrong way. ends up in the cayman islands 
-        - same if not easier difficulty than g.b
-        - still intense music cuz lovey thinks hes being chased
+    - lovey realises he went the wrong way. ends up in the cayman islands 
+    - same if not easier difficulty than g.b
+    - still intense music cuz lovey thinks hes being chased
 
 ## Project set up
 This is a gradle project using JMonkey Engine and other java libraries
