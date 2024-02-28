@@ -1,9 +1,7 @@
 package com.sleepamos.game;
 
-import com.jme3.app.DebugKeysAppState;
-import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.app.StatsAppState;
+import com.jme3.app.state.AppState;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
@@ -12,12 +10,12 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import com.jme3.app.state.AppState;
 import com.jme3.scene.shape.Torus;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.system.AppSettings;
+import com.simsilica.lemur.*;
+import com.simsilica.lemur.style.BaseStyles;
 
 
 /**
@@ -37,6 +35,22 @@ public class Lovey extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        GuiHandler.initialize(this);
+
+        BaseStyles.loadGlassStyle();
+        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
+
+        Container window = new Container();
+        guiNode.attachChild(window);
+        // Put it somewhere that we will see it.
+// Note: Lemur GUI elements grow down from the upper left corner.
+        window.setLocalTranslation(300, 300, 0);
+
+// Add some elements
+        window.addChild(new Label("Hello, World."));
+        Button clickMe = window.addChild(new Button("Click Me"));
+        clickMe.addClickCommands(source -> System.out.println("The world is yours."));
+
         Torus ring = new Torus(128, 128, 0.1f, 5f);
         Geometry geom = new Geometry("Ring", ring);
 
