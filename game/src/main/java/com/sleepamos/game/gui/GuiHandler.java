@@ -1,4 +1,4 @@
-package com.sleepamos.game;
+package com.sleepamos.game.gui;
 
 import com.jme3.app.Application;
 import com.simsilica.lemur.GuiGlobals;
