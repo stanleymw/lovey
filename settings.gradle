@@ -6,7 +6,7 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
-rootProject.name = "Lovey"
+rootProject.name = "lovey"
 include ':desktop'
 include ':vrdesktop'
 include ':game'

@@ -11,3 +11,5 @@
 !/.idea/runConfigurations/
 
 local.properties
+/desktop/build/
+/game/build/
