@@ -35,6 +35,9 @@ public class ScreenHandler {
 
     public static void initialize(Lovey app) {
         GuiGlobals.initialize(app);
+        BaseStyles.loadGlassStyle();
+        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
+
         instance = new ScreenHandler(app); // gaming
     }
 
@@ -53,7 +56,7 @@ public class ScreenHandler {
      */
     public void showScreen(Screen screen) {
         if(screen instanceof MainMenuScreen) {
-            throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen");
+            throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen, use ScreenHandler.goToMainMenu() instead");
         }
         this.screenHierarchy.getLast().detach(this.getGuiNode());
         screen.attach(this.getGuiNode());

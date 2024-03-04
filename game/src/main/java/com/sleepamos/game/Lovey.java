@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  *
  */
 public class Lovey extends SimpleApplication {
+    @Nullable
     private static Lovey instance;
 
     /**
@@ -27,6 +28,7 @@ public class Lovey extends SimpleApplication {
         return instance;
     }
 
+    @Nullable
     private ScreenHandler screenHandler;
 
     public Lovey(AppState... initialStates) {
@@ -38,9 +40,6 @@ public class Lovey extends SimpleApplication {
     public void simpleInitApp() {
         ScreenHandler.initialize(this);
         this.screenHandler = ScreenHandler.getInstance();
-
-        BaseStyles.loadGlassStyle();
-        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
         Container window = new Container();
         guiNode.attachChild(window);
@@ -64,6 +63,7 @@ public class Lovey extends SimpleApplication {
      * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
      * @return The screen handler for the game.
      */
+    @Nullable
     public ScreenHandler getScreenHandler() {
         return this.screenHandler;
     }

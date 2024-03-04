@@ -6,6 +6,17 @@ public abstract class Screen {
     protected final Node elements;
     private Node parent;
 
+    /**
+     * Constructs this screen with the class name as the node name.
+     */
+    public Screen() {
+        this.elements = new Node(this.getClass().getSimpleName());  // we can't just call this(this.getClass().getSimpleName()) because thanks java
+    }
+
+    /**
+     * Constructs this screen with a specific name as the node name.
+     * @param name The name to use.
+     */
     public Screen(String name) {
         this.elements = new Node(name);
     }
