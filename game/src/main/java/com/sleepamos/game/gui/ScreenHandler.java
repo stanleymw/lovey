@@ -2,6 +2,7 @@ package com.sleepamos.game.gui;
 
 import com.jme3.scene.Node;
 import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.style.BaseStyles;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.gui.screen.MainMenuScreen;
 import com.sleepamos.game.gui.screen.Screen;
@@ -44,8 +45,7 @@ public class ScreenHandler {
     private ScreenHandler(Lovey app) {
         this.app = app;
         this.screenHierarchy = new LinkedList<>();
-
-        this.showScreen(new MainMenuScreen());
+        this.createMainMenu();
     }
 
     /**
@@ -58,9 +58,11 @@ public class ScreenHandler {
         if(screen instanceof MainMenuScreen) {
             throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen, use ScreenHandler.goToMainMenu() instead");
         }
-        this.screenHierarchy.getLast().detach(this.getGuiNode());
-        screen.attach(this.getGuiNode());
-        this.screenHierarchy.add(screen);
+        if(screen != Screens.NONE || !(this.screenHierarchy.getLast() == Screens.NONE)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
+            this.screenHierarchy.getLast().detach();
+            screen.attach(this.getGuiNode());
+            this.screenHierarchy.add(screen);
+        }
     }
 
     /**
@@ -71,9 +73,10 @@ public class ScreenHandler {
      *
      * @return Whether a screen was successfully removed. If the hierarchy was on the main menu when this method is called, returns false.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean hideLastShownScene() {
         if(this.screenHierarchy.size() > 1) {
-            this.screenHierarchy.getLast().detach(this.getGuiNode());
+            this.screenHierarchy.getLast().detach();
             this.screenHierarchy.removeLast();
             this.screenHierarchy.getLast().attach(this.getGuiNode());
             return true;
@@ -104,6 +107,12 @@ public class ScreenHandler {
     public void goToMainMenu() {
         Screen main = this.screenHierarchy.getFirst();
         this.screenHierarchy.clear();
+        this.screenHierarchy.add(main);
+    }
+
+    private void createMainMenu() {
+        Screen main = new MainMenuScreen();
+        main.attach(this.getGuiNode());
         this.screenHierarchy.add(main);
     }
 

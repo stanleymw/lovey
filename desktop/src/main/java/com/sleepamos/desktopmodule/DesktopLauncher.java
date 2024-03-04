@@ -17,6 +17,8 @@ public class DesktopLauncher {
 
         final AppSettings appSettings = new AppSettings(true);
 
+        appSettings.setResolution(1080, 720);
+
         game.setSettings(appSettings);
         game.start();
     }

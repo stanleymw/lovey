@@ -3,13 +3,15 @@ package com.sleepamos.game.appstates;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.simsilica.lemur.GuiGlobals;
-import com.sleepamos.game.gui.screen.Screen;
+import com.sleepamos.game.Lovey;
+import com.sleepamos.game.gui.ScreenHandler;
 
 public class ScreenAppState extends BaseAppState {
-    private Screen currentScreen;
+    private ScreenHandler screenHandler;
 
     @Override
     protected void initialize(Application app) {
+        this.screenHandler = ((Lovey) app).getScreenHandler();
     }
 
     @Override
@@ -19,11 +21,17 @@ public class ScreenAppState extends BaseAppState {
     @Override
     protected void onEnable() {
         GuiGlobals.getInstance().requestCursorEnabled(this);
+        if(!this.screenHandler.isShowingAScreen()) {
+            this.screenHandler.hideLastShownScene();
+        }
     }
 
     @Override
     protected void onDisable() {
-        GuiGlobals.getInstance().releaseCursorEnabled(this);
+        System.out.println(GuiGlobals.getInstance().releaseCursorEnabled(this));
+        if(this.screenHandler.isShowingAScreen()) {
+            this.screenHandler.hideAllScreens();
+        }
     }
 
     @Override
