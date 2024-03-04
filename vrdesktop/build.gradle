@@ -25,6 +25,8 @@ dependencies {
     implementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
     
     implementation 'com.onemillionworlds:tamarin:2.4'
+
+    implementation 'org.jetbrains:annotations:24.0.0'
 }
 task copyJars(type: Copy) {
     from (sourceSets.main.runtimeClasspath){

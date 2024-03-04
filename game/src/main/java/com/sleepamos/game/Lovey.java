@@ -4,7 +4,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.style.BaseStyles;
-import com.sleepamos.game.gui.GuiHandler;
+import com.sleepamos.game.gui.ScreenHandler;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -14,13 +15,29 @@ import com.sleepamos.game.gui.GuiHandler;
  *
  */
 public class Lovey extends SimpleApplication {
+    private static Lovey instance;
+
+    /**
+     * Get the instance of the game.
+     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * @return The game instance.
+     */
+    @Nullable
+    public static Lovey getInstance() {
+        return instance;
+    }
+
+    private ScreenHandler screenHandler;
+
     public Lovey(AppState... initialStates) {
         super(initialStates);
+        instance = this;
     }
 
     @Override
     public void simpleInitApp() {
-        GuiHandler.initialize(this);
+        ScreenHandler.initialize(this);
+        this.screenHandler = ScreenHandler.getInstance();
 
         BaseStyles.loadGlassStyle();
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
@@ -40,5 +57,14 @@ public class Lovey extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
 
+    }
+
+    /**
+     * Get the screen handler.
+     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * @return The screen handler for the game.
+     */
+    public ScreenHandler getScreenHandler() {
+        return this.screenHandler;
     }
 }
