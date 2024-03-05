@@ -2,7 +2,16 @@ package com.sleepamos.game;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.input.InputManager;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.sleepamos.game.appstates.InGameAppState;
+import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.gui.ScreenHandler;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 
 /**
@@ -25,6 +34,13 @@ public class Lovey extends SimpleApplication {
 
     private ScreenHandler screenHandler;
 
+    private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
+        // false = key released!
+        switch(name) {
+            case "Pause" -> System.out.println("paused");
+        }
+    };
+
     public Lovey(AppState... initialStates) {
         super(initialStates);
         instance = this;
@@ -35,6 +51,33 @@ public class Lovey extends SimpleApplication {
         ScreenHandler.initialize(this);
         this.screenHandler = ScreenHandler.getInstance();
         this.getRootNode().attachChild(this.getGuiNode());
+
+        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_MEMORY); // delete the defaults,
+        this.configureMappings(this.getInputManager()); // then add our own
+    }
+
+    private String[] hijackMappingsList(InputManager mgrInstance) {
+        try {
+            // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
+            // We access the field through the given InputManager instance, cast it to a HashMap with key type String, then convert the key set
+            // to a String[] that we can use.
+
+            Field mappingField = InputManager.class.getDeclaredField("mappings");
+            mappingField.setAccessible(true); // Since the field is normally "private final", make it accessible.
+
+            // Ignore the big yellow line here, I think I know what I'm doing
+            return ((HashMap<String, ?>)(mappingField.get(mgrInstance))).keySet().toArray(new String[0]); // trust me bro
+        } catch(Exception e) {
+            System.out.println("Unable to get the mappings list");
+            e.printStackTrace();
+            return new String[]{};
+        }
+    }
+
+    private void configureMappings(InputManager mgr) {
+        mgr.addMapping("Pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
+
+        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr));
     }
 
     @Override
@@ -49,5 +92,10 @@ public class Lovey extends SimpleApplication {
      */
     public ScreenHandler getScreenHandler() {
         return this.screenHandler;
+    }
+
+    public void toggleScreenMode(boolean screensEnabled) {
+        this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
+        this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
     }
 }

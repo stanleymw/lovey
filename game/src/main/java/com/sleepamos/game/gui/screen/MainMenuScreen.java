@@ -1,12 +1,10 @@
 package com.sleepamos.game.gui.screen;
 
-import com.jme3.app.state.AppStateManager;
+import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.Label;
 import com.sleepamos.game.Lovey;
-import com.sleepamos.game.appstates.InGameAppState;
-import com.sleepamos.game.appstates.ScreenAppState;
 
 public class MainMenuScreen extends Screen {
     @Override
@@ -16,14 +14,11 @@ public class MainMenuScreen extends Screen {
         // Put it somewhere that we will see it.
         // Note: Lemur GUI elements grow down from the upper left corner.
         window.setLocalTranslation(300, 300, 0);
+        window.scale(1.75f);
 
         // Add some elements
-        window.addChild(new Label("Hello, World."));
-        Button clickMe = window.addChild(new Button("Click Me"));
-        clickMe.addClickCommands(source -> {
-            AppStateManager mgr = Lovey.getInstance().getStateManager();
-            mgr.getState(ScreenAppState.class).setEnabled(false);
-            mgr.getState(InGameAppState.class).setEnabled(true);
-        });
+        window.addChild((Node)((new Label("The Adventures of\nLovey the Penguin")).scale(0.75f)));
+        Button clickMe = window.addChild(new Button("Enter Game"));
+        clickMe.addClickCommands(source -> Lovey.getInstance().toggleScreenMode(false));
     }
 }

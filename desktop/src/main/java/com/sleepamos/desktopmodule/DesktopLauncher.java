@@ -18,6 +18,9 @@ public class DesktopLauncher {
         final AppSettings appSettings = new AppSettings(true);
 
         appSettings.setResolution(1080, 720);
+        appSettings.setGammaCorrection(true);
+        appSettings.setTitle("Lovey");
+
 
         game.setSettings(appSettings);
         game.start();
