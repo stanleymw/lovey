@@ -1,23 +1,20 @@
 package com.sleepamos.game;
 
-import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
-import com.jme3.light.DirectionalLight;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.app.state.AppState;
-import com.jme3.scene.shape.Torus;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
-import com.jme3.system.AppSettings;
+import com.jme3.audio.AudioListenerState;
+import com.jme3.input.InputManager;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.sleepamos.game.appstates.InGameAppState;
+import com.sleepamos.game.appstates.ScreenAppState;
+import com.sleepamos.game.gui.ScreenHandler;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 
 /**
@@ -27,55 +24,69 @@ import com.jme3.system.AppSettings;
  *
  */
 public class Lovey extends SimpleApplication {
+    private static Lovey instance;
 
-    public Lovey() {
+    /**
+     * Get the instance of the game.
+     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * @return The game instance.
+     */
+    public static Lovey getInstance() {
+        return instance;
     }
+
+    private ScreenHandler screenHandler;
+
+    private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
+        // false = key released!
+        switch(name) {
+            case "Pause" -> System.out.println("paused");
+        }
+    };
 
     public Lovey(AppState... initialStates) {
         super(initialStates);
+        instance = this;
+    }
+
+    public Lovey() {
+        super(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
+        instance = this;
     }
 
     @Override
     public void simpleInitApp() {
-        Torus ring = new Torus(128, 128, 0.1f, 5f);
-        Geometry geom = new Geometry("Ring", ring);
+        ScreenHandler.initialize(this);
+        this.screenHandler = ScreenHandler.getInstance();
+        this.getRootNode().attachChild(this.getGuiNode());
 
-        Box ground = new Box(999999.0f, 1.0f, 999999.0f);
-        Geometry ground_geom = new Geometry("Ground", ground);
-        ground_geom.move(new Vector3f(0.0f,-5.0f,0.0f));
+        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_MEMORY); // delete the defaults
 
-        Material ground_material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        ground_material.setColor("Color", ColorRGBA.Green);
+        this.configureMappings(this.getInputManager()); // then add our own
+    }
 
-        ground_geom.setMaterial(ground_material);
+    private String[] hijackMappingsList(InputManager mgrInstance) {
+        try {
+            // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
+            // We access the field through the given InputManager instance, cast it to a HashMap with key type String, then convert the key set
+            // to a String[] that we can use.
 
-        geom.move(new Vector3f(0.0f,0.0f,0.0f));
-        geom.rotate(FastMath.HALF_PI, 0, 0);
-        geom.scale(1.0f, 1.0f, 9999.0f);
+            Field mappingField = InputManager.class.getDeclaredField("mappings");
+            mappingField.setAccessible(true); // Since the field is normally "private final", make it accessible.
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setTransparent(true);
-        mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        mat.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 200));
+            // Ignore the big yellow line here, I think I know what I'm doing
+            return ((HashMap<String, ?>)(mappingField.get(mgrInstance))).keySet().toArray(new String[0]); // trust me bro
+        } catch(Exception e) {
+            System.out.println("Unable to get the mappings list");
+            e.printStackTrace();
+            return new String[]{};
+        }
+    }
 
-        geom.setMaterial(mat);
-        geom.setQueueBucket(RenderQueue.Bucket.Transparent);
+    private void configureMappings(InputManager mgr) {
+        mgr.addMapping("Pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
-        rootNode.attachChild(geom);
-        rootNode.attachChild(ground_geom);
-
-        DirectionalLight sun = new DirectionalLight(); // This is the light source for shadows
-        sun.setDirection(new Vector3f(-0.5f, 0.5f, -0.5f).normalizeLocal()); // Positions the light source
-        sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun); // Puts the sun in the map
-
-        final int SHADOWMAP_SIZE = 1<<10; // Size of the shadow map
-        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 1); // Renders shadows
-        dlsr.setLight(sun);
-//        viewPort.addProcessor(dlsr); // Adds the shadow renderer to the viewport
-        rootNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive); // Make sure everything can have a shadow casted on, but cannot cast a shadow because that will kill fps
-
-
+        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr));
     }
 
     @Override
@@ -83,14 +94,17 @@ public class Lovey extends SimpleApplication {
 
     }
 
-
-    public static void main(String[] args) {
-        AppSettings settings = new AppSettings(true);
-
-
-        Lovey app = new Lovey();
-        app.setSettings(settings);
-        app.start();
+    /**
+     * Get the screen handler.
+     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * @return The screen handler for the game.
+     */
+    public ScreenHandler getScreenHandler() {
+        return this.screenHandler;
     }
 
+    public void toggleScreenMode(boolean screensEnabled) {
+        this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
+        this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
 }
