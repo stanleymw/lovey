@@ -14,6 +14,7 @@ import com.jme3.scene.control.AbstractControl;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.gui.ScreenHandler;
+import com.sleepamos.game.gui.screen.PauseScreen;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -42,7 +43,12 @@ public class Lovey extends SimpleApplication {
     private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
         // false = key released!
         switch(name) {
-            case "Pause" -> System.out.println("paused");
+            case "Pause" -> {
+                if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
+                    this.toggleScreenMode(true);
+                    this.getScreenHandler().showScreen(new PauseScreen());
+                }
+            }
         }
     };
 
@@ -61,7 +67,7 @@ public class Lovey extends SimpleApplication {
         this.screenHandler = ScreenHandler.getInstance();
         this.getRootNode().attachChild(this.getGuiNode());
 
-        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_MEMORY); // delete the defaults
+        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT); // delete the default
         this.getFlyByCamera().setMoveSpeed(0);
 
         this.configureMappings(this.getInputManager()); // then add our own

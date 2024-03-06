@@ -5,8 +5,8 @@ import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.gui.screen.MainMenuScreen;
+import com.sleepamos.game.gui.screen.NoScreen;
 import com.sleepamos.game.gui.screen.Screen;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 
@@ -21,7 +21,6 @@ public class ScreenHandler {
      * Get the instance of the ScreenHandler. Requires that {@link #initialize(Lovey)} has been called.
      * @return The instance of this object.
      */
-    @Nullable
     public static ScreenHandler getInstance() {
         return instance;
     }
@@ -58,7 +57,7 @@ public class ScreenHandler {
         if(screen instanceof MainMenuScreen) {
             throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen, use ScreenHandler.goToMainMenu() instead");
         }
-        if(screen != Screens.NONE || !(this.screenHierarchy.getLast() == Screens.NONE)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
+        if(!(this.screenHierarchy.getLast() instanceof NoScreen)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
             this.screenHierarchy.getLast().detach();
             screen.attach(this.getGuiNode());
             this.screenHierarchy.add(screen);
@@ -76,7 +75,8 @@ public class ScreenHandler {
     @SuppressWarnings("UnusedReturnValue")
     public boolean hideLastShownScene() {
         if(this.screenHierarchy.size() > 1) {
-            this.screenHierarchy.getLast().detach();
+            Screen current = this.screenHierarchy.getLast();
+            current.detach();
             this.screenHierarchy.removeLast();
             this.screenHierarchy.getLast().attach(this.getGuiNode());
             return true;
@@ -88,17 +88,21 @@ public class ScreenHandler {
      * Shows no screen. Useful for entering the game state.
      */
     public void hideAllScreens() {
-        this.showScreen(Screens.NONE);
+        this.showScreen(new NoScreen());
+    }
+
+    public Screen getCurrentScreen() {
+        return this.screenHierarchy.getLast();
     }
 
     /**
      * Whether a screen is being shown (i.e. visible) to the user.
      * If no screens exist in the screen hierarchy (shouldn't happen?), returns false.
-     * If the most recent screen is {@link Screens#NONE}, returns false.
+     * If the most recent screen is instanceof {@link NoScreen}, returns false.
      * @return Whether a screen is visible to the user.
      */
     public boolean isShowingAScreen() {
-        return !this.screenHierarchy.isEmpty() && this.screenHierarchy.getLast() != Screens.NONE;
+        return !this.screenHierarchy.isEmpty() && !(this.screenHierarchy.getLast() instanceof NoScreen);
     }
 
     /**
