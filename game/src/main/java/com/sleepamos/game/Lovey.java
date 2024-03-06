@@ -4,11 +4,13 @@ import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.app.state.AppState;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.scene.control.AbstractControl;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.gui.ScreenHandler;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 
 /**
  * The JMonkeyEngine game entry, you should only do initializations for your game here, game logic is handled by
- * Custom states {@link com.jme3.app.state.BaseAppState}, Custom controls {@link com.jme3.scene.control.AbstractControl}
+ * Custom states {@link BaseAppState}, Custom controls {@link AbstractControl}
  * and your custom entities implementations of the previous.
  *
  */
@@ -50,8 +52,7 @@ public class Lovey extends SimpleApplication {
     }
 
     public Lovey() {
-        super(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
-        instance = this;
+        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
     }
 
     @Override
@@ -61,6 +62,7 @@ public class Lovey extends SimpleApplication {
         this.getRootNode().attachChild(this.getGuiNode());
 
         this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_MEMORY); // delete the defaults
+        this.getFlyByCamera().setMoveSpeed(0);
 
         this.configureMappings(this.getInputManager()); // then add our own
     }
@@ -86,7 +88,7 @@ public class Lovey extends SimpleApplication {
     private void configureMappings(InputManager mgr) {
         mgr.addMapping("Pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
-        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr));
+        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr)); // add all our defined mappings to the action listener
     }
 
     @Override
