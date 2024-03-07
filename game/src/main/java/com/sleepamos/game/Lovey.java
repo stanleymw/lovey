@@ -10,6 +10,8 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
@@ -40,6 +42,7 @@ public class Lovey extends SimpleApplication {
 
     private ScreenHandler screenHandler;
 
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
         // false = key released!
         switch(name) {
@@ -65,14 +68,16 @@ public class Lovey extends SimpleApplication {
     public void simpleInitApp() {
         ScreenHandler.initialize(this);
         this.screenHandler = ScreenHandler.getInstance();
-        this.getRootNode().attachChild(this.getGuiNode());
+        this.getRootNode().attachChild(this.getGuiNode()); // make sure it's attached
 
         this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT); // delete the default
         this.getFlyByCamera().setMoveSpeed(0);
+        this.getCamera().setFrame(new Vector3f(0, 3, 0), new Quaternion());
 
         this.configureMappings(this.getInputManager()); // then add our own
     }
 
+    @SuppressWarnings("unchecked")
     private String[] hijackMappingsList(InputManager mgrInstance) {
         try {
             // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
@@ -99,7 +104,7 @@ public class Lovey extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-
+        super.simpleUpdate(tpf);
     }
 
     /**
