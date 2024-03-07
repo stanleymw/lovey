@@ -57,7 +57,7 @@ public class ScreenHandler {
         if(screen instanceof MainMenuScreen) {
             throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen, use ScreenHandler.goToMainMenu() instead");
         }
-        if(!(this.screenHierarchy.getLast() instanceof NoScreen)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
+        if(!(screen instanceof NoScreen) || !(this.screenHierarchy.getLast() instanceof NoScreen)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
             this.screenHierarchy.getLast().detach();
             screen.attach(this.getGuiNode());
             this.screenHierarchy.add(screen);
