@@ -15,6 +15,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
+import com.sleepamos.game.asset.Assets;
+import com.sleepamos.game.audio.Audios;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
 
@@ -75,6 +77,8 @@ public class Lovey extends SimpleApplication {
         this.getCamera().setFrame(new Vector3f(0, 3, 0), new Quaternion());
 
         this.configureMappings(this.getInputManager()); // then add our own
+        Assets.initialize();
+        Audios.initialize();
     }
 
     @SuppressWarnings("unchecked")
