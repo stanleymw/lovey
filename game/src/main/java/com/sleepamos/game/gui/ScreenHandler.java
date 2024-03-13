@@ -73,7 +73,7 @@ public class ScreenHandler {
      * @return Whether a screen was successfully removed. If the hierarchy was on the main menu when this method is called, returns false.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean hideLastShownScene() {
+    public boolean hideLastShownScreen() {
         if(this.screenHierarchy.size() > 1) {
             Screen current = this.screenHierarchy.getLast();
             current.detach();
