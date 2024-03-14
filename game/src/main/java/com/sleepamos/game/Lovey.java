@@ -54,7 +54,7 @@ public class Lovey extends SimpleApplication {
                         this.toggleScreenMode(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
                     } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
-                        this.getScreenHandler().hideLastShownScreen();
+                        this.getScreenHandler().onEscape();
                     }
                 }
             }

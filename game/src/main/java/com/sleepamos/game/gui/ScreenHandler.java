@@ -84,6 +84,12 @@ public class ScreenHandler {
         return false;
     }
 
+    public void onEscape() {
+        if(this.getCurrentScreen().isEscapable()) {
+            this.hideLastShownScreen();
+        }
+    }
+
     /**
      * Shows no screen. Useful for entering the game state.
      */

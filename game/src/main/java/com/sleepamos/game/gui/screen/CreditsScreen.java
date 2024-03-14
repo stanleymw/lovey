@@ -3,7 +3,7 @@ package com.sleepamos.game.gui.screen;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.Label;
 
-public class CreditsScreen extends Screen {
+public class CreditsScreen extends EscapableScreen {
     @Override
     protected void initialize() {
         Container window = this.createAndAttachContainer();
