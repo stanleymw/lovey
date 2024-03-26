@@ -5,24 +5,21 @@ import com.simsilica.lemur.Container;
 
 public abstract class Screen {
     protected final Node elements;
-
+    protected final boolean escapable;
     private Node parent;
 
     /**
      * Constructs this screen with the class name as the node name.
      */
-    public Screen() {
-        this.elements = new Node(this.getClass().getSimpleName());  // we can't just call this(this.getClass().getSimpleName()) because thanks java
+    protected Screen(boolean escapable) {
+        this.elements = new Node(this.getClass().getSimpleName());
+        this.escapable = escapable;
+
         this.initialize();
     }
 
-    /**
-     * Constructs this screen with a specific name as the node name.
-     * @param name The name to use.
-     */
-    public Screen(String name) {
-        this.elements = new Node(name);
-        this.initialize();
+    protected Screen() {
+        this(false);
     }
 
     /**
@@ -45,6 +42,10 @@ public abstract class Screen {
     public void detach() {
         this.parent.detachChild(this.elements);
         this.parent = null;
+    }
+
+    public boolean isEscapable() {
+        return this.escapable;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.sleepamos.game.appstates;
 
-
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
@@ -17,10 +16,14 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 
+import java.util.Objects;
+
 public class InGameAppState extends BaseAppState {
     private AssetManager assetManager;
     private Node rootNode;
     private Node gameNode;
+
+    private Vector3f directionOnPause;
 
     @Override
     protected void initialize(Application app) {
@@ -41,7 +44,7 @@ public class InGameAppState extends BaseAppState {
     private void setupGameNode() {
         this.gameNode = new Node("game_node");
 
-        Dome dome = new Dome(1<<8, 1<<8, 8f);
+        Dome dome = new Dome(1<<8, 1<<8, 69f);
         Geometry domeGeometry = new Geometry("Ring", dome);
 
         Box ground = new Box(50.0f, 1.0f,50.0f);
@@ -85,11 +88,13 @@ public class InGameAppState extends BaseAppState {
     @Override
     protected void onEnable() {
         this.rootNode.attachChild(this.gameNode);
+        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
     }
 
     @Override
     protected void onDisable() {
         this.rootNode.detachChild(this.gameNode);
+        this.directionOnPause = this.getApplication().getCamera().getDirection();
     }
 
     @Override
