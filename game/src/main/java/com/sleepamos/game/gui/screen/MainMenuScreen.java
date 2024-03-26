@@ -20,6 +20,7 @@ public class MainMenuScreen extends Screen {
         window.addChild((Node)((new Label("The Adventures of\nLovey the Penguin")).scale(0.75f)));
         Button clickMe = window.addChild(new Button("Enter Game"));
         clickMe.addClickCommands(source -> Lovey.getInstance().toggleScreenMode(false));
+        window.addChild(new Button("Settings")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(new SettingsScreen()));
         window.addChild(new Button("Credits")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(new CreditsScreen()));
         window.addChild(new Button("Quit")).addClickCommands(source -> Lovey.getInstance().stop());
     }

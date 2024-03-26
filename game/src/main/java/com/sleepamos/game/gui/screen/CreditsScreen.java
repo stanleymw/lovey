@@ -8,7 +8,7 @@ public class CreditsScreen extends EscapableScreen {
     protected void initialize() {
         Container window = this.createAndAttachContainer();
 
-        window.setLocalTranslation(300, 300, 0);
+        window.setLocalTranslation(500, 500, 0);
         window.scale(1.75f);
 
         window.addChild(new Label("""

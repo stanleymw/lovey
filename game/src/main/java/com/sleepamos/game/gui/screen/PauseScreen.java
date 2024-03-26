@@ -20,8 +20,7 @@ public class PauseScreen extends Screen {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
             Lovey.getInstance().toggleScreenMode(false);
         });
-        window.addChild(new Button("Return to Main Menu")).addClickCommands(source -> {
-            Lovey.getInstance().getScreenHandler().hideLastShownScreen();
-        });
+        window.addChild(new Button("Settings")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(new SettingsScreen()));
+        window.addChild(new Button("Return to Main Menu")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen());
     }
 }

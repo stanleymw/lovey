@@ -13,6 +13,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.asset.Assets;
@@ -127,5 +128,9 @@ public class Lovey extends SimpleApplication {
     public void toggleScreenMode(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
         this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public AppSettings getSettings() {
+        return this.settings;
     }
 }

@@ -1,12 +1,24 @@
 package com.sleepamos.game.gui.screen;
 
 import com.jme3.scene.Node;
+import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Container;
+import com.sleepamos.game.Lovey;
+import com.sleepamos.game.gui.screen.settings.ButtonSettings;
 
 public abstract class Screen {
     protected final Node elements;
     protected final boolean escapable;
     private Node parent;
+
+    protected int getScreenWidth() {
+        return Lovey.getInstance().getSettings().getWindowWidth();
+    }
+
+    protected int getScreenHeight() {
+        return Lovey.getInstance().getSettings().getWindowHeight();
+    }
 
     /**
      * Constructs this screen with the class name as the node name.
@@ -56,5 +68,11 @@ public abstract class Screen {
         Container c = new Container();
         this.elements.attachChild(c);
         return c;
+    }
+
+    protected Button createButtonToOtherScreen(String buttonName, Screen next, ButtonSettings buttonSettings) {
+        Button b = new Button(buttonName);
+        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
+        return b;
     }
 }
