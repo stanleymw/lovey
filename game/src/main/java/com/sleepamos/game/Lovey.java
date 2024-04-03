@@ -87,7 +87,7 @@ public class Lovey extends SimpleApplication {
     }
 
     @SuppressWarnings("unchecked")
-    private String[] hijackMappingsList(InputManager mgrInstance) {
+    private static String[] hijackMappingsList(InputManager mgrInstance) {
         try {
             // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
             // We access the field through the given InputManager instance, cast it to a HashMap with key type String, then convert the key set
@@ -101,14 +101,14 @@ public class Lovey extends SimpleApplication {
         } catch(Exception e) {
             System.out.println("Unable to get the mappings list");
             e.printStackTrace();
-            return new String[]{};
+            throw new AssertionError("Closing game due to error in startup.");
         }
     }
 
     private void configureMappings(InputManager mgr) {
         mgr.addMapping("Escape", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
-        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr)); // add all our defined mappings to the action listener
+        mgr.addListener(this.actionListener, hijackMappingsList(mgr)); // add all our defined mappings to the action listener
     }
 
     @Override
