@@ -1,8 +1,6 @@
 package com.sleepamos.game.gui.screen;
 
-import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Container;
-import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.sleepamos.game.Lovey;
 
 public class PauseScreen extends Screen {
@@ -16,11 +14,11 @@ public class PauseScreen extends Screen {
         window.setLocalTranslation(this.getScreenWidth() / 3f, this.getScreenHeight(), 0);
         window.scale(1.75f);
 
-        window.addChild(new Button("Resume")).addClickCommands(source -> {
+        window.addChild(this.buttonWithCommand("Resume", source -> {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
             Lovey.getInstance().toggleScreenMode(false);
-        });
-        window.addChild(this.createButtonToOtherScreen("Settings", new SettingsScreen()));
-        window.addChild(new Button("Return to Main Menu")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen());
+        }));
+        window.addChild(this.buttonToOtherScreen("Settings", new SettingsScreen()));
+        window.addChild(this.buttonWithCommand("Quit", source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen()));
     }
 }

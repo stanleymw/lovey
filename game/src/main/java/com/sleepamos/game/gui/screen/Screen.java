@@ -2,6 +2,7 @@ package com.sleepamos.game.gui.screen;
 
 import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Container;
 import com.sleepamos.game.Lovey;
 
@@ -68,9 +69,15 @@ public abstract class Screen {
         return c;
     }
 
-    protected Button createButtonToOtherScreen(String buttonName, Screen next) {
+    protected Button buttonToOtherScreen(String buttonName, Screen next) {
         Button b = new Button(buttonName);
         b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
+        return b;
+    }
+
+    protected Button buttonWithCommand(String buttonName, Command<? super Button> run) {
+        Button b = new Button(buttonName);
+        b.addClickCommands(run);
         return b;
     }
 }
