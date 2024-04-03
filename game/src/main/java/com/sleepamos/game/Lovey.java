@@ -13,6 +13,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.asset.Assets;
@@ -46,12 +47,16 @@ public class Lovey extends SimpleApplication {
 
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
-        // false = key released!
-        switch(name) {
-            case "Pause" -> {
-                if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
-                    this.toggleScreenMode(true);
-                    this.getScreenHandler().showScreen(new PauseScreen());
+        // false = key released! we only want to do stuff on key release for these ones.
+        if(!keyPressed) {
+            switch(name) {
+                case "Escape" -> {
+                    if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
+                        this.toggleScreenMode(true);
+                        this.getScreenHandler().showScreen(new PauseScreen());
+                    } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
+                        this.getScreenHandler().onEscape();
+                    }
                 }
             }
         }
@@ -101,7 +106,7 @@ public class Lovey extends SimpleApplication {
     }
 
     private void configureMappings(InputManager mgr) {
-        mgr.addMapping("Pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
+        mgr.addMapping("Escape", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
         mgr.addListener(this.actionListener, this.hijackMappingsList(mgr)); // add all our defined mappings to the action listener
     }
@@ -123,5 +128,9 @@ public class Lovey extends SimpleApplication {
     public void toggleScreenMode(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
         this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public AppSettings getSettings() {
+        return this.settings;
     }
 }

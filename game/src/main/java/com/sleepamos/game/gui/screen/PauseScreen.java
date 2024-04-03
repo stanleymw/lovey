@@ -13,10 +13,14 @@ public class PauseScreen extends Screen {
 
         // Put it somewhere that we will see it.
         // Note: Lemur GUI elements grow down from the upper left corner.
-        window.setLocalTranslation(300, 300, 0);
+        window.setLocalTranslation(this.getScreenWidth() / 3f, this.getScreenHeight(), 0);
         window.scale(1.75f);
 
-        window.addChild(new Button("Resume")).addClickCommands(source -> Lovey.getInstance().toggleScreenMode(false));
-        window.addChild(new Button("Quit")).addClickCommands(source -> Lovey.getInstance().stop());
+        window.addChild(new Button("Resume")).addClickCommands(source -> {
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
+            Lovey.getInstance().toggleScreenMode(false);
+        });
+        window.addChild(this.createButtonToOtherScreen("Settings", new SettingsScreen()));
+        window.addChild(new Button("Return to Main Menu")).addClickCommands(source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen());
     }
 }
