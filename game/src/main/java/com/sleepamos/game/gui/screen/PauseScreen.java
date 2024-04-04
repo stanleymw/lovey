@@ -7,7 +7,6 @@ public class PauseScreen extends Screen {
     @Override
     protected void initialize() {
         Container window = this.createAndAttachContainer();
-        // window.setBackground(new QuadBackgroundComponent(Lovey.getInstance().getAssetManager().loadTexture("bg.png")));
 
         // Put it somewhere that we will see it.
         // Note: Lemur GUI elements grow down from the upper left corner.

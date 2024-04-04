@@ -144,7 +144,6 @@ public class InGameAppState extends BaseAppState {
     protected void onEnable() {
         this.rootNode.attachChild(this.gameNode);
         this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
-
     }
 
     @Override

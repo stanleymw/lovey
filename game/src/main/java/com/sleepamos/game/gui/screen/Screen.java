@@ -4,7 +4,9 @@ import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Container;
+import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.sleepamos.game.Lovey;
+import com.sleepamos.game.asset.Assets;
 
 public abstract class Screen {
     protected final Node elements;
@@ -65,18 +67,26 @@ public abstract class Screen {
      */
     protected Container createAndAttachContainer() {
         Container c = new Container();
+        c.setBackground(null);
         this.elements.attachChild(c);
         return c;
     }
 
-    protected Button buttonToOtherScreen(String buttonName, Screen next) {
+    private Button button(String buttonName) {
         Button b = new Button(buttonName);
+        b.setBorder(null);
+        b.setBackground(new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE));
+        return b;
+    }
+
+    protected Button buttonToOtherScreen(String buttonName, Screen next) {
+        Button b = button(buttonName);
         b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
         return b;
     }
 
     protected Button buttonWithCommand(String buttonName, Command<? super Button> run) {
-        Button b = new Button(buttonName);
+        Button b = button(buttonName);
         b.addClickCommands(run);
         return b;
     }

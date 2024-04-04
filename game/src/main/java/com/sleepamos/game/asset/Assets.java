@@ -7,7 +7,7 @@ import com.sleepamos.game.Lovey;
  * Holds all the assets
  */
 public final class Assets {
-    // public static final Texture BUTTON_BG = Lovey.getInstance().getAssetManager().loadTexture("button_bg");
+    public static final Texture BUTTON_BG_TEXTURE = Lovey.getInstance().getAssetManager().loadTexture("Textures/button.png");
 
     /**
      * This class takes advantage of Java's lazy class loading in order to access the assetManager without needing it passed in.
