@@ -65,7 +65,8 @@ Backstory on Lovey for the uncultured and uneducated
         - lovey surprised pickachu face
         - runs away
 * - [ ] Chicago
-    - 
+    - lowk dont even know atp
+    - improv
 
 ## Project set up
 This is a gradle project using JMonkey Engine and other java libraries
