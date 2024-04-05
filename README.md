@@ -49,9 +49,28 @@ Backstory on Lovey for the uncultured and uneducated
     - lovey realises he went the wrong way. ends up in the cayman islands 
     - same if not easier difficulty than g.b
     - still intense music cuz lovey thinks hes being chased
+* - [ ] Cancun cutscene
+    - Lovey is back!
+    - he's sweaty and tired and says in penguin talk, "can't believe im back here"
+    - reuse cancun music it'll be funny
+* - [ ] La Frontera
+    - setting, Rio Grande : The US Mexico border
+    - on the Mexican side
+    - cutscene is lovey jumping over the wall and being chased by border patrol
+    - idk iconic mexican music idrc if that is racist
+* - [ ] Wild West
+    - corn, corn, corn, random old western town, corn
+    - wild west music have fun with that
+    - cutscene of another penguin say "This town ain't big enough for the two of us
+        - lovey surprised pickachu face
+        - runs away
+* - [ ] Chicago
+    - lowk dont even know atp
+    - improv
 
 ## Project set up
 This is a gradle project using JMonkey Engine and other java libraries
+![image](https://github.com/stanleymw/lovey/assets/96892261/17dd98f4-6975-4877-b4b7-d3740ef13699)
 
 # Modules : 
 
