@@ -9,6 +9,7 @@ import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.ActionListener;
@@ -26,11 +27,13 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sun.tools.jconsole.JConsoleContext;
 
 import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
     private AssetManager assetManager;
+    private InputManager inputManager;
     private Node rootNode;
     private Node gameNode;
 
@@ -40,48 +43,32 @@ public class InGameAppState extends BaseAppState {
     @Override
     protected void initialize(Application app) {
         this.assetManager = this.getApplication().getAssetManager();
+        this.inputManager = this.getApplication().getInputManager();
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
 
         this.setupGameNode();
         this.setEnabled(false);
+
+        this.inputManager.addMapping("Interact",      // Declare...
+                new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
     }
 
     @Override
     protected void cleanup(Application app) {
     }
 
+    private AnalogListener analogListener = new AnalogListener() {
+        @Override
+        public void onAnalog(String name, float keyPressed, float tpf) {
+            System.out.println(name+keyPressed+tpf);
+        }
+    };
+
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            if (name.equals("Shoot") && !keyPressed) {
-                // 1. Reset results list.
-                CollisionResults results = new CollisionResults();
-                // 2. Aim the ray from cam loc to cam direction.
-                Camera cam = getApplication().getCamera();
-                Ray ray = new Ray(cam.getLocation(), cam.getDirection());
-                // 3. Collect intersections between Ray and Shootables in results list.
-                shootables.collideWith(ray, results);
-                // 4. Print the results
-                System.out.println("----- Collisions? " + results.size() + "-----");
-                for (int i = 0; i < results.size(); i++) {
-                    // For each hit, we know distance, impact point, name of geometry.
-                    float dist = results.getCollision(i).getDistance();
-                    Vector3f pt = results.getCollision(i).getContactPoint();
-                    String hit = results.getCollision(i).getGeometry().getName();
-                    System.out.println("* Collision #" + i);
-                    System.out.println("  You shot " + hit + " at " + pt + ", " + dist + " wu away.");
-                }
-                // 5. Use the results (we mark the hit object)
-                if (results.size() > 0) {
-                    // The closest collision point is what was truly hit:
-                    CollisionResult closest = results.getClosestCollision();
-                    closest.getGeometry().setLocalScale(0.1f);
-                    // Let's interact - we mark the hit with a red dot.
-                } else {
-                    // No hits? Then remove the red mark.
-                    System.out.println("no sentir");
-                }
-            }
+            System.out.println(name+keyPressed+tpf);
         }
     };
 
@@ -144,6 +131,9 @@ public class InGameAppState extends BaseAppState {
     protected void onEnable() {
         this.rootNode.attachChild(this.gameNode);
         this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
+
+        createBinds();
+        this.getApplication().getInputManager().addListener(analogListener);
     }
 
     @Override
@@ -151,21 +141,15 @@ public class InGameAppState extends BaseAppState {
         this.rootNode.detachChild(this.gameNode);
         this.directionOnPause = this.getApplication().getCamera().getDirection();
 
-        createBinds();
-
-        this.getApplication().getInputManager().addListener(actionListener);
+        destroyBinds();
     }
 
     private void createBinds() {
-        InputManager inputManager = this.getApplication().getInputManager();
-        inputManager.addMapping("Shoot",      // Declare...
-                new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
-        inputManager.addListener(actionListener, "Shoot"); // ... and add.
+        this.inputManager.addListener(analogListener, "Interact"); // ... and add.
     }
 
     private void destroyBinds() {
-
+        this.inputManager.removeListener(analogListener);
     }
 
     @Override
@@ -176,17 +160,18 @@ public class InGameAppState extends BaseAppState {
 //        }
     }
 
-    private Geometry makeCube(String name, float x, float y, float z) {
-        Box box = new Box(1, 1, 1);
+
+    private Geometry makeCube(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
+        Box box = new Box(size_x, size_y, size_z);
         Geometry cube = new Geometry(name, box);
         cube.setLocalTranslation(x, y, z);
-
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
-
         cube.setMaterial(mat1);
         return cube;
-    }
+  }
 
-
+  private Geometry makeCube(String name, float x, float y, float z) {
+        return makeCube(name, x, y, z, 1, 1, 1);
+  }
 }
