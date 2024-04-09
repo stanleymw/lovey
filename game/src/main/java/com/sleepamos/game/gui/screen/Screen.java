@@ -1,9 +1,7 @@
 package com.sleepamos.game.gui.screen;
 
 import com.jme3.scene.Node;
-import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Command;
-import com.simsilica.lemur.Container;
+import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.asset.Assets;
@@ -72,10 +70,31 @@ public abstract class Screen {
         return c;
     }
 
-    private Button button(String buttonName) {
+    protected Button button(String buttonName) {
         Button b = new Button(buttonName);
         b.setBorder(null);
-        b.setBackground(new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE));
+        var q = new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE);
+        q.setMargin(0.25f, 0.25f);
+        b.setBackground(q);
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment) {
+        Button b = button(buttonName);
+        b.setTextHAlignment(hAlignment);
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, VAlignment vAlignment) {
+        Button b = button(buttonName);
+        b.setTextVAlignment(vAlignment);
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment, VAlignment vAlignment) {
+        Button b = button(buttonName);
+        b.setTextHAlignment(hAlignment);
+        b.setTextVAlignment(vAlignment);
         return b;
     }
 
@@ -87,6 +106,16 @@ public abstract class Screen {
 
     protected Button buttonWithCommand(String buttonName, Command<? super Button> run) {
         Button b = button(buttonName);
+        b.addClickCommands(run);
+        return b;
+    }
+
+    protected Button buttonToOtherScreen(Button b, Screen next) {
+        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
+        return b;
+    }
+
+    protected Button buttonWithCommand(Button b, Command<? super Button> run) {
         b.addClickCommands(run);
         return b;
     }
