@@ -2,7 +2,10 @@ package com.sleepamos.game.gui;
 
 import com.jme3.scene.Node;
 import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.style.Attributes;
 import com.simsilica.lemur.style.BaseStyles;
+import com.simsilica.lemur.style.ElementId;
+import com.simsilica.lemur.style.Styles;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.gui.screen.MainMenuScreen;
 import com.sleepamos.game.gui.screen.NoScreen;
@@ -36,6 +39,12 @@ public class ScreenHandler {
     public static void initialize(Lovey app) {
         GuiGlobals.initialize(app);
         BaseStyles.loadGlassStyle();
+
+        Styles styles = GuiGlobals.getInstance().getStyles();
+        Attributes attrs = styles.getSelector(new ElementId("button"), "glass");
+        attrs.set("fontSize", 5);
+        attrs.set("shadowColor", null);
+
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
         instance = new ScreenHandler(app); // gaming

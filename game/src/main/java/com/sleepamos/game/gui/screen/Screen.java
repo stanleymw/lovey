@@ -3,6 +3,7 @@ package com.sleepamos.game.gui.screen;
 import com.jme3.scene.Node;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.asset.Assets;
 
@@ -71,7 +72,7 @@ public abstract class Screen {
     }
 
     protected Button button(String buttonName) {
-        Button b = new Button(buttonName);
+        Button b = new Button(buttonName, new ElementId("button"), "glass");
         b.setBorder(null);
         var q = new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE);
         q.setMargin(0.25f, 0.25f);
