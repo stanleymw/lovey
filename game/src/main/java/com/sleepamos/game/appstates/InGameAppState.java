@@ -27,11 +27,14 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sleepamos.game.interactables.Shootable;
 import com.sun.tools.jconsole.JConsoleContext;
 
 import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
+    private boolean isInteracting = false;
+
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
@@ -58,20 +61,18 @@ public class InGameAppState extends BaseAppState {
     protected void cleanup(Application app) {
     }
 
-    private AnalogListener analogListener = new AnalogListener() {
-        @Override
-        public void onAnalog(String name, float keyPressed, float tpf) {
-            System.out.println(name+keyPressed+tpf);
-        }
-    };
-
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            System.out.println(name+keyPressed+tpf);
+            System.out.println("ACTION:" + name+ " | " + keyPressed+ "|" +tpf);
+
+            switch(name) {
+                case "Interact" -> {
+                    isInteracting = keyPressed;
+                }
+            }
         }
     };
-
 
     /**
      * Sets up a node that contains all game-related spatials.
@@ -133,7 +134,6 @@ public class InGameAppState extends BaseAppState {
         this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
 
         createBinds();
-        this.getApplication().getInputManager().addListener(analogListener);
     }
 
     @Override
@@ -145,33 +145,44 @@ public class InGameAppState extends BaseAppState {
     }
 
     private void createBinds() {
-        this.inputManager.addListener(analogListener, "Interact"); // ... and add.
+        this.inputManager.addListener(actionListener, "Interact"); // ... and add.
     }
 
     private void destroyBinds() {
-        this.inputManager.removeListener(analogListener);
+        this.inputManager.removeListener(actionListener);
     }
 
     @Override
     public void update(float tpf) {
         // run every frame we're enabled
-//        for (Spatial i : this.shootables.getChildren()) {
-//            i.setLocalScale((float)Math.random());
-//        }
+        if (isInteracting) {
+            System.out.println("Mouse is Being Held Down!");
+        }
     }
 
-
     private Geometry makeCube(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
-        Box box = new Box(size_x, size_y, size_z);
+        Shootable box = new Shootable(size_x, size_y, size_z);
         Geometry cube = new Geometry(name, box);
         cube.setLocalTranslation(x, y, z);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
         cube.setMaterial(mat1);
+
         return cube;
   }
 
   private Geometry makeCube(String name, float x, float y, float z) {
         return makeCube(name, x, y, z, 1, 1, 1);
+  }
+
+  private CollisionResults castRay(Node whitelist) {
+      CollisionResults results = new CollisionResults();
+      // 2. Aim the ray from cam loc to cam direction.
+      Camera cam = this.getApplication().getCamera();
+      Ray ray = new Ray(cam.getLocation(), cam.getDirection());
+      // 3. Collect intersections between Ray and Shootables in results list.
+      whitelist.collideWith(ray, results);
+
+      return results;
   }
 }

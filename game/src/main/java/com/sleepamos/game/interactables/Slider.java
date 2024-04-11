@@ -5,8 +5,9 @@ public class Slider implements Interactable {
     public Slider() {
 
     }
+
     @Override
-    public Geometry getGeometry() {
-        return null;
+    public int getPoints() {
+        return 0;
     }
 }
