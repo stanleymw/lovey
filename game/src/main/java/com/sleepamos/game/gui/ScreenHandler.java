@@ -40,11 +40,6 @@ public class ScreenHandler {
         GuiGlobals.initialize(app);
         BaseStyles.loadGlassStyle();
 
-        Styles styles = GuiGlobals.getInstance().getStyles();
-        Attributes attrs = styles.getSelector(new ElementId("button"), "glass");
-        attrs.set("fontSize", 5);
-        attrs.set("shadowColor", null);
-
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
         instance = new ScreenHandler(app); // gaming

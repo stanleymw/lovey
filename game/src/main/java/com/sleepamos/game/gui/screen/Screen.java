@@ -1,7 +1,12 @@
 package com.sleepamos.game.gui.screen;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
-import com.simsilica.lemur.*;
+import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Command;
+import com.simsilica.lemur.Container;
+import com.simsilica.lemur.HAlignment;
+import com.simsilica.lemur.VAlignment;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
@@ -72,11 +77,13 @@ public abstract class Screen {
     }
 
     protected Button button(String buttonName) {
-        Button b = new Button(buttonName, new ElementId("button"), "glass");
+        BetterButton b = new BetterButton(buttonName, new ElementId("button"), "glass");
         b.setBorder(null);
         var q = new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE);
         q.setMargin(0.25f, 0.25f);
         b.setBackground(q);
+        b.getTextComponent().setFontSize(9);
+        b.setShadowColor(new ColorRGBA(255, 255, 255, 255));
         return b;
     }
 
