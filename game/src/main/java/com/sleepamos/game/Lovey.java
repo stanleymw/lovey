@@ -74,6 +74,7 @@ public class Lovey extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         ScreenHandler.initialize(this);
+
         this.screenHandler = ScreenHandler.getInstance();
         this.getRootNode().attachChild(this.getGuiNode()); // make sure it's attached
 
