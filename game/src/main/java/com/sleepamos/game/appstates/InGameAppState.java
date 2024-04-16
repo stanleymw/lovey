@@ -27,6 +27,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 import com.sun.tools.jconsole.JConsoleContext;
 
@@ -34,6 +35,7 @@ import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
     private boolean isInteracting = false;
+    private Interactable interactingWith;
 
     private AssetManager assetManager;
     private InputManager inputManager;
@@ -55,6 +57,9 @@ public class InGameAppState extends BaseAppState {
         this.inputManager.addMapping("Interact",      // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
+
+        this.isInteracting = false;
+        this.interactingWith = null;
     }
 
     @Override
@@ -69,6 +74,14 @@ public class InGameAppState extends BaseAppState {
             switch(name) {
                 case "Interact" -> {
                     isInteracting = keyPressed;
+                    Interactable hit = null;
+
+                    CollisionResults collisionResult = castRay(shootables);
+                    if (collisionResult.size() > 0) {
+                        hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
+                    }
+
+                    interactingWith = hit;
                 }
             }
         }
@@ -106,7 +119,7 @@ public class InGameAppState extends BaseAppState {
         this.gameNode.attachChild(groundGeometry);
 
         for (int i = 0; i < 10; i++) {
-            this.shootables.attachChild(makeCube("target" + i, (float) (Math.random() * 10), (float)(Math.random() * 10), (float)(Math.random() * 10)));
+            this.shootables.attachChild(makeShootable("target" + i, (float) (Math.random() * 10), (float)(Math.random() * 10), (float)(Math.random() * 10)));
         }
 
         this.gameNode.attachChild(this.shootables);
@@ -156,13 +169,28 @@ public class InGameAppState extends BaseAppState {
     public void update(float tpf) {
         // run every frame we're enabled
         if (isInteracting) {
-            System.out.println("Mouse is Being Held Down!");
+            // we need to raycast every frame while Interacting (maybe could optimize this)
+            Interactable hit = null;
+
+            CollisionResults collisionResult = castRay(shootables);
+            if (collisionResult.size() > 0) {
+                hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
+            }
+
+            // lets check
+            if (interactingWith != hit) {
+                // we moved off, STOP INTERACTING
+                isInteracting = false;
+                interactingWith = null;
+            }
+
+            if (interactingWith != null) interactingWith.onInteract();
         }
     }
 
-    private Geometry makeCube(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
-        Shootable box = new Shootable(size_x, size_y, size_z);
-        Geometry cube = new Geometry(name, box);
+    private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
+        Box box = new Box(size_x, size_y, size_z);
+        Shootable cube = new Shootable(name, box, 10);
         cube.setLocalTranslation(x, y, z);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
@@ -171,9 +199,9 @@ public class InGameAppState extends BaseAppState {
         return cube;
   }
 
-  private Geometry makeCube(String name, float x, float y, float z) {
-        return makeCube(name, x, y, z, 1, 1, 1);
-  }
+      private Interactable makeShootable(String name, float x, float y, float z) {
+            return makeShootable(name, x, y, z, 1, 1, 1);
+      }
 
   private CollisionResults castRay(Node whitelist) {
       CollisionResults results = new CollisionResults();

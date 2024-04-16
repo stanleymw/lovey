@@ -1,13 +1,19 @@
 package com.sleepamos.game.interactables;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 
-public class Slider implements Interactable {
-    public Slider() {
+public class Slider extends  Interactable {
+    public Slider(String name, Mesh mesh) {
+        super(name, mesh);
+    }
+
+    @Override
+    public void onInteract() {
 
     }
 
     @Override
-    public int getPoints() {
-        return 0;
+    public void onInteractStop() {
+
     }
 }
