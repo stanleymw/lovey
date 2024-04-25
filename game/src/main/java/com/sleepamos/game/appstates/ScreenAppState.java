@@ -22,7 +22,7 @@ public class ScreenAppState extends BaseAppState {
     protected void onEnable() {
         GuiGlobals.getInstance().setCursorEventsEnabled(true, true);
         if(!this.screenHandler.isShowingAScreen()) {
-            this.screenHandler.hideLastShownScene();
+            this.screenHandler.hideLastShownScreen();
         }
     }
 

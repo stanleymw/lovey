@@ -1,28 +1,42 @@
 package com.sleepamos.game.gui.screen;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
+import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Container;
+import com.simsilica.lemur.HAlignment;
+import com.simsilica.lemur.VAlignment;
+import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.style.ElementId;
+import com.sleepamos.game.Lovey;
+import com.sleepamos.game.asset.Assets;
 
 public abstract class Screen {
     protected final Node elements;
-
+    protected final boolean escapable;
     private Node parent;
+
+    protected int getScreenWidth() {
+        return Lovey.getInstance().getSettings().getWindowWidth();
+    }
+
+    protected int getScreenHeight() {
+        return Lovey.getInstance().getSettings().getWindowHeight();
+    }
 
     /**
      * Constructs this screen with the class name as the node name.
      */
-    public Screen() {
-        this.elements = new Node(this.getClass().getSimpleName());  // we can't just call this(this.getClass().getSimpleName()) because thanks java
+    protected Screen(boolean escapable) {
+        this.elements = new Node(this.getClass().getSimpleName());
+        this.escapable = escapable;
+
         this.initialize();
     }
 
-    /**
-     * Constructs this screen with a specific name as the node name.
-     * @param name The name to use.
-     */
-    public Screen(String name) {
-        this.elements = new Node(name);
-        this.initialize();
+    protected Screen() {
+        this(false);
     }
 
     /**
@@ -47,13 +61,70 @@ public abstract class Screen {
         this.parent = null;
     }
 
+    public boolean isEscapable() {
+        return this.escapable;
+    }
+
     /**
      * Creates and attaches a container to the internal elements node.
      * @return The created container, already attached.
      */
     protected Container createAndAttachContainer() {
         Container c = new Container();
+        c.setBackground(null);
         this.elements.attachChild(c);
         return c;
+    }
+
+    protected Button button(String buttonName) {
+        BetterButton b = new BetterButton(buttonName, new ElementId("button"), "glass");
+        b.setBorder(null);
+        var q = new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE);
+        q.setMargin(0.25f, 0.25f);
+        b.setBackground(q);
+        b.getTextComponent().setFontSize(9);
+        b.setShadowColor(new ColorRGBA(255, 255, 255, 255));
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment) {
+        Button b = button(buttonName);
+        b.setTextHAlignment(hAlignment);
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, VAlignment vAlignment) {
+        Button b = button(buttonName);
+        b.setTextVAlignment(vAlignment);
+        return b;
+    }
+
+    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment, VAlignment vAlignment) {
+        Button b = button(buttonName);
+        b.setTextHAlignment(hAlignment);
+        b.setTextVAlignment(vAlignment);
+        return b;
+    }
+
+    protected Button buttonToOtherScreen(String buttonName, Screen next) {
+        Button b = button(buttonName);
+        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
+        return b;
+    }
+
+    protected Button buttonWithCommand(String buttonName, Command<? super Button> run) {
+        Button b = button(buttonName);
+        b.addClickCommands(run);
+        return b;
+    }
+
+    protected Button buttonToOtherScreen(Button b, Screen next) {
+        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
+        return b;
+    }
+
+    protected Button buttonWithCommand(Button b, Command<? super Button> run) {
+        b.addClickCommands(run);
+        return b;
     }
 }

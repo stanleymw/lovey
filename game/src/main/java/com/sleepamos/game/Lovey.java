@@ -4,14 +4,22 @@ import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.app.state.AppState;
+import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.control.AbstractControl;
+import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
+import com.sleepamos.game.asset.Assets;
+import com.sleepamos.game.audio.Audios;
 import com.sleepamos.game.gui.ScreenHandler;
+import com.sleepamos.game.gui.screen.PauseScreen;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -19,7 +27,7 @@ import java.util.HashMap;
 
 /**
  * The JMonkeyEngine game entry, you should only do initializations for your game here, game logic is handled by
- * Custom states {@link com.jme3.app.state.BaseAppState}, Custom controls {@link com.jme3.scene.control.AbstractControl}
+ * Custom states {@link BaseAppState}, Custom controls {@link AbstractControl}
  * and your custom entities implementations of the previous.
  *
  */
@@ -37,10 +45,20 @@ public class Lovey extends SimpleApplication {
 
     private ScreenHandler screenHandler;
 
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
-        // false = key released!
-        switch(name) {
-            case "Pause" -> System.out.println("paused");
+        // false = key released! we only want to do stuff on key release for these ones.
+        if(!keyPressed) {
+            switch(name) {
+                case "Escape" -> {
+                    if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
+                        this.toggleScreenMode(true);
+                        this.getScreenHandler().showScreen(new PauseScreen());
+                    } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
+                        this.getScreenHandler().onEscape();
+                    }
+                }
+            }
         }
     };
 
@@ -50,22 +68,27 @@ public class Lovey extends SimpleApplication {
     }
 
     public Lovey() {
-        super(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
-        instance = this;
+        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
     }
 
     @Override
     public void simpleInitApp() {
         ScreenHandler.initialize(this);
-        this.screenHandler = ScreenHandler.getInstance();
-        this.getRootNode().attachChild(this.getGuiNode());
 
-        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_MEMORY); // delete the defaults
+        this.screenHandler = ScreenHandler.getInstance();
+        this.getRootNode().attachChild(this.getGuiNode()); // make sure it's attached
+
+        this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT); // delete the default
+        this.getFlyByCamera().setMoveSpeed(0);
+        this.getCamera().setFrame(new Vector3f(0, 3, 0), new Quaternion());
 
         this.configureMappings(this.getInputManager()); // then add our own
+        Assets.initialize();
+        Audios.initialize();
     }
 
-    private String[] hijackMappingsList(InputManager mgrInstance) {
+    @SuppressWarnings("unchecked")
+    private static String[] hijackMappingsList(InputManager mgrInstance) {
         try {
             // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
             // We access the field through the given InputManager instance, cast it to a HashMap with key type String, then convert the key set
@@ -79,19 +102,19 @@ public class Lovey extends SimpleApplication {
         } catch(Exception e) {
             System.out.println("Unable to get the mappings list");
             e.printStackTrace();
-            return new String[]{};
+            throw new AssertionError("Closing game due to error in startup.");
         }
     }
 
     private void configureMappings(InputManager mgr) {
-        mgr.addMapping("Pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
+        mgr.addMapping("Escape", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
-        mgr.addListener(this.actionListener, this.hijackMappingsList(mgr));
+        mgr.addListener(this.actionListener, hijackMappingsList(mgr)); // add all our defined mappings to the action listener
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-
+        super.simpleUpdate(tpf);
     }
 
     /**
@@ -106,5 +129,9 @@ public class Lovey extends SimpleApplication {
     public void toggleScreenMode(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
         this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public AppSettings getSettings() {
+        return this.settings;
     }
 }
