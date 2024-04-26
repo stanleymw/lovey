@@ -10,8 +10,8 @@ mainClassName = 'com.sleepamos.vrmodule.VrLauncher'
 String dependenciesString = ""
 
 java {
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
 }
 
 ext.jmonkeyengineVersion = '3.6.1-stable'
