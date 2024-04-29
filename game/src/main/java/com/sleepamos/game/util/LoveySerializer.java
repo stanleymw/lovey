@@ -6,7 +6,6 @@ import org.objenesis.ObjenesisSerializer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -197,7 +196,7 @@ public class LoveySerializer {
         }
 
         public String serialize() {
-            if(typeNameIsPrimitive(typeName)) {
+            if(ReflectionUtil.typeNameIsPrimitive(typeName)) {
                 return typeName + " \"" + fieldName + "\";";
             }
 
@@ -238,7 +237,7 @@ public class LoveySerializer {
                         name = field.getName();
                     }
 
-                    if(typeIsListOrArray(field.getType())) {
+                    if(ReflectionUtil.typeIsListOrArray(field.getType())) {
                         field.setAccessible(true);
                         try {
                             int len;
@@ -247,7 +246,7 @@ public class LoveySerializer {
                             } else {
                                 len = ((List<?>)(clazz.getDeclaredField(field.getName()).get(obj))).size();
                             }
-                            fieldDefinitions.add(new SerializedFieldDefinition(field.getType().getName(), name, getTypeOfListOrArray(field.getType()).getName(), len));
+                            fieldDefinitions.add(new SerializedFieldDefinition(field.getType().getName(), name, ReflectionUtil.getTypeOfListOrArray(field.getType()).getName(), len));
                         } catch(Exception e) {
                             throw new NonFatalException("Reflection issue while serializing class " + clazz.getName(), e);
                         }
@@ -291,35 +290,11 @@ public class LoveySerializer {
         }
 
         //noinspection RedundantIfStatement
-        if(typeIsListOrArray(clazz) && typeIsLoveySerializable(getTypeOfListOrArray(clazz))) { // is it a list/array? if so, is the underlying type LoveySerializable?
+        if(ReflectionUtil.typeIsListOrArray(clazz) && typeIsLoveySerializable(ReflectionUtil.getTypeOfListOrArray(clazz))) { // is it a list/array? if so, is the underlying type LoveySerializable?
             return true;
         }
 
         return false;
     }
 
-    private static boolean typeIsListOrArray(Class<?> clazz) {
-        return List.class.isAssignableFrom(clazz) || clazz.isArray();
-    }
-
-    private static Class<?> getTypeOfListOrArray(Class<?> listOrArrayClazz) {
-        if(!typeIsListOrArray(listOrArrayClazz)) {
-            throw new NonFatalException("Type " + listOrArrayClazz.getName() + " is not a list or array!");
-        }
-        if(List.class.isAssignableFrom(listOrArrayClazz)) {
-            return (Class<?>)((ParameterizedType)listOrArrayClazz.getGenericSuperclass()).getActualTypeArguments()[0];
-        }
-        return listOrArrayClazz.getComponentType();
-    }
-
-    private static boolean typeNameIsPrimitive(String typeName) {
-        return typeName.equals("boolean") ||
-            typeName.equals("character") ||
-            typeName.equals("byte") ||
-            typeName.equals("short") ||
-            typeName.equals("int") ||
-            typeName.equals("long") ||
-            typeName.equals("float") ||
-            typeName.equals("double");
-    }
 }
