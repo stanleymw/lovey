@@ -167,7 +167,7 @@ public class LoveySerializer {
      * @see LoveySerializer
      * @param clazz The class to create a class definition for.
      */
-    private static String serializeClass(Class<? extends LoveySerializable> clazz) {
+    private static String serializeClassHierarchy(Class<? extends LoveySerializable> clazz) {
         // Follow JDK's strategy of serializing everything that is serializable since objenesis can handle calling the constructor of the 1st non-serializable class for us.
         ArrayList<Class<?>> superclasses = new ArrayList<>();
         Class<?> superclass = clazz.getSuperclass();
@@ -177,6 +177,37 @@ public class LoveySerializer {
         }
 
         return "";
+    }
+
+    /**
+     * Represents a field definition within a class definition.
+     * 
+     * @param typeName The field's object type. Indicate "List" for a List and "Array" for arrays.
+     * @param fieldName The name to serialize.
+     * @param ofType If the field is of a certain type, the type.
+     * @param len If the field is a List or array, the length.
+     */
+    private record SerializedFieldDefinition(String typeName, String fieldName, String ofType, int len) {
+        public SerializedFieldDefinition(String typeName, String fieldName, String ofType) {
+            this(typeName, fieldName, ofType, -1);
+        }
+        public SerializedFieldDefinition(String typeName, String fieldName) {
+            this(typeName, fieldName, "", -1);
+        }
+
+        public String serialize() {
+            if(typeNameIsPrimitive(typeName)) {
+                return typeName + " \"" + fieldName + "\";";
+            }
+
+            String serialized = "val ";
+            if(typeNameIsListOrArray(typeName)) {
+                if(ofType == null || ofType.equals("")) {
+                    throw new NonFatalException("Attempt to serialize " + typeName + " " + fieldName + " resulted in error due to undefined ofType");
+                }
+                serialized += typeName + " type=" + ofType + " len=" + len + " \"" + fieldName + "\";";
+            }
+        }
     }
 
     private static String serializeSingleClassType(Class<? extends LoveySerializable> clazz) {
@@ -218,5 +249,20 @@ public class LoveySerializer {
         }
 
         return false;
+    }
+
+    private static boolean typeNameIsPrimitive(String typeName) {
+        return typeName.equals("boolean") ||
+            typeName.equals("character") ||
+            typeName.equals("byte") ||
+            typeName.equals("short") ||
+            typeName.equals("int") ||
+            typeName.equals("long") ||
+            typeName.equals("float") ||
+            typeName.equals("double");
+    }
+
+    private static boolean typeNameIsListOrArray(String typeName) {
+        return typeName.equals("List") || typeName.equals("Array");
     }
 }
