@@ -20,6 +20,7 @@ import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.audio.Audios;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
+import com.sleepamos.game.util.NonFatalException;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -110,6 +111,17 @@ public class Lovey extends SimpleApplication {
         mgr.addMapping("Escape", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
         mgr.addListener(this.actionListener, hijackMappingsList(mgr)); // add all our defined mappings to the action listener
+    }
+
+    @Override
+    public void update() {
+        try {
+            super.update();
+        } catch(NonFatalException e) {
+            System.out.println("A non-fatal exception was thrown");
+            e.printStackTrace();
+            // TODO: Write error handling code (and make sure this even works)
+        }
     }
 
     @Override

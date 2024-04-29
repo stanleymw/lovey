@@ -5,4 +5,11 @@ package com.sleepamos.game.util;
  * These errors should be caught, and fatal errors can remain uncaught if needed.
  */
 public class NonFatalException extends RuntimeException {
+    public NonFatalException(String msg) {
+        super(msg);
+    }
+
+    public NonFatalException() {
+        this("");
+    }
 }

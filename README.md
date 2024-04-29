@@ -3,6 +3,8 @@
 This is the readme for lovey, try to keep it up to date with any information future-you will wish past-you
 remembered to write down
 
+### Built using: JMonkeyEngine, Lemur GUI library for JME, Objenesis
+
 # LORE!!!!
 
 Backstory on Lovey for the uncultured and uneducated

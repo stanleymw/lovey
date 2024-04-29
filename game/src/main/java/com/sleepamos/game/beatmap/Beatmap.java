@@ -2,15 +2,29 @@ package com.sleepamos.game.beatmap;
 
 import com.jme3.audio.AudioNode;
 import com.sleepamos.game.util.LoveySerializable;
+import com.sleepamos.game.util.LoveySerializableClassVersion;
+import com.sleepamos.game.util.LoveySerializableValue;
 
 public class Beatmap implements LoveySerializable {
+    @LoveySerializableClassVersion
     public static final byte CURRENT_VERSION = 10;
 
+    @LoveySerializableValue("version")
     private final int version;
+
+    @LoveySerializableValue("name")
     private final String name;
+
+    @LoveySerializableValue("musicAuthor")
     private final String musicAuthor;
+
+    @LoveySerializableValue("beatmapAuthor")
     private final String beatmapAuthor;
+
+    @LoveySerializableValue("music")
     private final AudioNode music;
+
+    @LoveySerializableValue("spawner")
     private final InteractableSpawner spawner;
 
     public Beatmap(int version, String name, String musicAuthor, String beatmapAuthor, AudioNode music, InteractableSpawner spawner) {

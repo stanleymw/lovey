@@ -17,5 +17,6 @@ public class InteractableSpawner implements LoveySerializable {
         return toSpawn;
     }
 
-    public record Spawn(Interactable interactable, double time) implements LoveySerializable {} // note: use Class.getRecordComponents()
+    public record Spawn(Interactable interactable, double time) implements LoveySerializable {
+    } // note: use Class.getRecordComponents()
 }
