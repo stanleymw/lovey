@@ -3,6 +3,7 @@ package com.sleepamos.game.util;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisSerializer;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -47,16 +48,16 @@ import java.util.List;
  * The format of a serialized file for A would be similar to this format, without line breaks or information in parentheses:
  * <pre>
  * type A: (A must be of the root type being serialized, any following class structure definitions after A are for included sub-elements)
- *     version VERSION (the value, stored as a byte) (note: this value will NOT be read from the class; instead it must be passed in to the serializer)
+ *     version VERSION; (the value, stored as a byte) (note: this value will NOT be read from the class; instead it must be passed in to the serializer)
  *     double "d";
  *     double "e";
  *     boolean "bool";
  *     val B "b"; (val indicates an {@link Object} that will need to be defined)
- *     val List type=B len=bList.size() "bList"
- *     val Array type=B len=bArr.length "arrOfB"
+ *     val List type=B len=bList.size() "bList";
+ *     val Array type=B len=bArr.length "arrOfB";
  * fin;
  * type B:
- *     version VERSION (the value)
+ *     version VERSION; (the value)
  *     double "bSubVar";
  * fin;
  * val root:
@@ -81,21 +82,21 @@ import java.util.List;
  * The format of a serialized file for D would be similar to the following:
  * <pre>
  * type D:
- *     version VERSION
+ *     version VERSION;
  *     super A;
  *     long "dValue";
  * fin;
  * type A: (A must be of the root type being serialized, any following class structure definitions after A are for included sub-elements)
- *     version VERSION (the value, stored as a byte) (note: this value will NOT be read from the class; instead it must be passed in to the serializer)
+ *     version VERSION; (the value, stored as a byte) (note: this value will NOT be read from the class; instead it must be passed in to the serializer)
  *     double "d";
  *     double "e";
  *     boolean "bool";
  *     val B "b"; (val indicates an {@link Object} that will need to be defined)
- *     val List type=B len=bList.size() "bList"
- *     val Array type=B len=bArr.length "arrOfB"
+ *     val List type=B len=bList.size() "bList";
+ *     val Array type=B len=bArr.length "arrOfB";
  * fin;
  * type B:
- *     version VERSION (the value)
+ *     version VERSION; (the value)
  *     double "bSubVar";
  * fin;
  * val root:
@@ -201,17 +202,27 @@ public class LoveySerializer {
             }
 
             String serialized = "val ";
-            if(typeNameIsListOrArray(typeName)) {
-                if(ofType == null || ofType.equals("")) {
+            if(typeName.equals("List") || typeName.equals("Array")) {
+                if(ofType == null || ofType.isEmpty()) {
                     throw new NonFatalException("Attempt to serialize " + typeName + " " + fieldName + " resulted in error due to undefined ofType");
                 }
                 serialized += typeName + " type=" + ofType + " len=" + len + " \"" + fieldName + "\";";
+            } else {
+                serialized += typeName;
+                if(!ofType.isEmpty()) {
+                    serialized += " type=" + ofType;
+                }
+
+                serialized += " \"" + fieldName + "\";";
             }
+
+            return serialized;
         }
     }
 
-    private static String serializeSingleClassType(Class<? extends LoveySerializable> clazz) {
-        ArrayList<String> fieldNames = new ArrayList<>();
+    private static <T extends LoveySerializable> String serializeSingleClassType(T obj) {
+        Class<? extends LoveySerializable> clazz = obj.getClass();
+        ArrayList<SerializedFieldDefinition> fieldDefinitions = new ArrayList<>();
         // iterate over all fields.
         // if a field is transient or static, skip
         // if a field is not transient/static, check that the field is also LoveySerializable OR is primitive OR is an array/List of one of the first two requirements. If not, throw a NonFatalError
@@ -220,18 +231,58 @@ public class LoveySerializer {
             if(!Modifier.isTransient(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
                 if(typeIsLoveySerializable(field.getType())) {
                     LoveySerializableValue annotation = field.getAnnotation(LoveySerializableValue.class);
+                    String name;
                     if(annotation != null) {
-                        fieldNames.add(annotation.value());
+                        name = annotation.value();
                     } else {
-                        fieldNames.add(field.getName());
+                        name = field.getName();
                     }
+
+                    if(typeIsListOrArray(field.getType())) {
+                        field.setAccessible(true);
+                        try {
+                            int len;
+                            if(field.getType().isArray()) {
+                                len = Array.getLength(clazz.getDeclaredField(field.getName()).get(obj));
+                            } else {
+                                len = ((List<?>)(clazz.getDeclaredField(field.getName()).get(obj))).size();
+                            }
+                            fieldDefinitions.add(new SerializedFieldDefinition(field.getType().getName(), name, getTypeOfListOrArray(field.getType()).getName(), len));
+                        } catch(Exception e) {
+                            throw new NonFatalException("Reflection issue while serializing class " + clazz.getName(), e);
+                        }
+                    }
+                    fieldDefinitions.add(new SerializedFieldDefinition(field.getType().getName(), name));
                 } else {
                     System.out.println("Unexpected field type " + field.getType().getSimpleName() + " in class " + clazz.getSimpleName() + " does not impl LoveySerializable but was not marked as transient for serializer");
                 }
             }
         }
 
-        return "";
+        StringBuilder ret = new StringBuilder("type " + clazz.getName() + ":");
+        ret.append("version ").append(getClassVersion(clazz));
+
+        for(SerializedFieldDefinition sfd : fieldDefinitions) {
+            ret.append(sfd.serialize());
+        }
+
+        ret.append("fin;");
+
+        return ret.toString();
+    }
+
+    private static byte getClassVersion(Class<? extends LoveySerializable> clazz) {
+        try {
+            for(Field f : clazz.getDeclaredFields()) {
+                if(f.getAnnotation(LoveySerializableClassVersion.class) != null) {
+                    f.setAccessible(true);
+                    return f.getByte(null);
+                }
+            }
+        } catch (Exception e) {
+            throw new NonFatalException("Reflection error while getting class version for " + clazz.getName(), e);
+        }
+        return 0;
     }
 
     private static boolean typeIsLoveySerializable(Class<?> clazz) {
@@ -239,16 +290,26 @@ public class LoveySerializer {
             return true;
         }
 
-        if(List.class.isAssignableFrom(clazz) && typeIsLoveySerializable((Class<?>)((ParameterizedType)clazz.getGenericSuperclass()).getActualTypeArguments()[0])) { // is list of a LoveySerializable component or primitive (recursive OK)
-            return true;
-        }
-
         //noinspection RedundantIfStatement
-        if(clazz.isArray() && typeIsLoveySerializable(clazz.getComponentType())) { // is array of a LoveySerializable component or primitive (recursive OK)
+        if(typeIsListOrArray(clazz) && typeIsLoveySerializable(getTypeOfListOrArray(clazz))) { // is it a list/array? if so, is the underlying type LoveySerializable?
             return true;
         }
 
         return false;
+    }
+
+    private static boolean typeIsListOrArray(Class<?> clazz) {
+        return List.class.isAssignableFrom(clazz) || clazz.isArray();
+    }
+
+    private static Class<?> getTypeOfListOrArray(Class<?> listOrArrayClazz) {
+        if(!typeIsListOrArray(listOrArrayClazz)) {
+            throw new NonFatalException("Type " + listOrArrayClazz.getName() + " is not a list or array!");
+        }
+        if(List.class.isAssignableFrom(listOrArrayClazz)) {
+            return (Class<?>)((ParameterizedType)listOrArrayClazz.getGenericSuperclass()).getActualTypeArguments()[0];
+        }
+        return listOrArrayClazz.getComponentType();
     }
 
     private static boolean typeNameIsPrimitive(String typeName) {
@@ -260,9 +321,5 @@ public class LoveySerializer {
             typeName.equals("long") ||
             typeName.equals("float") ||
             typeName.equals("double");
-    }
-
-    private static boolean typeNameIsListOrArray(String typeName) {
-        return typeName.equals("List") || typeName.equals("Array");
     }
 }

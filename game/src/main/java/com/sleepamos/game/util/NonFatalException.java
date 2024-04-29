@@ -12,4 +12,12 @@ public class NonFatalException extends RuntimeException {
     public NonFatalException() {
         this("");
     }
+
+    public NonFatalException(Throwable cause) {
+        super(cause);
+    }
+
+    public NonFatalException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }
