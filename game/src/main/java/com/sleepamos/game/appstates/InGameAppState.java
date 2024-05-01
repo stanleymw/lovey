@@ -64,12 +64,15 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void cleanup(Application app) {
+        destroyBinds();
+        this.rootNode.detachChild(this.gameNode);
+        this.directionOnPause = this.getApplication().getCamera().getDirection();
     }
 
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            System.out.println("ACTION:" + name+ " | " + keyPressed+ "|" +tpf);
+            System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
 
             switch(name) {
                 case "Interact" -> {
@@ -143,17 +146,14 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        this.rootNode.attachChild(this.gameNode);
-        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
+//        this.rootNode.attachChild(this.gameNode);
+//        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
 
         createBinds();
     }
 
     @Override
     protected void onDisable() {
-        this.rootNode.detachChild(this.gameNode);
-        this.directionOnPause = this.getApplication().getCamera().getDirection();
-
         destroyBinds();
     }
 

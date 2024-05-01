@@ -32,7 +32,6 @@ public class ScreenHandler {
 
     /**
      * The hierarchy of screens, in the order they were added.
-     * This list should always have at least 1 screen.
      */
     private final LinkedList<Screen> screenHierarchy;
 
@@ -58,14 +57,11 @@ public class ScreenHandler {
      * @throws IllegalArgumentException If screen is an instance of {@link MainMenuScreen}
      */
     public void showScreen(Screen screen) {
-        if(screen instanceof MainMenuScreen) {
-            throw new IllegalArgumentException("Screen cannot be instance of MainMenuScreen, use ScreenHandler.goToMainMenu() instead");
-        }
-        if(!(screen instanceof NoScreen) || !(this.screenHierarchy.getLast() instanceof NoScreen)) { // if the requested screen is NONE, make sure the previous screen isn't also NONE
+        if (this.screenHierarchy.getLast() != null) {
             this.screenHierarchy.getLast().detach();
-            screen.attach(this.getGuiNode());
-            this.screenHierarchy.add(screen);
         }
+        screen.attach(this.getGuiNode());
+        this.screenHierarchy.add(screen);
     }
 
     /**
@@ -78,18 +74,22 @@ public class ScreenHandler {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean hideLastShownScreen() {
-        if(this.screenHierarchy.size() > 1) {
-            Screen current = this.screenHierarchy.getLast();
+        Screen current = this.screenHierarchy.getLast();
+
+        if (current != null) {
             current.detach();
             this.screenHierarchy.removeLast();
-            this.screenHierarchy.getLast().attach(this.getGuiNode());
+            if (this.screenHierarchy.getLast() != null) {
+                this.screenHierarchy.getLast().attach(this.getGuiNode());
+            }
             return true;
         }
+
         return false;
     }
 
     public void onEscape() {
-        if(this.getCurrentScreen().isEscapable()) {
+        if (this.getCurrentScreen().isEscapable()) {
             this.hideLastShownScreen();
         }
     }

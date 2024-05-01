@@ -19,6 +19,7 @@ public class PauseScreen extends Screen {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
             Lovey.getInstance().toggleScreenMode(false);
         }));
+
         window.addChild(this.buttonToOtherScreen(this.buttonWithAlign("Settings", HAlignment.Center, VAlignment.Center), new SettingsScreen()));
         window.addChild(this.buttonWithCommand(this.buttonWithAlign("Quit", HAlignment.Center, VAlignment.Center), source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen()));
     }

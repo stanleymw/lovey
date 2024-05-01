@@ -33,6 +33,7 @@ import java.util.HashMap;
  */
 public class Lovey extends SimpleApplication {
     private static Lovey instance;
+    private boolean inGame;
 
     /**
      * Get the instance of the game.
@@ -65,6 +66,7 @@ public class Lovey extends SimpleApplication {
     public Lovey(AppState... initialStates) {
         super(initialStates);
         instance = this;
+        inGame = false;
     }
 
     public Lovey() {
@@ -129,6 +131,14 @@ public class Lovey extends SimpleApplication {
     public void toggleScreenMode(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
         this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public void launchMap() {
+
+    }
+
+    public boolean isInGame() {
+        return inGame;
     }
 
     public AppSettings getSettings() {
