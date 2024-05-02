@@ -68,6 +68,11 @@ Backstory on Lovey for the uncultured and uneducated
     - lowk dont even know atp
     - improv
 
+* - [ ] New York
+  - coming of age music
+  - hardest level yet (aka very fast)
+  - cutscene of lovey and mr popper reunite
+
 ## Project set up
 This is a gradle project using JMonkey Engine and other java libraries
 ![image](https://github.com/stanleymw/lovey/assets/96892261/17dd98f4-6975-4877-b4b7-d3740ef13699)
