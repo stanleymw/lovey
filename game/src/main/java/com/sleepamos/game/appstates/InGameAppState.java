@@ -47,12 +47,13 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
+        System.out.println("INITIALIZING");
         this.assetManager = this.getApplication().getAssetManager();
         this.inputManager = this.getApplication().getInputManager();
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
 
         this.setupGameNode();
-        this.setEnabled(false);
+//        this.setEnabled(true);
 
         this.inputManager.addMapping("Interact",      // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
@@ -60,11 +61,13 @@ public class InGameAppState extends BaseAppState {
 
         this.isInteracting = false;
         this.interactingWith = null;
+        System.out.println("DONE INITIALIZING");
     }
 
     @Override
     protected void cleanup(Application app) {
         destroyBinds();
+
         this.rootNode.detachChild(this.gameNode);
         this.directionOnPause = this.getApplication().getCamera().getDirection();
     }
@@ -146,6 +149,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
+        System.out.println("onEnable Called");
 //        this.rootNode.attachChild(this.gameNode);
 //        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
 
@@ -154,6 +158,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onDisable() {
+        System.out.println("onDisable Called");
         destroyBinds();
     }
 

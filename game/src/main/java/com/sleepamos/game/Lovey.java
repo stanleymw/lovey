@@ -53,7 +53,7 @@ public class Lovey extends SimpleApplication {
             switch(name) {
                 case "Escape" -> {
                     if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
-                        this.toggleScreenMode(true);
+                        this.pauseGame(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
                     } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
                         this.getScreenHandler().onEscape();
@@ -70,7 +70,7 @@ public class Lovey extends SimpleApplication {
     }
 
     public Lovey() {
-        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
+        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new FlyCamAppState());
     }
 
     @Override
@@ -128,13 +128,18 @@ public class Lovey extends SimpleApplication {
         return this.screenHandler;
     }
 
-    public void toggleScreenMode(boolean screensEnabled) {
+    public void pauseGame(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
         this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
     }
 
     public void launchMap() {
+//        this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
+        this.getStateManager().attach(new InGameAppState());
+    }
 
+    public void exitMap() {
+        this.getStateManager().detach(new InGameAppState());
     }
 
     public boolean isInGame() {
