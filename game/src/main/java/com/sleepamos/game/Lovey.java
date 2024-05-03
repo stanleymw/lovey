@@ -53,6 +53,7 @@ public class Lovey extends SimpleApplication {
             switch(name) {
                 case "Escape" -> {
                     if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
+                        this.useGUIBehavior(true);
                         this.pauseGame(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
                     } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
@@ -128,9 +129,16 @@ public class Lovey extends SimpleApplication {
         return this.screenHandler;
     }
 
-    public void pauseGame(boolean screensEnabled) {
+    /**
+     * Set to true whenever we are in a GUI. (uses mouse behavior/stuff when screen opened)
+     * @param screensEnabled
+     */
+    public void useGUIBehavior(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
-        this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public void pauseGame(boolean paused) {
+        this.getStateManager().getState(InGameAppState.class).setEnabled(!paused);
     }
 
     public void launchMap() {

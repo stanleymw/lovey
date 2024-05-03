@@ -19,6 +19,7 @@ public class MainMenuScreen extends Screen {
         window.addChild(this.buttonWithCommand("Enter Game", source -> {
             Lovey.getInstance().launchMap();
             Lovey.getInstance().getScreenHandler().showScreen(new NoScreen());
+            Lovey.getInstance().useGUIBehavior(false);
         }));
         window.addChild(this.buttonToOtherScreen("Settings", new SettingsScreen()));
         window.addChild(this.buttonToOtherScreen("Credits", new CreditsScreen()));
