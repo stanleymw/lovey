@@ -9,18 +9,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoveySerializedClass implements Serializable {
+    private static final byte ROOT_VERSION = 0;
+
+    private final boolean isRootClass;
+
     private final byte version;
 
     private final LoveySerializedClass superclass;
+
     private final Class<?> storedClazz;
     private final Map<String, Object> data;
 
-
-    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, Map<String, Object> data) {
+    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, Map<String, Object> data, boolean isRootClass) {
         this.version = version;
         this.superclass = superclass;
         this.storedClazz = storedClazz;
         this.data = data;
+        this.isRootClass = isRootClass;
+    }
+
+    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, Map<String, Object> data) {
+        this(version, superclass, storedClazz,  data, false);
     }
 
     private LoveySerializedClass(byte version, Class<?> superClazz, Class<?> storedClazz, Map<String, Object> data, LoveySerializable obj) {
@@ -29,6 +38,26 @@ public class LoveySerializedClass implements Serializable {
 
     public LoveySerializedClass(LoveySerializable obj) {
         this(getClassVersion(obj.getClass()), obj.getClass().getSuperclass(), obj.getClass(), getObjectData(obj.getClass(), obj), obj);
+    }
+
+    public byte getVersion() {
+        return version;
+    }
+
+    public LoveySerializedClass getSuperclass() {
+        return superclass;
+    }
+
+    public Class<?> getStoredClazz() {
+        return storedClazz;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public boolean isRootClass() {
+        return this.isRootClass;
     }
 
     private static byte getClassVersion(Class<?> clazz) {
@@ -67,7 +96,7 @@ public class LoveySerializedClass implements Serializable {
     }
 
     private static LoveySerializedClass generateStoredRootObject(Class<?> rootClazz) {
-        return new LoveySerializedClass((byte) 0, null, rootClazz, new HashMap<>());
+        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new HashMap<>());
     }
 
     private static LoveySerializedClass createIfLegalClass(Class<?> clazz, LoveySerializable obj) {

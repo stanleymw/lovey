@@ -2,8 +2,8 @@ package com.sleepamos.game.beatmap;
 
 import com.jme3.audio.AudioNode;
 import com.sleepamos.game.util.LoveySerializable;
-import com.sleepamos.game.util.LoveySerializableClassVersion;
-import com.sleepamos.game.util.LoveySerializableValue;
+import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.util.annotations.LoveySerializableValue;
 
 public class Beatmap implements LoveySerializable {
     @LoveySerializableClassVersion
