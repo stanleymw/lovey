@@ -1,15 +1,15 @@
 package com.sleepamos.game.util;
 
-import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
-import com.sleepamos.game.util.annotations.LoveySerializableValue;
-
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoveySerializedClass implements Serializable {
     private static final byte ROOT_VERSION = 0;
+    @Serial
+    private static final long serialVersionUID = 5653976851902974527L;
 
     private final boolean isRootClass;
 
@@ -18,9 +18,9 @@ public class LoveySerializedClass implements Serializable {
     private final LoveySerializedClass superclass;
 
     private final Class<?> storedClazz;
-    private final Map<String, Object> data;
+    private final List<LoveySerializedClassDataEntry> data;
 
-    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, Map<String, Object> data, boolean isRootClass) {
+    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, List<LoveySerializedClassDataEntry> data, boolean isRootClass) {
         this.version = version;
         this.superclass = superclass;
         this.storedClazz = storedClazz;
@@ -28,16 +28,16 @@ public class LoveySerializedClass implements Serializable {
         this.isRootClass = isRootClass;
     }
 
-    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, Map<String, Object> data) {
-        this(version, superclass, storedClazz,  data, false);
+    private LoveySerializedClass(byte version, LoveySerializedClass superclass, Class<?> storedClazz, List<LoveySerializedClassDataEntry> data) {
+        this(version, superclass, storedClazz, data, false);
     }
 
-    private LoveySerializedClass(byte version, Class<?> superClazz, Class<?> storedClazz, Map<String, Object> data, LoveySerializable obj) {
+    private LoveySerializedClass(byte version, Class<?> superClazz, Class<?> storedClazz, List<LoveySerializedClassDataEntry> data, LoveySerializable obj) {
         this(version, createIfLegalClass(superClazz, obj), storedClazz, data);
     }
 
     public LoveySerializedClass(LoveySerializable obj) {
-        this(getClassVersion(obj.getClass()), obj.getClass().getSuperclass(), obj.getClass(), getObjectData(obj.getClass(), obj), obj);
+        this(LoveySerializationUtil.getClassVersion(obj.getClass()), obj.getClass().getSuperclass(), obj.getClass(), getObjectData(obj.getClass(), obj), obj);
     }
 
     public byte getVersion() {
@@ -52,7 +52,7 @@ public class LoveySerializedClass implements Serializable {
         return storedClazz;
     }
 
-    public Map<String, Object> getData() {
+    public List<LoveySerializedClassDataEntry> getData() {
         return data;
     }
 
@@ -60,32 +60,15 @@ public class LoveySerializedClass implements Serializable {
         return this.isRootClass;
     }
 
-    private static byte getClassVersion(Class<?> clazz) {
-        try {
-            for(Field f : clazz.getDeclaredFields()) {
-                if(ReflectionUtil.hasAnnotation(f, LoveySerializableClassVersion.class)) {
-                    f.setAccessible(true);
-                    return f.getByte(null);
-                }
-            }
-        } catch (Exception e) {
-            throw new NonFatalException("Reflection error while getting class version for " + clazz.getName(), e);
-        }
-        return 0;
-    }
-
-    private static Map<String, Object> getObjectData(Class<?> clazz, LoveySerializable obj) {
+    private static List<LoveySerializedClassDataEntry> getObjectData(Class<?> clazz, LoveySerializable obj) {
         Field[] classFields = clazz.getDeclaredFields();
-        Map<String, Object> variableNameToValue = new HashMap<>(classFields.length);
+        List<LoveySerializedClassDataEntry> variableNameToValue = new ArrayList<>(classFields.length);
 
         try {
             for (Field f : classFields) {
                 f.setAccessible(true);
                 if (!ReflectionUtil.isStatic(f)) {
-                    LoveySerializableValue annotation = f.getAnnotation(LoveySerializableValue.class);
-                    if (annotation != null) {
-                        variableNameToValue.put(annotation.value(), f.get(obj));
-                    }
+                    variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
                 }
             }
         } catch(Exception e) {
@@ -96,14 +79,25 @@ public class LoveySerializedClass implements Serializable {
     }
 
     private static LoveySerializedClass generateStoredRootObject(Class<?> rootClazz) {
-        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new HashMap<>());
+        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new ArrayList<>());
     }
 
     private static LoveySerializedClass createIfLegalClass(Class<?> clazz, LoveySerializable obj) {
         if(LoveySerializable.class.isAssignableFrom(clazz)) {
-            return new LoveySerializedClass(getClassVersion(clazz), clazz.getSuperclass(), clazz, getObjectData(clazz, obj), obj);
+            return new LoveySerializedClass(LoveySerializationUtil.getClassVersion(clazz), clazz.getSuperclass(), clazz, getObjectData(clazz, obj), obj);
         }
 
-        return generateStoredRootObject(clazz.getSuperclass());
+        return generateStoredRootObject(clazz);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o ||
+                o instanceof LoveySerializedClass other &&
+                this.version == other.version &&
+                this.data.equals(other.data) &&
+                this.isRootClass == other.isRootClass &&
+                this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
+                (this.superclass == other.superclass || this.superclass.equals(other.superclass)); // == implies null
     }
 }

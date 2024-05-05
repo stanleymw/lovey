@@ -3,6 +3,9 @@ package com.sleepamos.game.util;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisSerializer;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 /**
  * Serialization pipeline: Object with class version -> Serialize data in an easily recoverable format (global storage) -> Deserialize data into recoverable format -> Convert to new Object
  * Object: Class implements LoveySerializable
@@ -12,35 +15,63 @@ import org.objenesis.ObjenesisSerializer;
  * A custom serialization interface that is able to handle file versioning smoothly.
  */
 public class LoveySerializer {
-    private static Objenesis objenesis = new ObjenesisSerializer();
+    private static final Objenesis objenesis = new ObjenesisSerializer();
 
-    public static String serialize(LoveySerializable s) {
-        return serialize(s, (byte) 0);
+    public static String serialize(LoveySerializable obj) {
+        return serialize(obj, (byte) 0);
     }
 
-    public static String serialize(LoveySerializable s, byte version) {
+    public static String serialize(LoveySerializable obj, byte version) {
         String serialized = String.valueOf(version);
 
         return serialized;
     }
 
-    public static LoveySerializable deserialize(String s) {
-        return deserialize(s, (byte) 0);
+    public static <T> T deserialize(String fileName, Class<T> clazz) {
+        return clazz.cast(deserialize(fileName, clazz, (serialized, fileVersion, eVersion, c, obj) -> {
+            throw new NonFatalException("Unexpected version mismatch, stored file version: " + fileVersion + ", class defined version: " + eVersion);
+        }));
     }
 
-    public static LoveySerializable deserialize(String s, byte expectedVersion) {
-        return deserialize(s, expectedVersion, (serialized, fileVersion, eVersion) -> {
-            throw new NonFatalException("Unexpected version mismatch, file: " + fileVersion + ", class: " + eVersion);
-        });
-    }
+    public static <T> T deserialize(String fileName, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+        LoveySerializedClass deserialized = FileUtil.readSerializedObjectFromFile(fileName, LoveySerializedClass.class);
 
-    public static LoveySerializable deserialize(String s, byte expectedVersion, VersionMismatchedDeserializer onVersionMismatch) {
-        byte version = s.getBytes()[0];
-        if(version != expectedVersion) {
-            return onVersionMismatch.deserialize(s, version, expectedVersion);
+        if(!clazz.isAssignableFrom(deserialized.getStoredClazz())) {
+            throw new NonFatalException("Deserialized class of type " + deserialized.getStoredClazz().getName() + " is not assignable to requested class: " + clazz.getName());
         }
 
-        return null;
+        Class<?> storedClazz = deserialized.getStoredClazz();
+
+        Object obj = objenesis.newInstance(storedClazz);
+
+        LoveySerializedClass currentDeserializeCandidate = deserialized;
+        Class<?> toDeserialize = deserialized.getStoredClazz();
+
+        try {
+            while(!currentDeserializeCandidate.isRootClass()) { // handle the superclass values as well
+                byte serializedVer = currentDeserializeCandidate.getVersion();
+                byte definedVer = LoveySerializationUtil.getClassVersion(toDeserialize);
+
+                // if serializedVer == definedVer then run
+                // if serializedVer != definedVer and deserialize decides not to cancel (returns false) then run
+                if(serializedVer != definedVer || !onVersionMismatch.deserialize(deserialized, serializedVer, definedVer, toDeserialize, obj)) {
+                    Map<String, String> serializedNameToClassName = LoveySerializationUtil.serializedNameToClassName(toDeserialize);
+                    // iterate over all values in the deserialized class and put them into obj
+                    for (LoveySerializedClassDataEntry entry : deserialized.getData()) {
+                        Field f = storedClazz.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
+                        f.setAccessible(true);
+                        f.set(obj, entry.data());
+                    }
+                }
+
+                currentDeserializeCandidate = currentDeserializeCandidate.getSuperclass();
+                toDeserialize = currentDeserializeCandidate.getStoredClazz();
+            }
+        } catch(Exception e) {
+            throw new NonFatalException("Error while deserializing", e);
+        }
+
+        return clazz.cast(obj);
     }
 
     /**
@@ -48,6 +79,18 @@ public class LoveySerializer {
      */
     @FunctionalInterface
     public interface VersionMismatchedDeserializer {
-        LoveySerializable deserialize(String serialized, byte fileVersion, byte expectedVersion);
+        /**
+         * Handles a version conversion for a specified class by deserializing data into the deserialization object.
+         * @param serialized The serialized data.
+         * @param fileVersion The version of the serialized data.
+         * @param expectedVersion The version defined in the class.
+         * @param clazz The class with a version mismatch.
+         * @param o The object that data is being deserialized into.
+         * @return Whether further deserialization should be canceled. If true, this method should handle ALL deserialization for all fields included in serialized.
+         *         If false, this method should handle NONE of the deserialization for any fields defined in serialized.
+         *         If only new fields were added between version changes, false would be a return option since this method would only need to intiialize the new fields.
+         *         If fields were deleted or more complex changes were made, this method may need to return true and handle the complex logic.
+         */
+        boolean deserialize(LoveySerializedClass serialized, byte fileVersion, byte expectedVersion, Class<?> clazz, Object o);
     }
 }

@@ -1,6 +1,7 @@
 package com.sleepamos.test;
 
 import com.sleepamos.game.util.LoveySerializable;
+import com.sleepamos.game.util.LoveySerializedClass;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -28,7 +29,8 @@ class LoveySerializedClassTest {
         @Override
         public boolean equals(Object o) {
             //noinspection ConstantValue
-            return o instanceof LoveyClass other &&
+            return this == o ||
+                    o instanceof LoveyClass other &&
                     this.i == other.i &&
                     this.s.equals(other.s) &&
                     Arrays.equals(this.iA, other.iA) &&
@@ -41,18 +43,20 @@ class LoveySerializedClassTest {
         final String fileName = "LoveySerializedClassTest.java.txt";
         LoveyClass loveyPreSerializedA = new LoveyClass();
 
+        LoveySerializedClass loveySerializedA = new LoveySerializedClass(loveyPreSerializedA);
+
         try(FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
             ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-            outputStream.writeObject(loveyPreSerializedA);
+            outputStream.writeObject(loveySerializedA);
             outputStream.flush();
             outputStream.close();
 
             try(FileInputStream fileInputStream = new FileInputStream(fileName)) {
                 ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-                LoveyClass loveyDeserializedA = (LoveyClass) inputStream.readObject();
+                LoveySerializedClass loveyDeserializedA = (LoveySerializedClass) inputStream.readObject();
                 inputStream.close();
 
-                assertEquals(loveyPreSerializedA, loveyDeserializedA);
+                assertEquals(loveySerializedA, loveyDeserializedA);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
