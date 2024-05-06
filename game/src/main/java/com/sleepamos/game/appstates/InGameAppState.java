@@ -72,7 +72,6 @@ public class InGameAppState extends BaseAppState {
         destroyBinds();
 
         this.rootNode.detachChild(this.gameNode);
-        this.directionOnPause = this.getApplication().getCamera().getDirection();
     }
 
     final private ActionListener actionListener = new ActionListener() {
@@ -154,7 +153,6 @@ public class InGameAppState extends BaseAppState {
     protected void onEnable() {
         System.out.println("onEnable Called");
         this.getStateManager().getState(FlyCamAppState.class).setEnabled(true);
-//        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
 
         createBinds();
     }

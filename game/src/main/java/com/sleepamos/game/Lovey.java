@@ -52,7 +52,8 @@ public class Lovey extends SimpleApplication {
         if(!keyPressed) {
             switch(name) {
                 case "Escape" -> {
-                    if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
+                    InGameAppState inGame = this.getStateManager().getState(InGameAppState.class);
+                    if(inGame != null && inGame.isEnabled()) {
                         this.useGUIBehavior(true);
                         this.pauseGame(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
