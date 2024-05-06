@@ -1,6 +1,7 @@
 package com.sleepamos.game.appstates;
 
 import com.jme3.app.Application;
+import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
@@ -54,6 +55,7 @@ public class InGameAppState extends BaseAppState {
 
         this.setupGameNode();
 //        this.setEnabled(true);
+        this.rootNode.attachChild(this.gameNode);
 
         this.inputManager.addMapping("Interact",      // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
@@ -66,6 +68,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void cleanup(Application app) {
+        System.out.println("Cleanup called");
         destroyBinds();
 
         this.rootNode.detachChild(this.gameNode);
@@ -150,7 +153,7 @@ public class InGameAppState extends BaseAppState {
     @Override
     protected void onEnable() {
         System.out.println("onEnable Called");
-//        this.rootNode.attachChild(this.gameNode);
+        this.getStateManager().getState(FlyCamAppState.class).setEnabled(true);
 //        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
 
         createBinds();
@@ -159,6 +162,8 @@ public class InGameAppState extends BaseAppState {
     @Override
     protected void onDisable() {
         System.out.println("onDisable Called");
+
+        this.getStateManager().getState(FlyCamAppState.class).setEnabled(false);
         destroyBinds();
     }
 

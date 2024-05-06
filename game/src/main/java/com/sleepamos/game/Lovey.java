@@ -147,7 +147,7 @@ public class Lovey extends SimpleApplication {
     }
 
     public void exitMap() {
-        this.getStateManager().detach(new InGameAppState());
+        this.getStateManager().detach(this.getStateManager().getState(InGameAppState.class));
     }
 
     public boolean isInGame() {
