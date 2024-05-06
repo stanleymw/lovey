@@ -1,4 +1,6 @@
 package com.sleepamos.game.util;
 
-public record LoveySerializedClassDataEntry(String serializedName, Object data) {
+import java.io.Serializable;
+
+public record LoveySerializedClassDataEntry(String serializedName, Object data) implements Serializable {
 }

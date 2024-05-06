@@ -9,6 +9,7 @@ import java.io.*;
  * reads this class as a serializable class and will walk up the inheritance chain properly.
  * @see LoveySerializer
  */
+
 public interface LoveySerializable extends Serializable {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {

@@ -3,6 +3,8 @@ package com.sleepamos.game.util;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisSerializer;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -17,14 +19,16 @@ import java.util.Map;
 public class LoveySerializer {
     private static final Objenesis objenesis = new ObjenesisSerializer();
 
-    public static String serialize(LoveySerializable obj) {
-        return serialize(obj, (byte) 0);
-    }
-
-    public static String serialize(LoveySerializable obj, byte version) {
-        String serialized = String.valueOf(version);
-
-        return serialized;
+    public static void serialize(String fileName, LoveySerializable obj) {
+        LoveySerializedClass serializedClass = new LoveySerializedClass(obj);
+        try(FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+            outputStream.writeObject(serializedClass);
+            outputStream.flush();
+            outputStream.close();
+        } catch(Exception e) {
+            throw new NonFatalException(e);
+        }
     }
 
     public static <T> T deserialize(String fileName, Class<T> clazz) {
@@ -52,9 +56,11 @@ public class LoveySerializer {
                 byte serializedVer = currentDeserializeCandidate.getVersion();
                 byte definedVer = LoveySerializationUtil.getClassVersion(toDeserialize);
 
+                // System.out.println("serialized version: " + serializedVer + ", defined version: " + definedVer + ", equal? " + (serializedVer == definedVer));
+
                 // if serializedVer == definedVer then run
                 // if serializedVer != definedVer and deserialize decides not to cancel (returns false) then run
-                if(serializedVer != definedVer || !onVersionMismatch.deserialize(deserialized, serializedVer, definedVer, toDeserialize, obj)) {
+                if(serializedVer == definedVer || !onVersionMismatch.deserialize(deserialized, serializedVer, definedVer, toDeserialize, obj)) {
                     Map<String, String> serializedNameToClassName = LoveySerializationUtil.serializedNameToClassName(toDeserialize);
                     // iterate over all values in the deserialized class and put them into obj
                     for (LoveySerializedClassDataEntry entry : deserialized.getData()) {

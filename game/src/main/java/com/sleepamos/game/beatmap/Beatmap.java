@@ -5,6 +5,7 @@ import com.sleepamos.game.util.LoveySerializable;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.util.annotations.LoveySerializableValue;
 
+@SuppressWarnings("serial")
 public class Beatmap implements LoveySerializable {
     @LoveySerializableClassVersion
     public static final byte CURRENT_VERSION = 10;
