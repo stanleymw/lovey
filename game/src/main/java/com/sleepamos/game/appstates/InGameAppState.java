@@ -28,6 +28,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 import com.sun.tools.jconsole.JConsoleContext;
@@ -35,9 +36,7 @@ import com.sun.tools.jconsole.JConsoleContext;
 import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
-    private boolean isInteracting = false;
-    private Interactable interactingWith;
-
+    private GameState gameState;
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
@@ -61,8 +60,7 @@ public class InGameAppState extends BaseAppState {
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
 
-        this.isInteracting = false;
-        this.interactingWith = null;
+        this.gameState = new GameState();
         System.out.println("DONE INITIALIZING");
     }
 
@@ -81,7 +79,7 @@ public class InGameAppState extends BaseAppState {
 
             switch(name) {
                 case "Interact" -> {
-                    isInteracting = keyPressed;
+                    gameState.setInteracting(keyPressed);
                     Interactable hit = null;
 
                     CollisionResults collisionResult = castRay(shootables);
@@ -89,7 +87,7 @@ public class InGameAppState extends BaseAppState {
                         hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
                     }
 
-                    interactingWith = hit;
+                    gameState.setInteractingWith(hit);
                 }
             }
         }
@@ -176,7 +174,7 @@ public class InGameAppState extends BaseAppState {
     @Override
     public void update(float tpf) {
         // run every frame we're enabled
-        if (isInteracting) {
+        if (gameState.isInteracting()) {
             // we need to raycast every frame while Interacting (maybe could optimize this)
             Interactable hit = null;
 
@@ -186,13 +184,15 @@ public class InGameAppState extends BaseAppState {
             }
 
             // lets check
-            if (interactingWith != hit) {
+            if (gameState.getInteractingWith() != hit) {
                 // we moved off, STOP INTERACTING
-                isInteracting = false;
-                interactingWith = null;
+                gameState.setInteracting(false);
+                gameState.setInteractingWith(null);
             }
 
-            if (interactingWith != null) interactingWith.onInteract();
+            if (gameState.getInteractingWith() != null) {
+                gameState.getInteractingWith().onInteract();
+            }
         }
     }
 
