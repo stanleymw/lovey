@@ -23,6 +23,7 @@ public class MainMenuScreen extends Screen {
         }));
         window.addChild(this.buttonToOtherScreen("Settings", new SettingsScreen()));
         window.addChild(this.buttonToOtherScreen("Credits", new CreditsScreen()));
+        window.addChild(this.buttonToOtherScreen("Beatmap Editor", new BeatmapEditorScreen()));
         window.addChild(this.buttonWithCommand("Quit", source -> Lovey.getInstance().stop()));
     }
 }
