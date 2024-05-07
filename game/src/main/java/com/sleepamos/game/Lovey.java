@@ -33,6 +33,7 @@ import java.util.HashMap;
  */
 public class Lovey extends SimpleApplication {
     private static Lovey instance;
+    private boolean inGame;
 
     /**
      * Get the instance of the game.
@@ -51,8 +52,10 @@ public class Lovey extends SimpleApplication {
         if(!keyPressed) {
             switch(name) {
                 case "Escape" -> {
-                    if(this.getStateManager().getState(InGameAppState.class).isEnabled()) {
-                        this.toggleScreenMode(true);
+                    InGameAppState inGame = this.getStateManager().getState(InGameAppState.class);
+                    if(inGame != null && inGame.isEnabled()) {
+                        this.useGUIBehavior(true);
+                        this.pauseGame(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
                     } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
                         this.getScreenHandler().onEscape();
@@ -65,10 +68,11 @@ public class Lovey extends SimpleApplication {
     public Lovey(AppState... initialStates) {
         super(initialStates);
         instance = this;
+        inGame = false;
     }
 
     public Lovey() {
-        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new InGameAppState(), new FlyCamAppState());
+        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new FlyCamAppState());
     }
 
     @Override
@@ -126,9 +130,29 @@ public class Lovey extends SimpleApplication {
         return this.screenHandler;
     }
 
-    public void toggleScreenMode(boolean screensEnabled) {
+    /**
+     * Set to true whenever we are in a GUI. (uses mouse behavior/stuff when screen opened)
+     * @param screensEnabled
+     */
+    public void useGUIBehavior(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
-        this.getStateManager().getState(InGameAppState.class).setEnabled(!screensEnabled);
+    }
+
+    public void pauseGame(boolean paused) {
+        this.getStateManager().getState(InGameAppState.class).setEnabled(!paused);
+    }
+
+    public void launchMap() {
+//        this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
+        this.getStateManager().attach(new InGameAppState());
+    }
+
+    public void exitMap() {
+        this.getStateManager().detach(this.getStateManager().getState(InGameAppState.class));
+    }
+
+    public boolean isInGame() {
+        return inGame;
     }
 
     public AppSettings getSettings() {

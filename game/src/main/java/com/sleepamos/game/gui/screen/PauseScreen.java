@@ -17,9 +17,17 @@ public class PauseScreen extends Screen {
 
         window.addChild(this.buttonWithCommand(this.buttonWithAlign("Resume", HAlignment.Center, VAlignment.Center), source -> {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
-            Lovey.getInstance().toggleScreenMode(false);
+
+            Lovey.getInstance().useGUIBehavior(false);
+            Lovey.getInstance().pauseGame(false);
         }));
+
         window.addChild(this.buttonToOtherScreen(this.buttonWithAlign("Settings", HAlignment.Center, VAlignment.Center), new SettingsScreen()));
-        window.addChild(this.buttonWithCommand(this.buttonWithAlign("Quit", HAlignment.Center, VAlignment.Center), source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen()));
+        window.addChild(this.buttonWithCommand(this.buttonWithAlign("Quit", HAlignment.Center, VAlignment.Center), source -> {
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
+            Lovey.getInstance().exitMap();
+
+            Lovey.getInstance().useGUIBehavior(true);
+        }));
     }
 }

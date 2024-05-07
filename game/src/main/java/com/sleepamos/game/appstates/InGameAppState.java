@@ -1,6 +1,7 @@
 package com.sleepamos.game.appstates;
 
 import com.jme3.app.Application;
+import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
@@ -27,6 +28,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 import com.sun.tools.jconsole.JConsoleContext;
@@ -34,9 +36,7 @@ import com.sun.tools.jconsole.JConsoleContext;
 import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
-    private boolean isInteracting = false;
-    private Interactable interactingWith;
-
+    private GameState gameState;
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
@@ -47,33 +47,39 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
+        System.out.println("INITIALIZING");
         this.assetManager = this.getApplication().getAssetManager();
         this.inputManager = this.getApplication().getInputManager();
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
 
         this.setupGameNode();
-        this.setEnabled(false);
+//        this.setEnabled(true);
+        this.rootNode.attachChild(this.gameNode);
 
         this.inputManager.addMapping("Interact",      // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
 
-        this.isInteracting = false;
-        this.interactingWith = null;
+        this.gameState = new GameState();
+        System.out.println("DONE INITIALIZING");
     }
 
     @Override
     protected void cleanup(Application app) {
+        System.out.println("Cleanup called");
+        destroyBinds();
+
+        this.rootNode.detachChild(this.gameNode);
     }
 
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            System.out.println("ACTION:" + name+ " | " + keyPressed+ "|" +tpf);
+            System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
 
             switch(name) {
                 case "Interact" -> {
-                    isInteracting = keyPressed;
+                    gameState.setInteracting(keyPressed);
                     Interactable hit = null;
 
                     CollisionResults collisionResult = castRay(shootables);
@@ -81,7 +87,7 @@ public class InGameAppState extends BaseAppState {
                         hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
                     }
 
-                    interactingWith = hit;
+                    gameState.setInteractingWith(hit);
                 }
             }
         }
@@ -143,17 +149,17 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        this.rootNode.attachChild(this.gameNode);
-        this.getApplication().getCamera().lookAtDirection(Objects.requireNonNullElseGet(this.directionOnPause, () -> new Vector3f(0, 1, 0)), new Vector3f(0, 1, 0)); // i love you intellij
+        System.out.println("onEnable Called");
+        this.getStateManager().getState(FlyCamAppState.class).setEnabled(true);
 
         createBinds();
     }
 
     @Override
     protected void onDisable() {
-        this.rootNode.detachChild(this.gameNode);
-        this.directionOnPause = this.getApplication().getCamera().getDirection();
+        System.out.println("onDisable Called");
 
+        this.getStateManager().getState(FlyCamAppState.class).setEnabled(false);
         destroyBinds();
     }
 
@@ -168,7 +174,7 @@ public class InGameAppState extends BaseAppState {
     @Override
     public void update(float tpf) {
         // run every frame we're enabled
-        if (isInteracting) {
+        if (gameState.isInteracting()) {
             // we need to raycast every frame while Interacting (maybe could optimize this)
             Interactable hit = null;
 
@@ -178,13 +184,15 @@ public class InGameAppState extends BaseAppState {
             }
 
             // lets check
-            if (interactingWith != hit) {
+            if (gameState.getInteractingWith() != hit) {
                 // we moved off, STOP INTERACTING
-                isInteracting = false;
-                interactingWith = null;
+                gameState.setInteracting(false);
+                gameState.setInteractingWith(null);
             }
 
-            if (interactingWith != null) interactingWith.onInteract();
+            if (gameState.getInteractingWith() != null) {
+                gameState.getInteractingWith().onInteract();
+            }
         }
     }
 
