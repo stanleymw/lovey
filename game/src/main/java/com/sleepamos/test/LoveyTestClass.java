@@ -1,6 +1,6 @@
 package com.sleepamos.test;
 
-import com.sleepamos.game.util.LoveySerializable;
+import com.sleepamos.game.util.serializer.LoveySerializable;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.util.annotations.LoveySerializableValue;
 

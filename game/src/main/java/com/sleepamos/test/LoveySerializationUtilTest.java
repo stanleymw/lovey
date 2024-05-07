@@ -1,6 +1,6 @@
 package com.sleepamos.test;
 
-import com.sleepamos.game.util.LoveySerializationUtil;
+import com.sleepamos.game.util.serializer.LoveySerializationUtil;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;

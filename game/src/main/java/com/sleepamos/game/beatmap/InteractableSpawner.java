@@ -1,11 +1,12 @@
 package com.sleepamos.game.beatmap;
 
 import com.sleepamos.game.interactables.Interactable;
-import com.sleepamos.game.util.LoveySerializable;
+import com.sleepamos.game.util.serializer.LoveySerializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class InteractableSpawner implements LoveySerializable {
     private final ArrayList<Spawn> toSpawn;
 
@@ -16,7 +17,4 @@ public class InteractableSpawner implements LoveySerializable {
     public List<Spawn> getTargetsToSpawn() {
         return toSpawn;
     }
-
-    public record Spawn(Interactable interactable, double time) implements LoveySerializable {
-    } // note: use Class.getRecordComponents()
 }

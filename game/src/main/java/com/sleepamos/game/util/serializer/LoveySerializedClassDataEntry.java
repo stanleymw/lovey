@@ -1,4 +1,4 @@
-package com.sleepamos.game.util;
+package com.sleepamos.game.util.serializer;
 
 import java.io.Serializable;
 

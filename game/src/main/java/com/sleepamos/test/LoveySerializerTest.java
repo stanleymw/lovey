@@ -1,7 +1,7 @@
 package com.sleepamos.test;
 
 import com.sleepamos.game.util.FileUtil;
-import com.sleepamos.game.util.LoveySerializer;
+import com.sleepamos.game.util.serializer.LoveySerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

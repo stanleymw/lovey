@@ -1,5 +1,7 @@
-package com.sleepamos.game.util;
+package com.sleepamos.game.util.serializer;
 
+import com.sleepamos.game.util.NonFatalException;
+import com.sleepamos.game.util.ReflectionUtil;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.util.annotations.LoveySerializableValue;
 

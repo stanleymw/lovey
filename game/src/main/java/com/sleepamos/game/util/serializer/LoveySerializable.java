@@ -1,4 +1,6 @@
-package com.sleepamos.game.util;
+package com.sleepamos.game.util.serializer;
+
+import com.sleepamos.game.util.NonFatalException;
 
 import java.io.*;
 
