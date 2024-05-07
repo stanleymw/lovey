@@ -37,7 +37,9 @@ public final class LoveySerializationUtil {
     public static Map<String, String> serializedNameToClassName(Class<?> clazz) {
         Map<String, String> map = new HashMap<>();
         for(Field f : clazz.getDeclaredFields()) {
-            map.put(getSerializationName(f), f.getName());
+            if(!ReflectionUtil.isStatic(f)) {
+                map.put(getSerializationName(f), f.getName());
+            }
         }
         return map;
     }

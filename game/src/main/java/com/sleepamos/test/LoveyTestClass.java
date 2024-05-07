@@ -2,6 +2,7 @@ package com.sleepamos.test;
 
 import com.sleepamos.game.util.LoveySerializable;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.util.annotations.LoveySerializableValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +13,10 @@ class LoveyTestClass implements LoveySerializable {
     @LoveySerializableClassVersion
     private static final byte VERSION = 10;
 
+    @LoveySerializableValue("not i")
     private final int i = 2;
+
+    @LoveySerializableValue("s")
     private final String s = "test";
 
     private final int[] iA = {2, 4, 6, 8};

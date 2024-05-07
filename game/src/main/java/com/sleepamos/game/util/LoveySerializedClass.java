@@ -93,11 +93,11 @@ public class LoveySerializedClass implements Serializable {
     @Override
     public boolean equals(Object o) {
         return this == o ||
-                o instanceof LoveySerializedClass other &&
+                (o instanceof LoveySerializedClass other &&
                 this.version == other.version &&
                 this.data.equals(other.data) &&
                 this.isRootClass == other.isRootClass &&
                 this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
-                (this.superclass == other.superclass || this.superclass.equals(other.superclass)); // == implies null
+                (this.superclass == other.superclass || this.superclass.equals(other.superclass))); // == implies null
     }
 }
