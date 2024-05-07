@@ -79,14 +79,13 @@ public class LoveySerializedClass implements Serializable {
     }
 
     private static LoveySerializedClass generateStoredRootObject(Class<?> rootClazz) {
-        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new ArrayList<>());
+        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new ArrayList<>(), true);
     }
 
     private static LoveySerializedClass createIfLegalClass(Class<?> clazz, LoveySerializable obj) {
         if(LoveySerializable.class.isAssignableFrom(clazz)) {
             return new LoveySerializedClass(LoveySerializationUtil.getClassVersion(clazz), clazz.getSuperclass(), clazz, getObjectData(clazz, obj), obj);
         }
-
         return generateStoredRootObject(clazz);
     }
 

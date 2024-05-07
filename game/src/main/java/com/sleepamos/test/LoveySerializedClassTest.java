@@ -2,6 +2,7 @@ package com.sleepamos.test;
 
 import com.sleepamos.game.util.FileUtil;
 import com.sleepamos.game.util.LoveySerializedClass;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -9,9 +10,9 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoveySerializedClassTest {
+    private static final String fileName = "LoveySerializedClassTest.java.txt";
     @Test
     void testSerialization() throws IOException {
-        final String fileName = "LoveySerializedClassTest.java.txt";
         LoveyTestClass loveyPreSerializedA = new LoveyTestClass();
 
         LoveySerializedClass loveySerializedA = new LoveySerializedClass(loveyPreSerializedA);
@@ -31,8 +32,11 @@ class LoveySerializedClassTest {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        } finally {
-            FileUtil.deleteFile(fileName);
         }
+    }
+
+    @AfterEach
+    void tearDown() {
+        FileUtil.deleteFile(fileName);
     }
 }

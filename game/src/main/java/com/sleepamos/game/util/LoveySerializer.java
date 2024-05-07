@@ -60,11 +60,12 @@ public class LoveySerializer {
 
                 // if serializedVer == definedVer then run
                 // if serializedVer != definedVer and deserialize decides not to cancel (returns false) then run
-                if(serializedVer == definedVer || !onVersionMismatch.deserialize(deserialized, serializedVer, definedVer, toDeserialize, obj)) {
+                if(serializedVer == definedVer || !onVersionMismatch.deserialize(currentDeserializeCandidate, serializedVer, definedVer, toDeserialize, obj)) {
                     Map<String, String> serializedNameToClassName = LoveySerializationUtil.serializedNameToClassName(toDeserialize);
                     // iterate over all values in the deserialized class and put them into obj
-                    for (LoveySerializedClassDataEntry entry : deserialized.getData()) {
-                        Field f = storedClazz.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
+                    for (LoveySerializedClassDataEntry entry : currentDeserializeCandidate.getData()) {
+                        System.out.println("attempting to retrieve: " + entry.serializedName() + " from " + toDeserialize);
+                        Field f = toDeserialize.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
                         f.setAccessible(true);
                         f.set(obj, entry.data());
                     }
