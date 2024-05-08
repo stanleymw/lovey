@@ -1,7 +1,6 @@
-package com.sleepamos.test;
+package com.sleepamos.game.util.serializer;
 
 import com.sleepamos.game.util.FileUtil;
-import com.sleepamos.game.util.serializer.LoveySerializedClass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ class LoveySerializedClassTest {
     private static final String fileName = "LoveySerializedClassTest.java.txt";
     @Test
     void testSerialization() throws IOException {
-        LoveyTestClass loveyPreSerializedA = new LoveyTestClass();
+        SerializationClassTest loveyPreSerializedA = new SerializationClassTest();
 
         LoveySerializedClass loveySerializedA = new LoveySerializedClass(loveyPreSerializedA);
 

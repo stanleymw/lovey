@@ -1,9 +1,10 @@
-package com.sleepamos.test;
+package com.sleepamos.game.util.serializer;
 
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.util.annotations.LoveySerializableValue;
 
-class LoveySubclassTestClass extends LoveyTestClass {
+@SuppressWarnings("serial")
+class SerializationSubclassTest extends SerializationClassTest {
     @LoveySerializableClassVersion
     private static final byte VERSION = 11;
 
@@ -15,6 +16,6 @@ class LoveySubclassTestClass extends LoveyTestClass {
     @Override
     public boolean equals(Object o) {
         //noinspection ConstantValue
-        return super.equals(o) && yippee == ((LoveySubclassTestClass) o).yippee && goodNameSchemeGuys == ((LoveySubclassTestClass) o).goodNameSchemeGuys;
+        return super.equals(o) && yippee == ((SerializationSubclassTest) o).yippee && goodNameSchemeGuys == ((SerializationSubclassTest) o).goodNameSchemeGuys;
     }
 }

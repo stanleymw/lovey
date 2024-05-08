@@ -1,18 +1,13 @@
 package com.sleepamos.game.interactables;
 
-import com.jme3.bounding.BoundingVolume;
-import com.jme3.collision.Collidable;
-import com.jme3.collision.CollisionResults;
-import com.jme3.collision.UnsupportedCollisionException;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
-import com.jme3.scene.SceneGraphVisitor;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
+import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 
-import java.util.Queue;
-
+@SuppressWarnings("serial")
 public class Shootable extends Interactable {
+    @LoveySerializableClassVersion
+    private static final byte VERSION = 10;
+
     private final int points;
 
     public Shootable(String name, Mesh mesh, int pts) {

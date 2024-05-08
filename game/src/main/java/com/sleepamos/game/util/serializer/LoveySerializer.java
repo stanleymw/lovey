@@ -11,12 +11,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
- * Serialization pipeline: Object with class version -> Serialize data in an easily recoverable format (global storage) -> Deserialize data into recoverable format -> Convert to new Object
- * Object: Class implements LoveySerializable
- * Recoverable format: LoveySerializedClass (Contains variable names, values, reference to superclass LoveySerializedClass which can be serialized.
- * Deserializer uses LoveySerializedClass hierarchy.
- * <p>
- * A custom serialization interface that is able to handle file versioning smoothly.
+ * A custom serialization interface that is able to handle file versioning smoothly. Conversions between different versions is supported by passing in a handler method.
  */
 public class LoveySerializer {
     private static final Objenesis objenesis = new ObjenesisSerializer();

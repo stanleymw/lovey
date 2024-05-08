@@ -1,7 +1,6 @@
-package com.sleepamos.test;
+package com.sleepamos.game.util.serializer;
 
 import com.sleepamos.game.util.FileUtil;
-import com.sleepamos.game.util.serializer.LoveySerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,16 +11,16 @@ class LoveySerializerTest {
 
     @Test
     void test() {
-        LoveyTestClass test = new LoveyTestClass();
+        SerializationClassTest test = new SerializationClassTest();
         LoveySerializer.serialize(fileName, test);
-        LoveyTestClass deserialized = LoveySerializer.deserialize(fileName, LoveyTestClass.class);
+        SerializationClassTest deserialized = LoveySerializer.deserialize(fileName, SerializationClassTest.class);
         assertEquals(test, deserialized);
 
         FileUtil.deleteFile(fileName);
 
-        LoveySubclassTestClass subclassTest = new LoveySubclassTestClass();
+        SerializationSubclassTest subclassTest = new SerializationSubclassTest();
         LoveySerializer.serialize(fileName, subclassTest);
-        LoveySubclassTestClass deserializedSubclassTest = LoveySerializer.deserialize(fileName, LoveySubclassTestClass.class);
+        SerializationSubclassTest deserializedSubclassTest = LoveySerializer.deserialize(fileName, SerializationSubclassTest.class);
         assertEquals(subclassTest, deserializedSubclassTest);
     }
 

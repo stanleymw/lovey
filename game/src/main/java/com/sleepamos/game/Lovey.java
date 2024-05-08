@@ -6,6 +6,7 @@ import com.jme3.app.StatsAppState;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
+import com.jme3.font.BitmapFont;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -90,6 +91,9 @@ public class Lovey extends SimpleApplication {
         this.configureMappings(this.getInputManager()); // then add our own
         Assets.initialize();
         Audios.initialize();
+
+        this.getStateManager().getState(StatsAppState.class).getFpsText().setSize(9);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -131,6 +135,11 @@ public class Lovey extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         super.simpleUpdate(tpf);
+    }
+
+    @Override
+    protected BitmapFont loadGuiFont() {
+        return Assets.FONT;
     }
 
     /**

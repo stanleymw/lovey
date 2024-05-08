@@ -1,6 +1,5 @@
-package com.sleepamos.test;
+package com.sleepamos.game.util.serializer;
 
-import com.sleepamos.game.util.serializer.LoveySerializable;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.util.annotations.LoveySerializableValue;
 
@@ -9,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("serial")
-class LoveyTestClass implements LoveySerializable {
+class SerializationClassTest implements LoveySerializable {
     @LoveySerializableClassVersion
     private static final byte VERSION = 10;
 
@@ -23,7 +22,7 @@ class LoveyTestClass implements LoveySerializable {
 
     private final List<String> stringList = new ArrayList<>();
 
-    public LoveyTestClass() {
+    public SerializationClassTest() {
         stringList.add("a");
         stringList.add("b");
         stringList.add("c");
@@ -33,7 +32,7 @@ class LoveyTestClass implements LoveySerializable {
     public boolean equals(Object o) {
         //noinspection ConstantValue
         return this == o ||
-                o instanceof LoveyTestClass other &&
+                o instanceof SerializationClassTest other &&
                         this.i == other.i &&
                         this.s.equals(other.s) &&
                         Arrays.equals(this.iA, other.iA) &&

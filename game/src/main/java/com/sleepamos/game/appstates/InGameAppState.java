@@ -5,16 +5,13 @@ import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
-import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
@@ -24,16 +21,11 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
-import com.sun.tools.jconsole.JConsoleContext;
-
-import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
     private GameState gameState;
@@ -77,6 +69,7 @@ public class InGameAppState extends BaseAppState {
         public void onAction(String name, boolean keyPressed, float tpf) {
             System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
 
+            //noinspection SwitchStatementWithTooFewBranches
             switch(name) {
                 case "Interact" -> {
                     gameState.setInteracting(keyPressed);

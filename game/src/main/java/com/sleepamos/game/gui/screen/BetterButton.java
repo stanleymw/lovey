@@ -29,9 +29,9 @@ public class BetterButton extends Button {
             Field f = Label.class.getDeclaredField("text");
             f.setAccessible(true);
             return (TextComponent) (f.get(this));
-        } catch(Exception ignored) {
+        } catch(Exception e) {
             System.out.println("err: ");
-            ignored.printStackTrace();
+            e.printStackTrace();
             throw new RuntimeException("failed to reflect to get the text component. ????");
         }
     }

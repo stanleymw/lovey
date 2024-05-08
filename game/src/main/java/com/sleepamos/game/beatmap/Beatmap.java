@@ -8,7 +8,7 @@ import com.sleepamos.game.util.annotations.LoveySerializableValue;
 @SuppressWarnings("serial")
 public class Beatmap implements LoveySerializable {
     @LoveySerializableClassVersion
-    public static final byte CURRENT_VERSION = 10;
+    public static final byte VERSION = 10;
 
     @LoveySerializableValue("version")
     private final int version;
@@ -28,7 +28,7 @@ public class Beatmap implements LoveySerializable {
     @LoveySerializableValue("spawner")
     private final InteractableSpawner spawner;
 
-    public Beatmap(int version, String name, String musicAuthor, String beatmapAuthor, AudioNode music, InteractableSpawner spawner) {
+    private Beatmap(int version, String name, String musicAuthor, String beatmapAuthor, AudioNode music, InteractableSpawner spawner) {
         this.version = version;
         this.name = name;
         this.musicAuthor = musicAuthor;

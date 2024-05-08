@@ -3,7 +3,7 @@
 This is the readme for lovey, try to keep it up to date with any information future-you will wish past-you
 remembered to write down
 
-### Built using: JMonkeyEngine, Lemur GUI library for JME, Objenesis
+### Built using: JMonkeyEngine, Lemur GUI library for JME, Objenesis. Utilizes the Croissant One font (https://fonts.google.com/specimen/Croissant+One)
 
 # LORE!!!!
 

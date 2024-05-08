@@ -1,4 +1,4 @@
-package com.sleepamos.test;
+package com.sleepamos.game.util.serializer;
 
 import com.sleepamos.game.util.ReflectionUtil;
 import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
