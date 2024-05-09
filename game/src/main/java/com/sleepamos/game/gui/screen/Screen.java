@@ -12,6 +12,7 @@ import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.asset.Assets;
+import com.sleepamos.game.gui.element.BetterButton;
 
 public abstract class Screen {
     protected final Node elements;
@@ -68,16 +69,21 @@ public abstract class Screen {
 
     /**
      * Creates and attaches a container to the internal elements node.
-     * @return The created container, already attached.
+     * @return The created container, already attached. Attach all further nodes to this container.
      */
     protected Container createAndAttachContainer() {
         Container c = new Container();
         c.setBackground(null);
+
+        // Make the container visible by default.
+        c.setLocalTranslation(10, this.getScreenHeight(), 0);
+        c.scale(1.75f);
+
         this.elements.attachChild(c);
         return c;
     }
 
-    protected Button button(String buttonName) {
+    protected BetterButton button(String buttonName) {
         BetterButton b = new BetterButton(buttonName, new ElementId("button"), "glass");
         System.out.println("making button");
         b.setBorder(null);
@@ -92,43 +98,43 @@ public abstract class Screen {
         return b;
     }
 
-    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment) {
-        Button b = button(buttonName);
+    protected BetterButton buttonWithAlign(String buttonName, HAlignment hAlignment) {
+        BetterButton b = button(buttonName);
         b.setTextHAlignment(hAlignment);
         return b;
     }
 
-    protected Button buttonWithAlign(String buttonName, VAlignment vAlignment) {
-        Button b = button(buttonName);
+    protected BetterButton buttonWithAlign(String buttonName, VAlignment vAlignment) {
+        BetterButton b = button(buttonName);
         b.setTextVAlignment(vAlignment);
         return b;
     }
 
-    protected Button buttonWithAlign(String buttonName, HAlignment hAlignment, VAlignment vAlignment) {
-        Button b = button(buttonName);
+    protected BetterButton buttonWithAlign(String buttonName, HAlignment hAlignment, VAlignment vAlignment) {
+        BetterButton b = button(buttonName);
         b.setTextHAlignment(hAlignment);
         b.setTextVAlignment(vAlignment);
         return b;
     }
 
-    protected Button buttonToOtherScreen(String buttonName, Screen next) {
-        Button b = button(buttonName);
+    protected BetterButton buttonToOtherScreen(String buttonName, Screen next) {
+        BetterButton b = button(buttonName);
         b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
         return b;
     }
 
-    protected Button buttonWithCommand(String buttonName, Command<? super Button> run) {
-        Button b = button(buttonName);
+    protected BetterButton buttonWithCommand(String buttonName, Command<? super Button> run) {
+        BetterButton b = button(buttonName);
         b.addClickCommands(run);
         return b;
     }
 
-    protected Button buttonToOtherScreen(Button b, Screen next) {
+    protected <T extends Button> T buttonToOtherScreen(T b, Screen next) {
         b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
         return b;
     }
 
-    protected Button buttonWithCommand(Button b, Command<? super Button> run) {
+    protected <T extends Button> T buttonWithCommand(T b, Command<? super Button> run) {
         b.addClickCommands(run);
         return b;
     }

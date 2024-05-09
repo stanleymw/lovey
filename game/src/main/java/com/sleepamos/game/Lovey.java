@@ -18,7 +18,7 @@ import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.asset.Assets;
-import com.sleepamos.game.audio.Audios;
+import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
 import com.sleepamos.game.util.NonFatalException;
@@ -90,7 +90,7 @@ public class Lovey extends SimpleApplication {
 
         this.configureMappings(this.getInputManager()); // then add our own
         Assets.initialize();
-        Audios.initialize();
+        Audio.initialize();
 
         this.getStateManager().getState(StatsAppState.class).getFpsText().setSize(9);
 
@@ -139,7 +139,8 @@ public class Lovey extends SimpleApplication {
 
     @Override
     protected BitmapFont loadGuiFont() {
-        return Assets.FONT;
+        return super.loadGuiFont();
+        // return Assets.FONT;
     }
 
     /**

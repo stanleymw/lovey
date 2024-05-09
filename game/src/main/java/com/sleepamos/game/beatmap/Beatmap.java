@@ -10,8 +10,25 @@ public class Beatmap implements LoveySerializable {
     @LoveySerializableClassVersion
     public static final byte VERSION = 10;
 
-    @LoveySerializableValue("version")
-    private final int version;
+    public String getName() {
+        return name;
+    }
+
+    public String getMusicAuthor() {
+        return musicAuthor;
+    }
+
+    public String getBeatmapAuthor() {
+        return beatmapAuthor;
+    }
+
+    public long getLengthSec() {
+        return lengthSec;
+    }
+
+    public InteractableSpawner getSpawner() {
+        return spawner;
+    }
 
     @LoveySerializableValue("name")
     private final String name;
@@ -22,18 +39,21 @@ public class Beatmap implements LoveySerializable {
     @LoveySerializableValue("beatmapAuthor")
     private final String beatmapAuthor;
 
-    @LoveySerializableValue("music")
-    private final AudioNode music;
+    @LoveySerializableValue("lengthSec")
+    private final long lengthSec;
 
     @LoveySerializableValue("spawner")
     private final InteractableSpawner spawner;
 
-    private Beatmap(int version, String name, String musicAuthor, String beatmapAuthor, AudioNode music, InteractableSpawner spawner) {
-        this.version = version;
+    private Beatmap(String name, String musicAuthor, String beatmapAuthor, long lengthSec, InteractableSpawner spawner) {
         this.name = name;
         this.musicAuthor = musicAuthor;
         this.beatmapAuthor = beatmapAuthor;
-        this.music = music;
+        this.lengthSec = lengthSec;
         this.spawner = spawner;
+    }
+
+    public Beatmap() {
+        this("", "", "", 0, new InteractableSpawner());
     }
 }
