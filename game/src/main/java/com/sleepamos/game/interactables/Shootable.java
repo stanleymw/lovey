@@ -9,25 +9,31 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.sleepamos.game.game.GameState;
 
 import java.util.Queue;
 
 public class Shootable extends Interactable {
-    private final int points;
+    private final long points;
+    private GameState gameState;
 
-    public Shootable(String name, Mesh mesh, int pts) {
+    public Shootable(String name, Mesh mesh, GameState gs, long pts) {
         super(name, mesh);
-        points = pts;
+
+        this.points = pts;
+        this.gameState = gs;
     }
 
     @Override
     public void onInteract() {
         System.out.println("add " + this.points + " pts");
-        this.removeFromParent();
+        this.gameState.addPoints(this.points);
+
+        this.removeFromParent(); // destroy
     }
 
     @Override
     public void onInteractStop() {
-        System.out.println("INTERACTION STOOPPED");
+        System.out.println("STOPPED ITERACT");
     }
 }

@@ -7,6 +7,7 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -28,6 +29,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.sleepamos.game.Lovey;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
@@ -42,6 +44,8 @@ public class InGameAppState extends BaseAppState {
     private Node rootNode;
     private Node gameNode;
 
+    private BitmapText hud;
+
     private Vector3f directionOnPause;
     private Node shootables;
 
@@ -50,7 +54,9 @@ public class InGameAppState extends BaseAppState {
         System.out.println("INITIALIZING");
         this.assetManager = this.getApplication().getAssetManager();
         this.inputManager = this.getApplication().getInputManager();
+        this.gameState = new GameState();
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
+
 
         this.setupGameNode();
 //        this.setEnabled(true);
@@ -60,7 +66,6 @@ public class InGameAppState extends BaseAppState {
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
 
-        this.gameState = new GameState();
         System.out.println("DONE INITIALIZING");
     }
 
@@ -75,7 +80,7 @@ public class InGameAppState extends BaseAppState {
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
+//            System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
 
             switch(name) {
                 case "Interact" -> {
@@ -196,9 +201,13 @@ public class InGameAppState extends BaseAppState {
         }
     }
 
+    private void updateHUDText() {
+
+    }
+
     private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
         Box box = new Box(size_x, size_y, size_z);
-        Shootable cube = new Shootable(name, box, 10);
+        Shootable cube = new Shootable(name, box, this.gameState, 10);
         cube.setLocalTranslation(x, y, z);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
