@@ -2,9 +2,11 @@ package com.sleepamos.game.util.serializer;
 
 import com.sleepamos.game.util.FileUtil;
 import com.sleepamos.game.util.NonFatalException;
+import lombok.SneakyThrows;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisSerializer;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
@@ -34,9 +36,21 @@ public class LoveySerializer {
         }));
     }
 
-    public static <T> T deserialize(String fileName, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
-        LoveySerializedClass deserialized = FileUtil.readSerializedObjectFromFile(fileName, LoveySerializedClass.class);
+    public static <T> T deserialize(File file, Class<T> clazz) {
+        return clazz.cast(deserialize(file, clazz, (serialized, fileVersion, eVersion, c, obj) -> {
+            throw new NonFatalException("Unexpected version mismatch, stored file version: " + fileVersion + ", class defined version: " + eVersion);
+        }));
+    }
 
+    public static <T> T deserialize(String fileName, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+        return deserialize(FileUtil.readSerializedObjectFromFile(fileName, LoveySerializedClass.class), clazz, onVersionMismatch);
+    }
+
+    public static <T> T deserialize(File file, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+        return deserialize(FileUtil.readSerializedObjectFromFile(file, LoveySerializedClass.class), clazz, onVersionMismatch);
+    }
+
+    private static <T> T deserialize(LoveySerializedClass deserialized, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
         if(!clazz.isAssignableFrom(deserialized.getStoredClazz())) {
             throw new NonFatalException("Deserialized class of type " + deserialized.getStoredClazz().getName() + " is not assignable to requested class: " + clazz.getName());
         }

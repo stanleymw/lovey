@@ -1,9 +1,8 @@
 package com.sleepamos.game.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import lombok.SneakyThrows;
+
+import java.io.*;
 import java.nio.file.Files;
 
 public final class FileUtil {
@@ -11,15 +10,30 @@ public final class FileUtil {
         throw new UnsupportedOperationException("Utility Class");
     }
 
+    @SneakyThrows
     public static <T> T readSerializedObjectFromFile(String fileName, Class<T> clazz) {
         return clazz.cast(readSerializedObjectFromFile(fileName));
     }
 
-    public static Object readSerializedObjectFromFile(String fileName) {
-        try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) {
+    @SneakyThrows
+    public static <T> T readSerializedObjectFromFile(File file, Class<T> clazz) {
+        return clazz.cast(readSerializedObjectFromFile(file));
+    }
+
+    public static Object readSerializedObjectFromFile(String fileName) throws FileNotFoundException {
+        return fromFileInputStream(new FileInputStream(fileName));
+    }
+
+    public static Object readSerializedObjectFromFile(File file) throws FileNotFoundException {
+        return fromFileInputStream(new FileInputStream(file));
+    }
+
+
+    private static Object fromFileInputStream(FileInputStream fis) {
+        try(ObjectInputStream in = new ObjectInputStream(fis)) {
             return in.readObject();
         } catch(IOException | ClassNotFoundException e) {
-            throw new NonFatalException("Error reading a serialized object from file " + fileName, e);
+            throw new NonFatalException("Error reading a serialized object from stream " + fis, e);
         }
     }
 

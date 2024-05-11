@@ -19,7 +19,11 @@ public class BeatmapEditorScreen extends Screen {
         }));
 
         Container rightUI = this.createAndAttachContainer();
-        rightUI.setLocalTranslation(this.getScreenWidth() - 133, this.getScreenHeight(), 0);
+        rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
+
+        rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Load", HAlignment.Center, VAlignment.Center), source -> {
+
+        }));
 
         rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Save", HAlignment.Center, VAlignment.Center), source -> {
             LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap);
