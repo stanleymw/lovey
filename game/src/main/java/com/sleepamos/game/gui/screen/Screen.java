@@ -13,6 +13,7 @@ import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.gui.element.BetterButton;
+import com.sleepamos.game.util.AssetsUtil;
 
 public abstract class Screen {
     protected final Node elements;
@@ -85,10 +86,9 @@ public abstract class Screen {
 
     protected BetterButton button(String buttonName) {
         BetterButton b = new BetterButton(buttonName, new ElementId("button"), "glass");
-        System.out.println("making button");
         b.setBorder(null);
         b.setPreferredSize(new Vector3f(80, 80 * 2481f / 6000f, 0));
-        var q = new QuadBackgroundComponent(Assets.BUTTON_BG_TEXTURE);
+        var q = AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE);
         q.setMargin(1f, 1f);
         b.setBackground(q);
         b.getTextComponent().setFont(Assets.FONT);

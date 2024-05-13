@@ -92,7 +92,7 @@ public class Lovey extends SimpleApplication {
         Assets.initialize();
         Audio.initialize();
 
-        this.getStateManager().getState(StatsAppState.class).getFpsText().setSize(9);
+        // this.getStateManager().getState(StatsAppState.class).getFpsText().setSize(9);
 
     }
 

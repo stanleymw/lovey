@@ -22,7 +22,10 @@ public class BeatmapEditorScreen extends Screen {
         rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
 
         rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Load", HAlignment.Center, VAlignment.Center), source -> {
-
+            FolderSelectorScreen folderSelectorScreen = new FolderSelectorScreen((selected) -> {
+                Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen, kicking us back to the beatmap editor.
+                beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class);
+            });
         }));
 
         rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Save", HAlignment.Center, VAlignment.Center), source -> {

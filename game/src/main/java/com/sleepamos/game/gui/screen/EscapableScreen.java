@@ -4,4 +4,6 @@ public abstract class EscapableScreen extends Screen {
     protected EscapableScreen() {
         super(true);
     }
+
+    protected void onEscape() {}
 }
