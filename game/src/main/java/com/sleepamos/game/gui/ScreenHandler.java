@@ -87,6 +87,7 @@ public class ScreenHandler {
 
     public void onEscape() {
         if (this.getCurrentScreen().isEscapable()) {
+            this.getCurrentScreen().onEscape();
             this.hideLastShownScreen();
         }
     }

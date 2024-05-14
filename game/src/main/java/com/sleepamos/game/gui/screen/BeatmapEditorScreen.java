@@ -14,22 +14,16 @@ public class BeatmapEditorScreen extends Screen {
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
 
-        leftUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Quit", HAlignment.Center, VAlignment.Center), source -> {
-            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
-        }));
+        leftUI.addChild(this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen()));
 
         Container rightUI = this.createAndAttachContainer();
         rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
 
-        rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Load", HAlignment.Center, VAlignment.Center), source -> {
-            FolderSelectorScreen folderSelectorScreen = new FolderSelectorScreen((selected) -> {
-                Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen, kicking us back to the beatmap editor.
-                beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class);
-            });
-        }));
+        rightUI.addChild(this.button("Load").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new FolderSelectorScreen((selected) -> {
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen, kicking us back to the beatmap editor.
+            beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class);
+        })));
 
-        rightUI.addChild(this.buttonWithCommand(this.buttonWithAlign("Save", HAlignment.Center, VAlignment.Center), source -> {
-            LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap);
-        }));
+        rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
     }
 }

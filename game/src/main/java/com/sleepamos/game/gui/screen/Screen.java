@@ -1,24 +1,16 @@
 package com.sleepamos.game.gui.screen;
 
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Command;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.HAlignment;
-import com.simsilica.lemur.VAlignment;
-import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.*;
 import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
-import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.gui.element.BetterButton;
-import com.sleepamos.game.util.AssetsUtil;
 
 public abstract class Screen {
     protected final Node elements;
     protected final boolean escapable;
     private Node parent;
+    private boolean initialized = false;
 
     protected int getScreenWidth() {
         return Lovey.getInstance().getSettings().getWindowWidth();
@@ -34,8 +26,6 @@ public abstract class Screen {
     protected Screen(boolean escapable) {
         this.elements = new Node(this.getClass().getSimpleName());
         this.escapable = escapable;
-
-        this.initialize();
     }
 
     protected Screen() {
@@ -52,6 +42,10 @@ public abstract class Screen {
      * @param base The base which this Screen's elements should be attached to.
      */
     public void attach(Node base) {
+        if(!this.initialized) {
+            this.initialize();
+            this.initialized = true;
+        }
         base.attachChild(this.elements);
         this.parent = base;
     }
@@ -85,17 +79,7 @@ public abstract class Screen {
     }
 
     protected BetterButton button(String buttonName) {
-        BetterButton b = new BetterButton(buttonName, new ElementId("button"), "glass");
-        b.setBorder(null);
-        b.setPreferredSize(new Vector3f(80, 80 * 2481f / 6000f, 0));
-        var q = AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE);
-        q.setMargin(1f, 1f);
-        b.setBackground(q);
-        b.getTextComponent().setFont(Assets.FONT);
-        b.getTextComponent().setOffset(4f, 0, 0);
-        b.getTextComponent().setFontSize(10);
-        b.setShadowColor(new ColorRGBA(255, 255, 255, 255));
-        return b;
+        return new BetterButton(buttonName, new ElementId("button"), "glass");
     }
 
     protected BetterButton buttonWithAlign(String buttonName, HAlignment hAlignment) {
@@ -137,5 +121,11 @@ public abstract class Screen {
     protected <T extends Button> T buttonWithCommand(T b, Command<? super Button> run) {
         b.addClickCommands(run);
         return b;
+    }
+
+    public void onEscape() {
+        if(!this.isEscapable()) {
+            throw new IllegalStateException("Non-escapable screen was escaped.");
+        }
     }
 }

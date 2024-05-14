@@ -9,6 +9,8 @@ public final class AssetsUtil {
     }
 
     public static QuadBackgroundComponent asQBC(Texture t) {
-        return new QuadBackgroundComponent(t);
+        QuadBackgroundComponent q = new QuadBackgroundComponent(t);
+        q.setMargin(1f, 1f);
+        return q;
     }
 }
