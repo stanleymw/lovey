@@ -70,17 +70,22 @@ public class BetterButton extends Button {
     }
 
     public BetterButton square() {
-        this.setPreferredSize(new Vector3f(80, 80, 0));
+        this.setSize(new Vector3f(80, 80, 0));
         return this;
     }
 
     public BetterButton rect() {
-        this.setPreferredSize(new Vector3f(80, 80 * 2481f / 6000f, 0));
+        this.setSize(new Vector3f(80, 80 * 2481f / 6000f, 0));
         return this;
     }
 
     public BetterButton withFontSize(float size) {
         this.getTextComponent().setFontSize(size);
+        return this;
+    }
+
+    public BetterButton setMaxTextWidth(float max) {
+        this.getTextComponent().setMaxWidth(max);
         return this;
     }
 }

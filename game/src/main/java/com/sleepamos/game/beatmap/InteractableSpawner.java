@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-class InteractableSpawner implements LoveySerializable {
+public class InteractableSpawner implements LoveySerializable {
     @LoveySerializableClassVersion
     private static final byte VERSION = 10;
 

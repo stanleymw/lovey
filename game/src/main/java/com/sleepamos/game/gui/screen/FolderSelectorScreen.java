@@ -5,6 +5,7 @@ import com.simsilica.lemur.*;
 import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.util.AssetsUtil;
 import com.sleepamos.game.util.FileUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -31,31 +32,39 @@ public class FolderSelectorScreen extends EscapableScreen {
         beatmapListUI.setPreferredSize(new Vector3f(this.getScreenWidth() / 4f, this.getScreenHeight() / 5f, 0));
         beatmapListUI.setBackground(AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE));
         String[] dirNames = FileUtil.getDirectoryNames(this.rootFolder, (dirFile) -> dirFile.toPath().resolve("beatmap.lovey").toFile().exists()); // wonderful code
+
+        Button openButton = this.button("Open").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> this.callback.onSelect(this.getSelected()));
+
+        openButton.setEnabled(false);
+
         for(String dirName : dirNames) {
-            beatmapListUI.addChild(this.button(dirName).withHAlign(HAlignment.Left).withVAlign(VAlignment.Center).withTextureEnabled(false).withOffset(50, 0, 0).withCommand(source -> {
+            beatmapListUI.addChild(this.button(dirName).withFontSize(20).withHAlign(HAlignment.Left).withVAlign(VAlignment.Center).withTextureEnabled(false).withOffset(50, 0, 0).withCommand(source -> {
                 source.setEnabled(false);
                 if(this.selected != null) {
                     selected.setEnabled(true);
                 }
                 selected = source;
+                openButton.setEnabled(true);
             }));
         }
 
-        Container selectionUI = this.createAndAttachContainer();
-        selectionUI.scale(0.5f);
-        selectionUI.setLocalTranslation(this.getScreenWidth() / 2.2f, this.getScreenHeight() * (1 - (dirNames.length * 0.1f)), 0);
+        final float y = this.getScreenHeight() * (0.9f - (dirNames.length * 0.1f));
 
-        selectionUI.addChild(this.button("<").square().withFontSize(15).withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+        Container leftButton = this.createAndAttachContainer();
+        leftButton.setLocalTranslation(this.getScreenWidth() / 2.2f, y, 0);
 
-        }));
-
-        selectionUI.addChild(this.button(">").square().withFontSize(15).withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+        leftButton.addChild(this.button("<").withFontSize(15).square().withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
 
         }));
 
-        selectionUI.addChild(this.button("Open").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+        Container rightButton = this.createAndAttachContainer();
+        rightButton.setLocalTranslation(this.getScreenWidth() / 2.2f + 150, y, 0);
+
+        rightButton.addChild(this.button(">").withFontSize(15).square().withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
 
         }));
+
+        rightButton.addChild(openButton);
     }
 
     @Override
@@ -63,9 +72,10 @@ public class FolderSelectorScreen extends EscapableScreen {
         this.selected = null;
     }
 
+    @Nullable
     public Path getSelected() {
         if(this.selected != null) {
-            return this.rootFolder.resolve(this.selected.getName());
+            return this.rootFolder.resolve(this.selected.getText());
         }
         return null;
     }

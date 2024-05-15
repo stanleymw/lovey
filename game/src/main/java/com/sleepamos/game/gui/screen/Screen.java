@@ -13,11 +13,11 @@ public abstract class Screen {
     private boolean initialized = false;
 
     protected int getScreenWidth() {
-        return Lovey.getInstance().getSettings().getWindowWidth();
+        return Lovey.getInstance().getSettings().getWidth();
     }
 
     protected int getScreenHeight() {
-        return Lovey.getInstance().getSettings().getWindowHeight();
+        return Lovey.getInstance().getSettings().getHeight();
     }
 
     /**

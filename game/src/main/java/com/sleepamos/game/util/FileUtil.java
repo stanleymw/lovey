@@ -60,6 +60,10 @@ public final class FileUtil {
         });
     }
 
+    public static boolean exists(Path p) {
+        return p.toFile().exists();
+    }
+
     public static String[] getDirectoryNames(Path dir) {
         return getDirectoryNames(dir, ignored -> true);
     }
