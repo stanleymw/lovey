@@ -82,47 +82,6 @@ public abstract class Screen {
         return new BetterButton(buttonName, new ElementId("button"), "glass");
     }
 
-    protected BetterButton buttonWithAlign(String buttonName, HAlignment hAlignment) {
-        BetterButton b = button(buttonName);
-        b.setTextHAlignment(hAlignment);
-        return b;
-    }
-
-    protected BetterButton buttonWithAlign(String buttonName, VAlignment vAlignment) {
-        BetterButton b = button(buttonName);
-        b.setTextVAlignment(vAlignment);
-        return b;
-    }
-
-    protected BetterButton buttonWithAlign(String buttonName, HAlignment hAlignment, VAlignment vAlignment) {
-        BetterButton b = button(buttonName);
-        b.setTextHAlignment(hAlignment);
-        b.setTextVAlignment(vAlignment);
-        return b;
-    }
-
-    protected BetterButton buttonToOtherScreen(String buttonName, Screen next) {
-        BetterButton b = button(buttonName);
-        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
-        return b;
-    }
-
-    protected BetterButton buttonWithCommand(String buttonName, Command<? super Button> run) {
-        BetterButton b = button(buttonName);
-        b.addClickCommands(run);
-        return b;
-    }
-
-    protected <T extends Button> T buttonToOtherScreen(T b, Screen next) {
-        b.addClickCommands(source -> Lovey.getInstance().getScreenHandler().showScreen(next));
-        return b;
-    }
-
-    protected <T extends Button> T buttonWithCommand(T b, Command<? super Button> run) {
-        b.addClickCommands(run);
-        return b;
-    }
-
     public void onEscape() {
         if(!this.isEscapable()) {
             throw new IllegalStateException("Non-escapable screen was escaped.");
