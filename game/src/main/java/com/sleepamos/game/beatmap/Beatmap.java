@@ -36,4 +36,8 @@ public class Beatmap implements LoveySerializable {
         this.music = music;
         this.spawner = spawner;
     }
+
+    public InteractableSpawner getSpawner() {
+        return spawner;
+    }
 }
