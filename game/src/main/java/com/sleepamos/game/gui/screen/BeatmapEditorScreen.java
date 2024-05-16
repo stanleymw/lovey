@@ -1,11 +1,17 @@
 package com.sleepamos.game.gui.screen;
 
 import com.jme3.audio.AudioNode;
+import com.jme3.input.MouseInput;
+import com.jme3.input.event.MouseButtonEvent;
+import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.HAlignment;
 import com.simsilica.lemur.VAlignment;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
@@ -45,6 +51,38 @@ public class BeatmapEditorScreen extends Screen {
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
 
         Container bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(new ColorRGBA(50, 50, 50,255)));
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,255)));
+        bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
+        bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
+
+        bg.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseButtonEvent(MouseButtonEvent event, Spatial target, Spatial capture) {
+                if(event.getButtonIndex() == MouseInput.BUTTON_LEFT) {
+                    if(event.isReleased()) {
+                        Vector3f offsets = bg.getLocalTranslation();
+                        int xRel = event.getX() - (int) offsets.x, yRel = (int) offsets.y - event.getY();
+                        System.out.println("x: " + xRel + ", y: " + yRel);
+
+                        event.setConsumed();
+                    }
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseMotionEvent event, Spatial target, Spatial capture) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseMotionEvent event, Spatial target, Spatial capture) {
+
+            }
+
+            @Override
+            public void mouseMoved(MouseMotionEvent event, Spatial target, Spatial capture) {
+
+            }
+        });
     }
 }
