@@ -21,7 +21,7 @@ import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
-import com.sleepamos.game.util.NonFatalException;
+import com.sleepamos.game.exceptions.NonFatalException;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

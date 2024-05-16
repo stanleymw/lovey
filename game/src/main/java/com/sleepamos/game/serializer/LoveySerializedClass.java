@@ -1,6 +1,6 @@
-package com.sleepamos.game.util.serializer;
+package com.sleepamos.game.serializer;
 
-import com.sleepamos.game.util.NonFatalException;
+import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.util.ReflectionUtil;
 
 import java.io.Serial;

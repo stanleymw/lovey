@@ -1,8 +1,7 @@
-package com.sleepamos.game.util.serializer;
+package com.sleepamos.game.serializer;
 
 import com.sleepamos.game.util.FileUtil;
-import com.sleepamos.game.util.NonFatalException;
-import lombok.SneakyThrows;
+import com.sleepamos.game.exceptions.NonFatalException;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisSerializer;
 

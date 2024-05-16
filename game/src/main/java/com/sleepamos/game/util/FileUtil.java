@@ -1,5 +1,6 @@
 package com.sleepamos.game.util;
 
+import com.sleepamos.game.exceptions.NonFatalException;
 import lombok.SneakyThrows;
 
 import java.io.*;

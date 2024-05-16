@@ -1,6 +1,6 @@
 package com.sleepamos.game.interactables;
 import com.jme3.scene.Mesh;
-import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
 
 @SuppressWarnings("serial")
 public class Slider extends Interactable {

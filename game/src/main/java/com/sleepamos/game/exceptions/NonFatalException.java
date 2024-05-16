@@ -1,10 +1,10 @@
-package com.sleepamos.game.util;
+package com.sleepamos.game.exceptions;
 
 import java.io.Serial;
 
 /**
  * A non-fatal exception that the game can recover from.
- * These errors should be caught, and fatal errors can remain uncaught if needed.
+ * These errors are caught in the game's main loop, but should be handled as early as possible with proper error handling and displaying instead of being allowed to propagate.
  */
 public class NonFatalException extends RuntimeException {
     @Serial

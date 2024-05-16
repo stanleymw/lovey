@@ -16,8 +16,8 @@ import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.util.FileUtil;
-import com.sleepamos.game.util.NonFatalException;
-import com.sleepamos.game.util.serializer.LoveySerializer;
+import com.sleepamos.game.exceptions.NonFatalException;
+import com.sleepamos.game.serializer.LoveySerializer;
 
 import java.nio.file.Path;
 

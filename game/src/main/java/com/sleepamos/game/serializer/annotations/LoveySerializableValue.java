@@ -1,4 +1,4 @@
-package com.sleepamos.game.util.annotations;
+package com.sleepamos.game.serializer.annotations;
 
 import java.lang.annotation.*;
 

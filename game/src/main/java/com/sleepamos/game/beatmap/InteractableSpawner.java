@@ -1,7 +1,7 @@
 package com.sleepamos.game.beatmap;
 
-import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
-import com.sleepamos.game.util.serializer.LoveySerializable;
+import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.serializer.LoveySerializable;
 
 import java.util.ArrayList;
 import java.util.List;
