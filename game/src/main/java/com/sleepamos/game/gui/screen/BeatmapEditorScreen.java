@@ -61,9 +61,15 @@ public class BeatmapEditorScreen extends Screen {
                 if(event.getButtonIndex() == MouseInput.BUTTON_LEFT) {
                     if(event.isReleased()) {
                         Vector3f offsets = bg.getLocalTranslation();
-                        int xRel = event.getX() - (int) offsets.x, yRel = (int) offsets.y - event.getY();
+                        Vector3f dims = bg.getSize().mult(bg.getWorldScale());
+
+                        // xRel and yRel originate from the top-center.
+                        int xRel = (event.getX() - (int) offsets.x) - (int) dims.x / 2, yRel = (int) offsets.y - event.getY();
+
+                        System.out.println("box dims: " + dims);
                         System.out.println("x: " + xRel + ", y: " + yRel);
 
+                        //
                         event.setConsumed();
                     }
                 }
