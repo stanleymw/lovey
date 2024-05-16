@@ -4,9 +4,13 @@ import com.jme3.audio.AudioNode;
 import com.jme3.input.MouseInput;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Sphere;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.HAlignment;
 import com.simsilica.lemur.VAlignment;
@@ -15,9 +19,9 @@ import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
-import com.sleepamos.game.util.FileUtil;
 import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.serializer.LoveySerializer;
+import com.sleepamos.game.util.FileUtil;
 
 import java.nio.file.Path;
 
@@ -51,7 +55,7 @@ public class BeatmapEditorScreen extends Screen {
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
 
         Container bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,255)));
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,0)));
         bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
         bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
 
@@ -63,13 +67,40 @@ public class BeatmapEditorScreen extends Screen {
                         Vector3f offsets = bg.getLocalTranslation();
                         Vector3f dims = bg.getSize().mult(bg.getWorldScale());
 
-                        // xRel and yRel originate from the top-center.
-                        int xRel = (event.getX() - (int) offsets.x) - (int) dims.x / 2, yRel = (int) offsets.y - event.getY();
+                        // xRel and yRel originate from the top-center and are relative to the beatmap creation area
+                        final float xRel = (event.getX() - offsets.x) - dims.x / 2, yRel = offsets.y - event.getY();
 
-                        System.out.println("box dims: " + dims);
-                        System.out.println("x: " + xRel + ", y: " + yRel);
+                        //System.out.println("box dims: " + dims);
+                        //System.out.println("x: " + xRel + ", y: " + yRel);
 
-                        //
+                        Sphere s = new Sphere(10, 10, 5);
+                        Geometry g = new Geometry("s", s);
+                        Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+                        g.setMaterial(mat);
+                        mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
+                        bg.attachChild(g);
+                        g.setLocalTranslation(event.getX() - offsets.x, 0, 0);
+                        System.out.println(g.getWorldTranslation());
+
+                        /*
+                        BitmapText dot = new BitmapText(Assets.DEFAULT_FONT);
+                        dot.setSize(Assets.DEFAULT_FONT.getCharSet().getRenderedSize());
+                        dot.setText("·");
+                        dot.setLocalTranslation(event.getX(), event.getY(), 0);
+                        dot.setColor(new ColorRGBA(0, 255, 0, 255));
+                        System.out.println("dot at: " + dot.getWorldTranslation());*/
+
+                        // we now need to convert these coordinates into angles
+
+                        // since the x-coordinate all the way to the left is negative, it can be used to represent -pi radians,
+                        // and similarly for the positive value all the way to the right.
+                        // therefore, the angle can be found as theta = pi * xRel / dims.x
+                        final float xAngleRad = FastMath.PI * xRel / dims.x;
+
+                        // the y-angle can similarly be found, but with pi / 2 instead.
+                        final float yAngleRad = FastMath.HALF_PI * yRel / dims.y;
+
+                        // make sure we don't accidentally continue to propagate anything (though it shouldn't happen)
                         event.setConsumed();
                     }
                 }
