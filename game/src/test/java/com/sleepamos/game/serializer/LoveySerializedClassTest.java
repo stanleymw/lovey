@@ -1,4 +1,4 @@
-package com.sleepamos.game.util.serializer;
+package com.sleepamos.game.serializer;
 
 import com.sleepamos.game.util.FileUtil;
 import org.junit.jupiter.api.AfterEach;

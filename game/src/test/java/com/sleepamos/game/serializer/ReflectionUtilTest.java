@@ -1,8 +1,8 @@
-package com.sleepamos.game.util.serializer;
+package com.sleepamos.game.serializer;
 
 import com.sleepamos.game.util.ReflectionUtil;
-import com.sleepamos.game.util.annotations.LoveySerializableClassVersion;
-import com.sleepamos.game.util.annotations.LoveySerializableValue;
+import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.serializer.annotations.LoveySerializableValue;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
