@@ -22,6 +22,7 @@ import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
 import com.sleepamos.game.exceptions.NonFatalException;
+import com.sleepamos.game.util.SentirCamera;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -85,15 +86,25 @@ public class Lovey extends SimpleApplication {
         this.getRootNode().attachChild(this.getGuiNode()); // make sure it's attached
 
         this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT); // delete the default
-        this.getFlyByCamera().setMoveSpeed(0);
         this.getCamera().setFrame(new Vector3f(0, 3, 0), new Quaternion());
 
         this.configureMappings(this.getInputManager()); // then add our own
         Assets.initialize();
         Audio.initialize();
 
-        // this.getStateManager().getState(StatsAppState.class).getFpsText().setSize(9);
+        this.hijackCamera();
+    }
 
+    private void hijackCamera() {
+        try {
+            Field camField = FlyCamAppState.class.getDeclaredField("flyCam");
+            camField.setAccessible(true);
+            camField.set(this.getStateManager().getState(FlyCamAppState.class), new SentirCamera(this.getCamera(), 1));
+        } catch(Exception e) {
+            System.out.println("Unable to hijack flycam");
+            e.printStackTrace();
+            throw new AssertionError("Closing game due to error in startup.");
+        }
     }
 
     @SuppressWarnings("unchecked")
