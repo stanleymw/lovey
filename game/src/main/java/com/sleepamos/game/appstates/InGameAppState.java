@@ -7,6 +7,7 @@ import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -30,11 +31,14 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.sleepamos.game.Lovey;
+import com.sleepamos.game.beatmap.Beatmap;
+import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 import com.sun.tools.jconsole.JConsoleContext;
 
+import java.util.List;
 import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
@@ -44,10 +48,31 @@ public class InGameAppState extends BaseAppState {
     private Node rootNode;
     private Node gameNode;
 
+    private Beatmap map;
+
     private BitmapText hud;
+    private BitmapText crosshair;
 
     private Vector3f directionOnPause;
     private Node shootables;
+
+    private double clock = 0;
+
+    private int spawnWindowRight = 0;
+    private int spanWindowLeft = 0;
+    private double nextSpawnTime = 0;
+    private List<Spawn> spawners;
+
+    public InGameAppState() {
+        super();
+    }
+
+    public InGameAppState(Beatmap m) {
+        super();
+
+        this.map = m;
+        this.spawners = this.map.getSpawner().getTargetsToSpawn();
+    }
 
     @Override
     protected void initialize(Application app) {
@@ -62,6 +87,8 @@ public class InGameAppState extends BaseAppState {
 //        this.setEnabled(true);
         this.rootNode.attachChild(this.gameNode);
 
+        this.initCrossHairs();
+
         this.inputManager.addMapping("Interact",      // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
@@ -74,6 +101,7 @@ public class InGameAppState extends BaseAppState {
         System.out.println("Cleanup called");
         destroyBinds();
 
+        Lovey.getInstance().getGuiNode().detachChild(crosshair);
         this.rootNode.detachChild(this.gameNode);
     }
 
@@ -121,7 +149,7 @@ public class InGameAppState extends BaseAppState {
         Material domeMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         domeMaterial.setTransparent(true);
         domeMaterial.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 200));
+        domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 100));
 
         domeGeometry.setMaterial(domeMaterial);
         domeGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -176,9 +204,22 @@ public class InGameAppState extends BaseAppState {
         this.inputManager.removeListener(actionListener);
     }
 
+    // 30 ticks per second
+    // Seconds/Frame -> Frame/second
+
+
     @Override
     public void update(float tpf) {
+        clock += tpf;
         // run every frame we're enabled
+        handleInteraction();
+    }
+
+    private void handleSpawns() {
+
+    }
+
+    private void handleInteraction() {
         if (gameState.isInteracting()) {
             // we need to raycast every frame while Interacting (maybe could optimize this)
             Interactable hit = null;
@@ -205,9 +246,19 @@ public class InGameAppState extends BaseAppState {
 
     }
 
+    private void initCrossHairs() {
+        BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        this.crosshair = new BitmapText(guiFont);
+        crosshair.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        crosshair.setText("+"); // crosshair
+        crosshair.setLocalTranslation( // center
+                Lovey.getInstance().getSettings().getWidth() / 2 - crosshair.getLineWidth() / 2,Lovey.getInstance().getSettings().getHeight() / 2 + crosshair.getLineHeight() / 2, 0);
+        Lovey.getInstance().getGuiNode().attachChild(crosshair);
+    }
+
     private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
         Box box = new Box(size_x, size_y, size_z);
-        Shootable cube = new Shootable(name, box, this.gameState, 10);
+        Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
         cube.setLocalTranslation(x, y, z);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
