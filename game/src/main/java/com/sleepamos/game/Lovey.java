@@ -75,7 +75,7 @@ public class Lovey extends SimpleApplication {
     }
 
     public Lovey() {
-        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new FlyCamAppState());
+        this(new ScreenAppState(), new AudioListenerState(), new FlyCamAppState());
     }
 
     @Override

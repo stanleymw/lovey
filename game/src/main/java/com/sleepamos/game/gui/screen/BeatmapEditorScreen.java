@@ -11,10 +11,10 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.HAlignment;
-import com.simsilica.lemur.VAlignment;
+import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
+import com.simsilica.lemur.event.CursorEventControl;
+import com.simsilica.lemur.event.CursorListener;
 import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
@@ -29,6 +29,7 @@ public class BeatmapEditorScreen extends Screen {
     private Beatmap beatmap = new Beatmap();
     private AudioNode audioNode = new AudioNode();
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
@@ -58,6 +59,23 @@ public class BeatmapEditorScreen extends Screen {
         bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,255)));
         bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
         bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
+
+        Slider timeSlider = new Slider(Axis.X);
+        timeSlider.getIncrementButton().removeFromParent();
+        timeSlider.getDecrementButton().removeFromParent();
+
+        timeSlider.getThumbButton().setText("");
+        this.elements.attachChild(timeSlider);
+        timeSlider.setLocalTranslation(0, 50, 0);
+        timeSlider.scale(20, 1, 1);
+        timeSlider.getThumbButton().scale(0.1f, 1, 1);
+
+        CursorEventControl cec = timeSlider.getControl(CursorEventControl.class);
+        try {
+            cec.removeMouseListener(cec.getMouseListener((Class<? extends CursorListener>) Class.forName("com.simsilica.lemur.Slider.ButtonDragger")));
+        } catch(Exception e) {
+            throw new NonFatalException("failed to remove mouseListener", e);
+        }
 
         bg.addMouseListener(new MouseListener() {
             @Override
