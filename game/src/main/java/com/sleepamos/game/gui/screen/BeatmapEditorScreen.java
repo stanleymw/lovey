@@ -55,7 +55,7 @@ public class BeatmapEditorScreen extends Screen {
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
 
         Container bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,0)));
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,255)));
         bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
         bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
 
@@ -65,7 +65,8 @@ public class BeatmapEditorScreen extends Screen {
                 if(event.getButtonIndex() == MouseInput.BUTTON_LEFT) {
                     if(event.isReleased()) {
                         Vector3f offsets = bg.getLocalTranslation();
-                        Vector3f dims = bg.getSize().mult(bg.getWorldScale());
+                        Vector3f scale = bg.getWorldScale();
+                        Vector3f dims = bg.getSize().mult(scale);
 
                         // xRel and yRel originate from the top-center and are relative to the beatmap creation area
                         final float xRel = (event.getX() - offsets.x) - dims.x / 2, yRel = offsets.y - event.getY();
@@ -79,16 +80,8 @@ public class BeatmapEditorScreen extends Screen {
                         g.setMaterial(mat);
                         mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
                         bg.attachChild(g);
-                        g.setLocalTranslation(event.getX() - offsets.x, 0, 0);
-                        System.out.println(g.getWorldTranslation());
-
-                        /*
-                        BitmapText dot = new BitmapText(Assets.DEFAULT_FONT);
-                        dot.setSize(Assets.DEFAULT_FONT.getCharSet().getRenderedSize());
-                        dot.setText("·");
-                        dot.setLocalTranslation(event.getX(), event.getY(), 0);
-                        dot.setColor(new ColorRGBA(0, 255, 0, 255));
-                        System.out.println("dot at: " + dot.getWorldTranslation());*/
+                        g.setLocalTranslation((event.getX() - offsets.x) / scale.x, (event.getY() - offsets.y) / scale.y, 0);
+                        // System.out.println(g.getWorldTranslation());
 
                         // we now need to convert these coordinates into angles
 
