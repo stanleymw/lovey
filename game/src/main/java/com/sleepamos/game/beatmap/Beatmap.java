@@ -44,7 +44,7 @@ public class Beatmap implements LoveySerializable {
     @LoveySerializableValue("spawner")
     private final InteractableSpawner spawner;
 
-    private Beatmap(String name, String musicAuthor, String beatmapAuthor, long lengthSec, InteractableSpawner spawner) {
+    public Beatmap(String name, String musicAuthor, String beatmapAuthor, long lengthSec, InteractableSpawner spawner) {
         this.name = name;
         this.musicAuthor = musicAuthor;
         this.beatmapAuthor = beatmapAuthor;

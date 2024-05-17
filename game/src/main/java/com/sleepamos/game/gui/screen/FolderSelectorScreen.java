@@ -7,6 +7,7 @@ import com.sleepamos.game.util.AssetsUtil;
 import com.sleepamos.game.util.FileUtil;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public class FolderSelectorScreen extends EscapableScreen {
@@ -25,13 +26,17 @@ public class FolderSelectorScreen extends EscapableScreen {
         this(FileUtil.getWorkingDirectory(), callback);
     }
 
+    protected boolean selectionRequirements(File f) {
+        return f.toPath().resolve("beatmap.lovey").toFile().exists();
+    }
+
     @Override
     protected void initialize() {
         Container beatmapListUI = this.createAndAttachContainer();
         beatmapListUI.setLocalTranslation(this.getScreenWidth() / 3.5f, this.getScreenHeight() - 20, 0);
         beatmapListUI.setPreferredSize(new Vector3f(this.getScreenWidth() / 4f, this.getScreenHeight() / 5f, 0));
         beatmapListUI.setBackground(AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE));
-        String[] dirNames = FileUtil.getDirectoryNames(this.rootFolder, (dirFile) -> dirFile.toPath().resolve("beatmap.lovey").toFile().exists()); // wonderful code
+        String[] dirNames = FileUtil.getDirectoryNames(this.rootFolder, this::selectionRequirements); // wonderful code
 
         Button openButton = this.button("Open").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> this.callback.onSelect(this.getSelected()));
 

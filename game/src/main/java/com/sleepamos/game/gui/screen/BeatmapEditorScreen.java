@@ -27,7 +27,6 @@ public class BeatmapEditorScreen extends Screen {
     private Beatmap beatmap = new Beatmap();
     private AudioNode audioNode = new AudioNode();
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
@@ -37,7 +36,7 @@ public class BeatmapEditorScreen extends Screen {
         Container rightUI = this.createAndAttachContainer();
         rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
 
-        rightUI.addChild(this.button("Load").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new FolderSelectorScreen((selected) -> {
+        rightUI.addChild(this.button("Load Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new FolderSelectorScreen((selected) -> {
             try {
                 beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class); // load the beatmap
                 Path audioPath = selected.resolve("audio.wav").toAbsolutePath();
@@ -52,6 +51,9 @@ public class BeatmapEditorScreen extends Screen {
         })));
 
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
+        rightUI.addChild(this.button("New Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new BeatmapCreationScreen((selected) -> {
+
+        })));
 
         Container bg = this.createAndAttachContainer();
         bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,255)));
