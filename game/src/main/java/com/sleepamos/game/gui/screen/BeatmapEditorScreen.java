@@ -13,8 +13,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
-import com.simsilica.lemur.event.CursorEventControl;
-import com.simsilica.lemur.event.CursorListener;
 import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
@@ -64,18 +62,10 @@ public class BeatmapEditorScreen extends Screen {
         timeSlider.getIncrementButton().removeFromParent();
         timeSlider.getDecrementButton().removeFromParent();
 
+        timeSlider.getRangePanel().setPreferredSize(new Vector3f(1700, 3, 0));
         timeSlider.getThumbButton().setText("");
         this.elements.attachChild(timeSlider);
-        timeSlider.setLocalTranslation(0, 50, 0);
-        timeSlider.scale(20, 1, 1);
-        timeSlider.getThumbButton().scale(0.1f, 1, 1);
-
-        CursorEventControl cec = timeSlider.getControl(CursorEventControl.class);
-        try {
-            cec.removeMouseListener(cec.getMouseListener((Class<? extends CursorListener>) Class.forName("com.simsilica.lemur.Slider.ButtonDragger")));
-        } catch(Exception e) {
-            throw new NonFatalException("failed to remove mouseListener", e);
-        }
+        timeSlider.setLocalTranslation(110, 50, 0);
 
         bg.addMouseListener(new MouseListener() {
             @Override
