@@ -1,5 +1,6 @@
 package com.sleepamos.game.asset;
 
+import com.jme3.font.BitmapFont;
 import com.jme3.texture.Texture;
 import com.sleepamos.game.Lovey;
 
@@ -8,6 +9,8 @@ import com.sleepamos.game.Lovey;
  */
 public final class Assets {
     public static final Texture BUTTON_BG_TEXTURE = Lovey.getInstance().getAssetManager().loadTexture("Textures/button.png");
+    public static final BitmapFont FONT = Lovey.getInstance().getAssetManager().loadFont("Interface/Fonts/uwu2.fnt");
+    public static final BitmapFont DEFAULT_FONT = Lovey.getInstance().getAssetManager().loadFont("Interface/Fonts/Default.fnt");
 
     /**
      * This class takes advantage of Java's lazy class loading in order to access the assetManager without needing it passed in.

@@ -2,10 +2,7 @@ package com.sleepamos.game.gui;
 
 import com.jme3.scene.Node;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.style.Attributes;
 import com.simsilica.lemur.style.BaseStyles;
-import com.simsilica.lemur.style.ElementId;
-import com.simsilica.lemur.style.Styles;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.gui.screen.MainMenuScreen;
 import com.sleepamos.game.gui.screen.NoScreen;
@@ -90,6 +87,7 @@ public class ScreenHandler {
 
     public void onEscape() {
         if (this.getCurrentScreen().isEscapable()) {
+            this.getCurrentScreen().onEscape();
             this.hideLastShownScreen();
         }
     }

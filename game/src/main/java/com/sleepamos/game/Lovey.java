@@ -2,11 +2,11 @@ package com.sleepamos.game;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.app.StatsAppState;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
 import com.jme3.audio.AudioNode;
+import com.jme3.font.BitmapFont;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -19,15 +19,14 @@ import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
 import com.sleepamos.game.asset.Assets;
-import com.sleepamos.game.audio.Audios;
+import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.beatmap.InteractableSpawner;
 import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
-import com.sleepamos.game.interactables.Interactable;
+import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.interactables.Shootable;
-import com.sleepamos.game.util.NonFatalException;
 import com.sleepamos.game.util.SentirCamera;
 
 import java.lang.reflect.Field;
@@ -84,7 +83,7 @@ public class Lovey extends SimpleApplication {
     }
 
     public Lovey() {
-        this(new ScreenAppState(), new StatsAppState(), new AudioListenerState(), new FlyCamAppState());
+        this(new ScreenAppState(), new AudioListenerState(), new FlyCamAppState());
     }
 
     @Override
@@ -100,7 +99,9 @@ public class Lovey extends SimpleApplication {
 
         this.configureMappings(this.getInputManager()); // then add our own
         Assets.initialize();
-        Audios.initialize();
+        Audio.initialize();
+
+        this.hijackCamera();
     }
 
     private void hijackCamera() {
@@ -161,6 +162,12 @@ public class Lovey extends SimpleApplication {
         super.simpleUpdate(tpf);
     }
 
+    @Override
+    protected BitmapFont loadGuiFont() {
+        return super.loadGuiFont();
+        // return Assets.FONT;
+    }
+
     /**
      * Get the screen handler.
      * You should wait until after {@link #simpleInitApp()} has been called
@@ -173,10 +180,9 @@ public class Lovey extends SimpleApplication {
     }
 
     /**
-     * Set to true whenever we are in a GUI. (uses mouse behavior/stuff when screen
-     * opened)
-     * 
      * @param screensEnabled
+     *                       Set to true whenever we are in a GUI. (uses mouse
+     *                       behavior/stuff when screen opened)
      */
     public void useGUIBehavior(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
@@ -194,8 +200,8 @@ public class Lovey extends SimpleApplication {
         stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0, 5.0));
 
         InteractableSpawner tmp = new InteractableSpawner();
-        this.getStateManager().attach(new InGameAppState(new Beatmap(10, "Sentir", "Sentir Music", "Sentir Mapper",
-                new AudioNode(), new InteractableSpawner(stuff))));
+        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper",
+                100, new InteractableSpawner(stuff))));
     }
 
     public void exitMap() {

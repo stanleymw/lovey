@@ -1,7 +1,10 @@
 package com.sleepamos.game.beatmap;
 
 import com.sleepamos.game.interactables.Interactable;
-import com.sleepamos.game.util.serializer.LoveySerializable;
+import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
+import com.sleepamos.game.serializer.LoveySerializable;
 
 public record Spawn(Interactable interactable, double time, double speed) implements LoveySerializable {
+    @LoveySerializableClassVersion
+    private static final byte VERSION = 10;
 }
