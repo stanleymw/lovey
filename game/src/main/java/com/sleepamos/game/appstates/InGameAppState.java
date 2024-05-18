@@ -20,6 +20,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -58,8 +59,8 @@ public class InGameAppState extends BaseAppState {
 
     private double clock = 0;
 
+    private int spawnWindowLeft = 0;
     private int spawnWindowRight = 0;
-    private int spanWindowLeft = 0;
     private double nextSpawnTime = 0;
     private List<Spawn> spawners;
 
@@ -82,16 +83,15 @@ public class InGameAppState extends BaseAppState {
         this.gameState = new GameState();
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
 
-
         this.setupGameNode();
-//        this.setEnabled(true);
+        // this.setEnabled(true);
         this.rootNode.attachChild(this.gameNode);
 
         this.initCrossHairs();
 
-        this.inputManager.addMapping("Interact",      // Declare...
+        this.inputManager.addMapping("Interact", // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT));         // trigger 2: left-button click
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
 
         System.out.println("DONE INITIALIZING");
     }
@@ -108,9 +108,8 @@ public class InGameAppState extends BaseAppState {
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-//            System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
-
-            switch(name) {
+            // System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
+            switch (name) {
                 case "Interact" -> {
                     gameState.setInteracting(keyPressed);
                     Interactable hit = null;
@@ -133,16 +132,17 @@ public class InGameAppState extends BaseAppState {
         this.gameNode = new Node("game_node");
         this.shootables = new Node("shootables");
 
-        Dome dome = new Dome(1<<8, 1<<8, 69f);
+        Dome dome = new Dome(1 << 8, 1 << 8, 50.0f);
         Geometry domeGeometry = new Geometry("Ring", dome);
 
-        Box ground = new Box(50.0f, 1.0f,50.0f);
+        Box ground = new Box(50.0f, 1.0f, 50.0f);
         Geometry groundGeometry = new Geometry("Ground", ground);
-        groundGeometry.move(new Vector3f(0f,-2f,0f));
+        groundGeometry.move(new Vector3f(0f, -2f, 0f));
 
         Material groundMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         groundMaterial.setColor("Color", ColorRGBA.Green);
-        groundMaterial.setTexture("ColorMap", assetManager.loadTexture("Textures/RockyTexture.jpg")); // with Unshaded.j3md
+        groundMaterial.setTexture("ColorMap", assetManager.loadTexture("Textures/RockyTexture.jpg")); // with
+                                                                                                      // Unshaded.j3md
 
         groundGeometry.setMaterial(groundMaterial);
 
@@ -157,27 +157,37 @@ public class InGameAppState extends BaseAppState {
         this.gameNode.attachChild(domeGeometry);
         this.gameNode.attachChild(groundGeometry);
 
-        for (int i = 0; i < 10; i++) {
-            this.shootables.attachChild(makeShootable("target" + i, (float) (Math.random() * 10), (float)(Math.random() * 10), (float)(Math.random() * 10)));
-        }
+        //
+        // for (int i = 0; i < 10; i++) {
+        // this.shootables.attachChild(makeShootable("target" + i, (float)
+        // (Math.random() * 10),
+        // (float) (Math.random() * 10), (float) (Math.random() * 10)));
+        // }
 
         this.gameNode.attachChild(this.shootables);
 
-//        DirectionalLight sun = new DirectionalLight(); // This is the light source for shadows
-//        sun.setDirection(new Vector3f(-0.5f, -0.5f, -0.5f).normalizeLocal()); // Positions the light source
-//        sun.setColor(ColorRGBA.White);
-//        this.gameNode.addLight(sun); // Puts the sun in the map
-//
-//        final int SHADOWMAP_SIZE = 1<<10; // Size of the shadow map
-//        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE,1); // Renders shadows
-//        dlsr.setLight(sun);
-////        this.getApplication().getViewPort().addProcessor(dlsr); // Adds the shadow renderer to the viewport
-//        this.gameNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive); // Make sure everything can have a shadow casted on, but cannot cast a shadow because that will kill fps
+        // DirectionalLight sun = new DirectionalLight(); // This is the light source
+        // for shadows
+        // sun.setDirection(new Vector3f(-0.5f, -0.5f, -0.5f).normalizeLocal()); //
+        // Positions the light source
+        // sun.setColor(ColorRGBA.White);
+        // this.gameNode.addLight(sun); // Puts the sun in the map
+        //
+        // final int SHADOWMAP_SIZE = 1<<10; // Size of the shadow map
+        // DirectionalLightShadowRenderer dlsr = new
+        // DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE,1); // Renders
+        // shadows
+        // dlsr.setLight(sun);
+        //// this.getApplication().getViewPort().addProcessor(dlsr); // Adds the shadow
+        // renderer to the viewport
+        // this.gameNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive); // Make
+        // sure everything can have a shadow casted on, but cannot cast a shadow because
+        // that will kill fps
 
-//        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-//        SSAOFilter ssaoFilter = new SSAOFilter(12.94f, 43.92f, 0.33f, 0.61f);
-//        fpp.addFilter(ssaoFilter);
-//        this.getApplication().getViewPort().addProcessor(fpp);
+        // FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        // SSAOFilter ssaoFilter = new SSAOFilter(12.94f, 43.92f, 0.33f, 0.61f);
+        // fpp.addFilter(ssaoFilter);
+        // this.getApplication().getViewPort().addProcessor(fpp);
     }
 
     @Override
@@ -207,16 +217,54 @@ public class InGameAppState extends BaseAppState {
     // 30 ticks per second
     // Seconds/Frame -> Frame/second
 
-
     @Override
     public void update(float tpf) {
         clock += tpf;
         // run every frame we're enabled
+        handleSpawns();
         handleInteraction();
     }
 
     private void handleSpawns() {
+        if (spawnWindowLeft >= spawners.size()) {
+            System.out.println("BEATMAP FINISHED: NOTHING TO SPAWN");
+            return;
+        }
+        // ensure that things targets are spawned properly
+        // maintain a sliding window of alive objects
+        // private int spawnWindowRight = 1;
+        // private int spanWindowLeft = 0;
+        // private double nextSpawnTime = 0;
+        // private List<Spawn> spawners;
+        if (spawnWindowRight < spawners.size()) {
+            if (clock >= spawners.get(spawnWindowRight).time()) {
+                Spawn current = spawners.get(spawnWindowRight);
+                Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+                mat1.setColor("Color", ColorRGBA.randomColor());
+                ((Shootable) current.interactable()).setGameState(this.gameState);
+                current.interactable().setMaterial(mat1);
+                this.shootables.attachChild(current.interactable());
 
+                // we must spawn this
+                spawnWindowRight++;
+            }
+        }
+
+        Spawn left = spawners.get(spawnWindowLeft);
+        if (clock >= left.time() + left.speed() * 2) {
+            spawnWindowLeft++;
+        }
+
+        for (int i = spawnWindowLeft; i < spawnWindowRight; i++) {
+            Spawn current = spawners.get(i);
+
+            double domeRadius = 50.0d; // change this when domeRadius is actually implemented
+            double curRadius = domeRadius - (clock - (current.time() + current.speed())) * domeRadius;
+
+            ((Shootable) current.interactable()).setLocalTranslation(FastMath.cos(0.3f) * (float) curRadius,
+                    FastMath.sin(0.5f) * (float) curRadius,
+                    FastMath.sin(0.3f) * (float) curRadius);
+        }
     }
 
     private void handleInteraction() {
@@ -252,7 +300,8 @@ public class InGameAppState extends BaseAppState {
         crosshair.setSize(guiFont.getCharSet().getRenderedSize() * 2);
         crosshair.setText("+"); // crosshair
         crosshair.setLocalTranslation( // center
-                Lovey.getInstance().getSettings().getWidth() / 2 - crosshair.getLineWidth() / 2,Lovey.getInstance().getSettings().getHeight() / 2 + crosshair.getLineHeight() / 2, 0);
+                Lovey.getInstance().getSettings().getWidth() / 2 - crosshair.getLineWidth() / 2,
+                Lovey.getInstance().getSettings().getHeight() / 2 + crosshair.getLineHeight() / 2, 0);
         Lovey.getInstance().getGuiNode().attachChild(crosshair);
     }
 
@@ -260,25 +309,26 @@ public class InGameAppState extends BaseAppState {
         Box box = new Box(size_x, size_y, size_z);
         Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
         cube.setLocalTranslation(x, y, z);
+
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
         cube.setMaterial(mat1);
 
         return cube;
-  }
+    }
 
-      private Interactable makeShootable(String name, float x, float y, float z) {
-            return makeShootable(name, x, y, z, 1, 1, 1);
-      }
+    private Interactable makeShootable(String name, float x, float y, float z) {
+        return makeShootable(name, x, y, z, 1, 1, 1);
+    }
 
-  private CollisionResults castRay(Node whitelist) {
-      CollisionResults results = new CollisionResults();
-      // 2. Aim the ray from cam loc to cam direction.
-      Camera cam = this.getApplication().getCamera();
-      Ray ray = new Ray(cam.getLocation(), cam.getDirection());
-      // 3. Collect intersections between Ray and Shootables in results list.
-      whitelist.collideWith(ray, results);
+    private CollisionResults castRay(Node whitelist) {
+        CollisionResults results = new CollisionResults();
+        // 2. Aim the ray from cam loc to cam direction.
+        Camera cam = this.getApplication().getCamera();
+        Ray ray = new Ray(cam.getLocation(), cam.getDirection());
+        // 3. Collect intersections between Ray and Shootables in results list.
+        whitelist.collideWith(ray, results);
 
-      return results;
-  }
+        return results;
+    }
 }

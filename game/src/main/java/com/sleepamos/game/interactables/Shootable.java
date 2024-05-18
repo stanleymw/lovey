@@ -26,6 +26,10 @@ public class Shootable extends Interactable {
         this.gameState = gs;
     }
 
+    public void setGameState(GameState gs) {
+        this.gameState = gs;
+    }
+
     @Override
     public void onInteract() {
         System.out.println("add " + this.points + " pts");
