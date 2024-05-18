@@ -52,7 +52,13 @@ public class BeatmapEditorScreen extends Screen {
 
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> LoveySerializer.serialize(beatmap.getName() + ".lovey", beatmap)));
         rightUI.addChild(this.button("New Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new BeatmapCreationScreen((selected) -> {
-
+            try {
+                if(!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
+                    throw new NonFatalException("File already exists");
+                }
+            } catch(Exception e) {
+                throw new NonFatalException("Error while creating beatmap file", e);
+            }
         })));
 
         Container bg = this.createAndAttachContainer();
