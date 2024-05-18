@@ -11,13 +11,13 @@ public class InteractableSpawner implements LoveySerializable {
     @LoveySerializableClassVersion
     private static final byte VERSION = 10;
 
-    private final ArrayList<Spawn> toSpawn;
+    private final List<Spawn> toSpawn;
 
     public InteractableSpawner() {
         this.toSpawn = new ArrayList<>();
     }
 
-    public InteractableSpawner(ArrayList<Spawn> stuffToSpawn) {
+    public InteractableSpawner(List<Spawn> stuffToSpawn) {
         this.toSpawn = stuffToSpawn;
     }
 

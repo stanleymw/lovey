@@ -25,6 +25,13 @@ import com.sleepamos.game.util.FileUtil;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 
+/**
+ * Handles beatmap creation.
+ * <p>
+ * The screen uses the song and based off of timestamps, renders which targets should intersect at that given point in time.
+ * Note that the spawn time of the targets (and therefore their visibility) is not explicitly handled by this screen.
+ * Responsibility for that is handled by the beatmap via a constant value per map for now due to the relative difficulty of implementing dynamic spawn locations and times.
+ */
 public class BeatmapEditorScreen extends Screen {
     private Beatmap beatmap = new Beatmap();
     private AudioNode audioNode = new AudioNode();
@@ -97,9 +104,6 @@ public class BeatmapEditorScreen extends Screen {
                         // xRel and yRel originate from the top-center and are relative to the beatmap creation area
                         final float xRel = (event.getX() - offsets.x) - dims.x / 2, yRel = offsets.y - event.getY();
 
-                        //System.out.println("box dims: " + dims);
-                        //System.out.println("x: " + xRel + ", y: " + yRel);
-
                         Sphere s = new Sphere(10, 10, 5);
                         Geometry g = new Geometry("s", s);
                         Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -107,7 +111,6 @@ public class BeatmapEditorScreen extends Screen {
                         mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
                         bg.attachChild(g);
                         g.setLocalTranslation((event.getX() - offsets.x) / scale.x, (event.getY() - offsets.y) / scale.y, 0);
-                        // System.out.println(g.getWorldTranslation());
 
                         // we now need to convert these coordinates into angles
 
