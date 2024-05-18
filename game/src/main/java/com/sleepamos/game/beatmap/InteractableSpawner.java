@@ -17,6 +17,10 @@ public class InteractableSpawner implements LoveySerializable {
         this.toSpawn = new ArrayList<>();
     }
 
+    public InteractableSpawner(ArrayList<Spawn> stuffToSpawn) {
+        this.toSpawn = stuffToSpawn;
+    }
+
     public List<Spawn> getTargetsToSpawn() {
         return toSpawn;
     }

@@ -14,6 +14,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
@@ -22,9 +23,12 @@ import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.PauseScreen;
 import com.sleepamos.game.exceptions.NonFatalException;
+import com.sleepamos.game.interactables.Interactable;
+import com.sleepamos.game.interactables.Shootable;
 import com.sleepamos.game.util.SentirCamera;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -177,7 +181,14 @@ public class Lovey extends SimpleApplication {
 
     public void launchMap() {
 //        this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
-        this.getStateManager().attach(new InGameAppState());
+
+        ArrayList<Spawn> stuff = new ArrayList<Spawn>();
+        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.15, 0.2, 1), 1.0, 1.0));
+        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.2, 0.15,  2), 3.0, 1.0));
+        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.3, 0.2, 3), 5.0, 1.0));
+
+        InteractableSpawner tmp = new InteractableSpawner();
+        this.getStateManager().attach(new InGameAppState(new Beatmap(10, "Sentir", "Sentir Music", "Sentir Mapper", new AudioNode(), new InteractableSpawner(stuff))));
     }
 
     public void exitMap() {
