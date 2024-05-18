@@ -15,15 +15,15 @@ public class PauseScreen extends Screen {
         window.setLocalTranslation(this.getScreenWidth() / 3f, this.getScreenHeight(), 0);
         window.scale(6);
 
-        window.addChild(this.buttonWithCommand(this.buttonWithAlign("Resume", HAlignment.Center, VAlignment.Center), source -> {
+        window.addChild(this.button("Resume").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
 
             Lovey.getInstance().useGUIBehavior(false);
             Lovey.getInstance().pauseGame(false);
         }));
 
-        window.addChild(this.buttonToOtherScreen(this.buttonWithAlign("Settings", HAlignment.Center, VAlignment.Center), new SettingsScreen()));
-        window.addChild(this.buttonWithCommand(this.buttonWithAlign("Quit", HAlignment.Center, VAlignment.Center), source -> {
+        window.addChild(this.button("Settings").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new SettingsScreen()));
+        window.addChild(this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
             Lovey.getInstance().exitMap();
 
