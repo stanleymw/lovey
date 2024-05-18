@@ -5,6 +5,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
+import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -32,9 +33,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 /**
- * The JMonkeyEngine game entry, you should only do initializations for your game here, game logic is handled by
+ * The JMonkeyEngine game entry, you should only do initializations for your
+ * game here, game logic is handled by
  * Custom states {@link BaseAppState}, Custom controls {@link AbstractControl}
  * and your custom entities implementations of the previous.
  *
@@ -45,7 +46,9 @@ public class Lovey extends SimpleApplication {
 
     /**
      * Get the instance of the game.
-     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * You should wait until after {@link #simpleInitApp()} has been called
+     * otherwise this will be null.
+     * 
      * @return The game instance.
      */
     public static Lovey getInstance() {
@@ -57,15 +60,15 @@ public class Lovey extends SimpleApplication {
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     private final ActionListener actionListener = (String name, boolean keyPressed, float tpf) -> {
         // false = key released! we only want to do stuff on key release for these ones.
-        if(!keyPressed) {
-            switch(name) {
+        if (!keyPressed) {
+            switch (name) {
                 case "Escape" -> {
                     InGameAppState inGame = this.getStateManager().getState(InGameAppState.class);
-                    if(inGame != null && inGame.isEnabled()) {
+                    if (inGame != null && inGame.isEnabled()) {
                         this.useGUIBehavior(true);
                         this.pauseGame(true);
                         this.getScreenHandler().showScreen(new PauseScreen());
-                    } else if(this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
+                    } else if (this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
                         this.getScreenHandler().onEscape();
                     }
                 }
@@ -91,6 +94,7 @@ public class Lovey extends SimpleApplication {
         this.getRootNode().attachChild(this.getGuiNode()); // make sure it's attached
 
         this.getInputManager().deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT); // delete the default
+        this.hijackCamera();
         this.getCamera().setFrame(new Vector3f(0, 3, 0), new Quaternion());
 
         this.configureMappings(this.getInputManager()); // then add our own
@@ -105,8 +109,9 @@ public class Lovey extends SimpleApplication {
             Field camField = FlyCamAppState.class.getDeclaredField("flyCam");
             camField.setAccessible(true);
             camField.set(this.getStateManager().getState(FlyCamAppState.class), new SentirCamera(this.getCamera(), 1));
-        } catch(Exception e) {
-            System.out.println("Unable to hijack flycam");
+            System.out.println("camera hijacked!");
+        } catch (Exception e) {
+            System.out.println("Unable to hijack flycam:");
             e.printStackTrace();
             throw new AssertionError("Closing game due to error in startup.");
         }
@@ -115,16 +120,19 @@ public class Lovey extends SimpleApplication {
     @SuppressWarnings("unchecked")
     private static String[] hijackMappingsList(InputManager mgrInstance) {
         try {
-            // InputManager hides a lot of stuff from us here - including the Mapping static inner class, which is why I've left it as ?
-            // We access the field through the given InputManager instance, cast it to a HashMap with key type String, then convert the key set
+            // InputManager hides a lot of stuff from us here - including the Mapping static
+            // inner class, which is why I've left it as ?
+            // We access the field through the given InputManager instance, cast it to a
+            // HashMap with key type String, then convert the key set
             // to a String[] that we can use.
 
             Field mappingField = InputManager.class.getDeclaredField("mappings");
             mappingField.setAccessible(true); // Since the field is normally "private final", make it accessible.
 
             // Ignore the big yellow line here, I think I know what I'm doing
-            return ((HashMap<String, ?>)(mappingField.get(mgrInstance))).keySet().toArray(new String[0]); // trust me bro
-        } catch(Exception e) {
+            return ((HashMap<String, ?>) (mappingField.get(mgrInstance))).keySet().toArray(new String[0]); // trust me
+                                                                                                           // bro
+        } catch (Exception e) {
             System.out.println("Unable to get the mappings list");
             e.printStackTrace();
             throw new AssertionError("Closing game due to error in startup.");
@@ -134,14 +142,15 @@ public class Lovey extends SimpleApplication {
     private void configureMappings(InputManager mgr) {
         mgr.addMapping("Escape", new KeyTrigger(KeyInput.KEY_ESCAPE));
 
-        mgr.addListener(this.actionListener, hijackMappingsList(mgr)); // add all our defined mappings to the action listener
+        mgr.addListener(this.actionListener, hijackMappingsList(mgr)); // add all our defined mappings to the action
+                                                                       // listener
     }
 
     @Override
     public void update() {
         try {
             super.update();
-        } catch(NonFatalException e) {
+        } catch (NonFatalException e) {
             System.out.println("A non-fatal exception was thrown");
             e.printStackTrace();
             // TODO: Write error handling code (and make sure this even works)
@@ -161,7 +170,9 @@ public class Lovey extends SimpleApplication {
 
     /**
      * Get the screen handler.
-     * You should wait until after {@link #simpleInitApp()} has been called otherwise this will be null.
+     * You should wait until after {@link #simpleInitApp()} has been called
+     * otherwise this will be null.
+     * 
      * @return The screen handler for the game.
      */
     public ScreenHandler getScreenHandler() {
@@ -169,8 +180,9 @@ public class Lovey extends SimpleApplication {
     }
 
     /**
-     * Set to true whenever we are in a GUI. (uses mouse behavior/stuff when screen opened)
-     * @param screensEnabled If screens are enabled or not
+     * @param screensEnabled
+     *                       Set to true whenever we are in a GUI. (uses mouse
+     *                       behavior/stuff when screen opened)
      */
     public void useGUIBehavior(boolean screensEnabled) {
         this.getStateManager().getState(ScreenAppState.class).setEnabled(screensEnabled);
@@ -181,15 +193,15 @@ public class Lovey extends SimpleApplication {
     }
 
     public void launchMap() {
-//        this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
-
-        ArrayList<Spawn> stuff = new ArrayList<>();
-        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.15, 0.2, 1), 1.0, 1.0));
-        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.2, 0.15,  2), 3.0, 1.0));
-        stuff.add(new Spawn(new Shootable("ez", new Box(5,5,5), null, 0.3, 0.2, 3), 5.0, 1.0));
+        // this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
+        ArrayList<Spawn> stuff = new ArrayList<Spawn>();
+        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 1.0, 5.0));
+        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 3.0, 5.0));
+        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0, 5.0));
 
         InteractableSpawner tmp = new InteractableSpawner();
-        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", 69, new InteractableSpawner(stuff))));
+        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper",
+                100, new InteractableSpawner(stuff))));
     }
 
     public void exitMap() {
