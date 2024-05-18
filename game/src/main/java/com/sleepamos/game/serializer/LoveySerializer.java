@@ -19,13 +19,30 @@ public class LoveySerializer {
 
     public static void serialize(String fileName, LoveySerializable obj) {
         LoveySerializedClass serializedClass = new LoveySerializedClass(obj);
-        try(FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-            outputStream.writeObject(serializedClass);
-            outputStream.flush();
-            outputStream.close();
-        } catch(Exception e) {
-            throw new NonFatalException(e);
+        File f = new File(fileName);
+        if(f.exists()) {
+            File g = new File(fileName + ".tmp");
+            try(FileOutputStream fileOutputStream = new FileOutputStream(g)) {
+                ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+                outputStream.writeObject(serializedClass);
+                outputStream.flush();
+                outputStream.close();
+            } catch(Exception e) {
+                throw new NonFatalException(e);
+            }
+            if(f.delete() && g.renameTo(f)) { // i really just wanna make sure this short circuits correctly.
+            } else {
+                throw new NonFatalException("Unable to write new file " + f.getAbsolutePath());
+            }
+        } else {
+            try(FileOutputStream fileOutputStream = new FileOutputStream(f)) {
+                ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+                outputStream.writeObject(serializedClass);
+                outputStream.flush();
+                outputStream.close();
+            } catch(Exception e) {
+                throw new NonFatalException(e);
+            }
         }
     }
 
@@ -50,6 +67,10 @@ public class LoveySerializer {
     }
 
     private static <T> T deserialize(LoveySerializedClass deserialized, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+        if(deserialized == null) {
+            return null;
+        }
+
         if(!clazz.isAssignableFrom(deserialized.getStoredClazz())) {
             throw new NonFatalException("Deserialized class of type " + deserialized.getStoredClazz().getName() + " is not assignable to requested class: " + clazz.getName());
         }

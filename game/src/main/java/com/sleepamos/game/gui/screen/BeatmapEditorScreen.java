@@ -1,5 +1,7 @@
 package com.sleepamos.game.gui.screen;
 
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioKey;
 import com.jme3.audio.AudioNode;
 import com.jme3.input.MouseInput;
 import com.jme3.input.event.MouseButtonEvent;
@@ -15,12 +17,12 @@ import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
-import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.serializer.LoveySerializer;
 import com.sleepamos.game.util.FileUtil;
 
+import java.io.FileInputStream;
 import java.nio.file.Path;
 
 public class BeatmapEditorScreen extends Screen {
@@ -39,13 +41,19 @@ public class BeatmapEditorScreen extends Screen {
         rightUI.addChild(this.button("Load Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(new FolderSelectorScreen((selected) -> {
             try {
                 beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class); // load the beatmap
+                if(beatmap == null) {
+                    beatmap = new Beatmap();
+                }
                 Path audioPath = selected.resolve("audio.wav").toAbsolutePath();
                 if (!FileUtil.exists(audioPath)) {
                     throw new NonFatalException("No audio file found for the beatmap");
                 }
-                audioNode = Audio.load(audioPath.toString());
-            } catch(NonFatalException nfe) {
-                throw new NonFatalException("An error has occured while loading the beatmap", nfe);
+
+                AudioKey key = new AudioKey("audio.wav");
+                AudioData a = Lovey.getInstance().getAssetManager().loadAssetFromStream(key, new FileInputStream(audioPath.toFile()));
+                audioNode = new AudioNode(a, key); // im such a cool programmer this is so cool guys !!!
+            } catch(Exception e) {
+                throw new NonFatalException("An error has occured while loading the beatmap", e);
             }
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen, kicking us back to the beatmap editor.
         })));
@@ -56,9 +64,11 @@ public class BeatmapEditorScreen extends Screen {
                 if(!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
                     throw new NonFatalException("File already exists");
                 }
+                beatmap = new Beatmap();
             } catch(Exception e) {
                 throw new NonFatalException("Error while creating beatmap file", e);
             }
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen, kicking us back to the beatmap editor.
         })));
 
         Container bg = this.createAndAttachContainer();
