@@ -1,12 +1,5 @@
 package com.sleepamos.game.interactables;
 
-import com.jme3.bounding.BoundingVolume;
-import com.jme3.collision.Collidable;
-import com.jme3.collision.CollisionResults;
-import com.jme3.collision.UnsupportedCollisionException;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;

@@ -25,7 +25,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.beatmap.Spawn;
@@ -34,7 +33,6 @@ import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 
 import java.util.List;
-import java.util.Objects;
 
 public class InGameAppState extends BaseAppState {
     private GameState gameState;
