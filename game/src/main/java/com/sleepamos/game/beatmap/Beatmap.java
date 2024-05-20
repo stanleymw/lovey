@@ -4,6 +4,8 @@ import com.sleepamos.game.serializer.LoveySerializable;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
 import com.sleepamos.game.serializer.annotations.LoveySerializableValue;
 
+import java.util.ArrayList;
+
 @SuppressWarnings("serial")
 public class Beatmap implements LoveySerializable {
     @LoveySerializableClassVersion

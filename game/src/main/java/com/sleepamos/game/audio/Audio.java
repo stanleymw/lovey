@@ -18,15 +18,15 @@ public final class Audio {
     }
 
     @SneakyThrows
-    public static AudioNode load(String fileName) {
+    public static TrackedAudioNode load(String fileName) {
         return load(Path.of(fileName));
     }
 
     @SneakyThrows
-    public static AudioNode load(Path path) {
+    public static TrackedAudioNode load(Path path) {
         AudioKey key = new AudioKey(path.getFileName().toString());
         AudioData a = Lovey.getInstance().getAssetManager().loadAssetFromStream(key, new FileInputStream(path.toFile()));
-        AudioNode audioNode = new AudioNode(a, key); // im such a cool programmer this is so cool guys !!!
+        TrackedAudioNode audioNode = new TrackedAudioNode(a, key); // im such a cool programmer this is so cool guys !!!
         audioNode.setPositional(false);
 
         return audioNode;

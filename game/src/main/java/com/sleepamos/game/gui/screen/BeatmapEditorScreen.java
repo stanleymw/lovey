@@ -1,8 +1,5 @@
 package com.sleepamos.game.gui.screen;
 
-import com.jme3.audio.AudioData;
-import com.jme3.audio.AudioKey;
-import com.jme3.audio.AudioNode;
 import com.jme3.input.MouseInput;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
@@ -18,8 +15,11 @@ import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.audio.Audio;
+import com.sleepamos.game.audio.TrackedAudioNode;
 import com.sleepamos.game.beatmap.Beatmap;
+import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.exceptions.NonFatalException;
+import com.sleepamos.game.interactables.Shootable;
 import com.sleepamos.game.serializer.LoveySerializer;
 import com.sleepamos.game.util.FileUtil;
 
@@ -34,14 +34,19 @@ import java.nio.file.Path;
  */
 public class BeatmapEditorScreen extends Screen {
     private Beatmap beatmap = new Beatmap();
-    private AudioNode audioNode = new AudioNode();
+    private TrackedAudioNode audioNode = new TrackedAudioNode();
     private boolean isPlaying = false;
+
+    private Slider timeSlider;
 
     @Override
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
 
-        leftUI.addChild(this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> Lovey.getInstance().getScreenHandler().hideLastShownScreen()));
+        leftUI.addChild(this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            this.audioNode.stop();
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen();
+        }));
 
         Container rightUI = this.createAndAttachContainer();
         rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
@@ -58,6 +63,9 @@ public class BeatmapEditorScreen extends Screen {
                 }
 
                 audioNode = Audio.load(audioPath);
+                System.out.println("setting to: " + audioNode.getPlaybackTime() / audioNode.getAudioData().getDuration());
+                audioNode.setCallback(() -> timeSlider.getModel().setPercent(audioNode.getPlaybackTime() / audioNode.getAudioData().getDuration()));
+                audioNode.updateLogicalState(0);
             } catch(Exception e) {
                 throw new NonFatalException("An error has occured while loading the beatmap", e);
             }
@@ -82,7 +90,7 @@ public class BeatmapEditorScreen extends Screen {
         bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
         bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
 
-        Slider timeSlider = new Slider(Axis.X);
+        timeSlider = new Slider(Axis.X);
         timeSlider.getIncrementButton().removeFromParent();
         timeSlider.getDecrementButton().removeFromParent();
 
@@ -131,6 +139,8 @@ public class BeatmapEditorScreen extends Screen {
 
                         // the y-angle can similarly be found, but with pi / 2 instead.
                         final float yAngleRad = FastMath.HALF_PI * yRel / dims.y;
+
+                        beatmap.getSpawner().getTargetsToSpawn().add(new Spawn(new Shootable("", new Sphere(10, 10, 1), null, xAngleRad, yAngleRad, 10), audioNode.getPlaybackTime(), 2));
 
                         // make sure we don't accidentally continue to propagate anything (though it shouldn't happen)
                         event.setConsumed();

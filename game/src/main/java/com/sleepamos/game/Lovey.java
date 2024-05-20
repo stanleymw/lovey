@@ -194,9 +194,9 @@ public class Lovey extends SimpleApplication {
     public void launchMap() {
         // this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
         ArrayList<Spawn> stuff = new ArrayList<>();
-        stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 5.0));
-        stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 5.0));
-        stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0));
+        // stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 5.0));
+        // stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 5.0));
+        // stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0));
 
         InteractableSpawner tmp = new InteractableSpawner();
         this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
