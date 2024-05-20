@@ -14,6 +14,6 @@ public class BeatmapCreationScreen extends FolderSelectorScreen {
 
     @Override
     protected boolean selectionRequirements(File f) {
-        return f.toPath().resolve("audio.wav").toFile().exists();
+        return f.toPath().resolve("audio.wav").toFile().exists() && !f.toPath().resolve("beatmap.lovey").toFile().exists();
     }
 }

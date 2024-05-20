@@ -3,16 +3,25 @@ package com.sleepamos.game.gui.screen;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.VAlignment;
 import com.sleepamos.game.Lovey;
+import com.sleepamos.game.util.FileUtil;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 public class MainMenuScreen extends Screen {
     @Override
     protected void initialize() {
         Container window = this.createAndAttachContainer();
 
-        window.addChild(this.button("Enter Game").withVAlign(VAlignment.Center).withCommand(source -> {
-            Lovey.getInstance().launchMap();
-            Lovey.getInstance().getScreenHandler().showScreen(new NoScreen());
-            Lovey.getInstance().useGUIBehavior(false);
+        window.addChild(this.button("Play").withVAlign(VAlignment.Center).toOtherScreen(() -> {
+            try {
+                return new LevelSelectScreen(LevelSelectScreen.parseData(FileUtil.getFromResources("/Maps/levels.txt")), (selected -> {
+
+                }));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }));
 
         window.addChild(this.button("Settings").withVAlign(VAlignment.Center).toOtherScreen(SettingsScreen::new));

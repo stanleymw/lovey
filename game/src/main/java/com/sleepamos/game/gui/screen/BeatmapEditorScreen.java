@@ -101,6 +101,8 @@ public class BeatmapEditorScreen extends Screen {
         })));
 
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            beatmap.getSpawner().getTargetsToSpawn().sort((a, b) -> (int) ((a.hitTime() - a.reactionTime()) - (b.hitTime() - b.reactionTime())));
+
             if (currentPath != null) {
                 LoveySerializer.serialize(currentPath, beatmap);
             } else {
