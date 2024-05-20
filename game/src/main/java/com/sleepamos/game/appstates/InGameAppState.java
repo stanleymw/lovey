@@ -229,7 +229,7 @@ public class InGameAppState extends BaseAppState {
         // private double nextSpawnTime = 0;
         // private List<Spawn> spawners;
         if (spawnWindowRight < spawners.size()) {
-            if (clock >= spawners.get(spawnWindowRight).impactTime()) {
+            if (clock >= spawners.get(spawnWindowRight).hitTime() - spawners.get(spawnWindowRight).reactionTime()) {
                 Spawn current = spawners.get(spawnWindowRight);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
                 mat1.setColor("Color", ColorRGBA.randomColor());
@@ -243,7 +243,7 @@ public class InGameAppState extends BaseAppState {
         }
 
         Spawn left = spawners.get(spawnWindowLeft);
-        if (clock >= left.impactTime() + left.speed() * 2) {
+        if (clock >= left.hitTime() + left.reactionTime() * 2) {
             spawnWindowLeft++;
         }
 
@@ -251,7 +251,7 @@ public class InGameAppState extends BaseAppState {
             Spawn current = spawners.get(i);
 
             double domeRadius = 50.0d; // change this when domeRadius is actually implemented
-            double curRadius = domeRadius - (clock - (current.impactTime() + current.speed())) * domeRadius;
+            double curRadius = domeRadius - (clock - current.hitTime()) * domeRadius;
 
             ((Shootable) current.interactable()).setLocalTranslation(FastMath.cos(0.3f) * (float) curRadius,
                     FastMath.sin(0.5f) * (float) curRadius,
