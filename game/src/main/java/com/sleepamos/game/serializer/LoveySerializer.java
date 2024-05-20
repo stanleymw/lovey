@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -17,11 +18,12 @@ import java.util.Map;
 public class LoveySerializer {
     private static final Objenesis objenesis = new ObjenesisSerializer();
 
-    public static void serialize(String fileName, LoveySerializable obj) {
+    public static void serialize(Path p, LoveySerializable obj) {
         LoveySerializedClass serializedClass = new LoveySerializedClass(obj);
-        File f = new File(fileName);
+        File f = p.toFile();
+
         if(f.exists()) {
-            File g = new File(fileName + ".tmp");
+            File g = new File(f.getName() + ".tmp");
             try(FileOutputStream fileOutputStream = new FileOutputStream(g)) {
                 ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
                 outputStream.writeObject(serializedClass);
@@ -44,6 +46,10 @@ public class LoveySerializer {
                 throw new NonFatalException(e);
             }
         }
+    }
+
+    public static void serialize(String fileName, LoveySerializable obj) {
+        serialize(Path.of(fileName), obj);
     }
 
     public static <T> T deserialize(String fileName, Class<T> clazz) {
