@@ -71,7 +71,11 @@ public class LoveySerializedClass implements Serializable {
             for (Field f : classFields) {
                 f.setAccessible(true);
                 if (!ReflectionUtil.isStatic(f)) {
-                    variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
+                    if(LoveySerializable.class.isAssignableFrom(f.getType())) { // if the sub-variable is LoveySerializable, we want to serialize it as such.
+                        variableNameToValue.add(new LoveySerializedClassDataEntry(f.getName(), new LoveySerializedClass((LoveySerializable) f.get(obj))));
+                    } else {
+                        variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
+                    }
                 }
             }
         } catch(Exception e) {

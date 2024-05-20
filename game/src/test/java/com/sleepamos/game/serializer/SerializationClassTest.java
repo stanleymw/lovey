@@ -22,6 +22,9 @@ class SerializationClassTest implements LoveySerializable {
 
     private final List<String> stringList = new ArrayList<>();
 
+    @LoveySerializableValue("otherTest")
+    private final OtherSerializationClassTest otherTest = new OtherSerializationClassTest();
+
     public SerializationClassTest() {
         stringList.add("a");
         stringList.add("b");

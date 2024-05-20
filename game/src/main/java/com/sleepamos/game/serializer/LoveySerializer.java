@@ -104,7 +104,11 @@ public class LoveySerializer {
                         System.out.println("attempting to retrieve: " + entry.serializedName() + " from " + toDeserialize);
                         Field f = toDeserialize.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
                         f.setAccessible(true);
-                        f.set(obj, entry.data());
+                        if(entry.data() instanceof LoveySerializedClass loveySerializedClass) {
+                            f.set(obj, deserialize(loveySerializedClass, loveySerializedClass.getStoredClazz(), onVersionMismatch));
+                        } else {
+                            f.set(obj, entry.data());
+                        }
                     }
                 }
 
