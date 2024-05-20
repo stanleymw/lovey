@@ -39,6 +39,7 @@ class SerializationClassTest implements LoveySerializable {
                         this.i == other.i &&
                         this.s.equals(other.s) &&
                         Arrays.equals(this.iA, other.iA) &&
-                        this.stringList.equals(other.stringList);
+                        this.stringList.equals(other.stringList) &&
+                        otherTest.equals(other.otherTest);
     }
 }

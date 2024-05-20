@@ -10,11 +10,6 @@ import java.util.Timer;
 
 public class TrackedAudioNode extends AudioNode {
     Timer t = new Timer();
-    @FunctionalInterface
-    public interface Callback {
-        void onUpdate();
-    }
-
     private Callback callback;
 
     public TrackedAudioNode(AudioData a, AudioKey key) {
@@ -29,7 +24,7 @@ public class TrackedAudioNode extends AudioNode {
                     }
                 });
             }
-        }, 0,  200);
+        }, 0, 200);
     }
 
     public TrackedAudioNode(AssetManager assetManager, String name, AudioData.DataType type) {
@@ -44,7 +39,7 @@ public class TrackedAudioNode extends AudioNode {
                     }
                 });
             }
-        }, 0,  200);
+        }, 0, 200);
     }
 
     public TrackedAudioNode() {
@@ -59,10 +54,15 @@ public class TrackedAudioNode extends AudioNode {
                     }
                 });
             }
-        }, 0,  200);
+        }, 0, 200);
     }
 
     public void setCallback(Callback callback) {
         this.callback = callback;
+    }
+
+    @FunctionalInterface
+    public interface Callback {
+        void onUpdate();
     }
 }

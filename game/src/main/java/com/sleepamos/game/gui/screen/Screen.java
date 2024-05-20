@@ -1,7 +1,7 @@
 package com.sleepamos.game.gui.screen;
 
 import com.jme3.scene.Node;
-import com.simsilica.lemur.*;
+import com.simsilica.lemur.Container;
 import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.gui.element.BetterButton;
@@ -11,14 +11,6 @@ public abstract class Screen {
     protected final boolean escapable;
     private Node parent;
     private boolean initialized = false;
-
-    protected int getScreenWidth() {
-        return Lovey.getInstance().getSettings().getWidth();
-    }
-
-    protected int getScreenHeight() {
-        return Lovey.getInstance().getSettings().getHeight();
-    }
 
     /**
      * Constructs this screen with the class name as the node name.
@@ -32,6 +24,14 @@ public abstract class Screen {
         this(false);
     }
 
+    protected int getScreenWidth() {
+        return Lovey.getInstance().getSettings().getWidth();
+    }
+
+    protected int getScreenHeight() {
+        return Lovey.getInstance().getSettings().getHeight();
+    }
+
     /**
      * Initialize the {@link #elements} with this screen's sub-elements.
      */
@@ -39,10 +39,11 @@ public abstract class Screen {
 
     /**
      * Attach all parts of this Screen onto the given node.
+     *
      * @param base The base which this Screen's elements should be attached to.
      */
     public void attach(Node base) {
-        if(!this.initialized) {
+        if (!this.initialized) {
             this.initialize();
             this.initialized = true;
         }
@@ -64,6 +65,7 @@ public abstract class Screen {
 
     /**
      * Creates and attaches a container to the internal elements node.
+     *
      * @return The created container, already attached. Attach all further nodes to this container.
      */
     protected Container createAndAttachContainer() {
@@ -83,7 +85,7 @@ public abstract class Screen {
     }
 
     public void onEscape() {
-        if(!this.isEscapable()) {
+        if (!this.isEscapable()) {
             throw new IllegalStateException("Non-escapable screen was escaped.");
         }
     }

@@ -11,9 +11,9 @@ import com.jme3.font.BitmapText;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
@@ -36,24 +36,38 @@ import com.sleepamos.game.interactables.Shootable;
 import java.util.List;
 
 public class InGameAppState extends BaseAppState {
+    private final double nextSpawnTime = 0;
     private GameState gameState;
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
     private Node gameNode;
-
     private Beatmap map;
-
     private BitmapText hud;
     private BitmapText crosshair;
-
     private Node shootables;
+    private final ActionListener actionListener = new ActionListener() {
+        @Override
+        public void onAction(String name, boolean keyPressed, float tpf) {
+            // System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
+            switch (name) {
+                case "Interact" -> {
+                    gameState.setInteracting(keyPressed);
+                    Interactable hit = null;
 
+                    CollisionResults collisionResult = castRay(shootables);
+                    if (collisionResult.size() > 0) {
+                        hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
+                    }
+
+                    gameState.setInteractingWith(hit);
+                }
+            }
+        }
+    };
     private double clock = 0;
-
     private int spawnWindowLeft = 0;
     private int spawnWindowRight = 0;
-    private double nextSpawnTime = 0;
     private List<Spawn> spawners;
 
     public InGameAppState() {
@@ -97,26 +111,6 @@ public class InGameAppState extends BaseAppState {
         this.rootNode.detachChild(this.gameNode);
     }
 
-    final private ActionListener actionListener = new ActionListener() {
-        @Override
-        public void onAction(String name, boolean keyPressed, float tpf) {
-            // System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
-            switch (name) {
-                case "Interact" -> {
-                    gameState.setInteracting(keyPressed);
-                    Interactable hit = null;
-
-                    CollisionResults collisionResult = castRay(shootables);
-                    if (collisionResult.size() > 0) {
-                        hit = (Interactable) collisionResult.getClosestCollision().getGeometry();
-                    }
-
-                    gameState.setInteractingWith(hit);
-                }
-            }
-        }
-    };
-
     /**
      * Sets up a node that contains all game-related spatials.
      */
@@ -134,7 +128,7 @@ public class InGameAppState extends BaseAppState {
         Material groundMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         groundMaterial.setColor("Color", ColorRGBA.Green);
         groundMaterial.setTexture("ColorMap", assetManager.loadTexture("Textures/RockyTexture.jpg")); // with
-                                                                                                      // Unshaded.j3md
+        // Unshaded.j3md
         groundGeometry.setMaterial(groundMaterial);
 
         Material domeMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");

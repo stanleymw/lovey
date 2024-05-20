@@ -4,7 +4,7 @@ import com.sleepamos.game.util.FileUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LoveySerializerTest {
     private static final String fileName = "sentir.lovey";

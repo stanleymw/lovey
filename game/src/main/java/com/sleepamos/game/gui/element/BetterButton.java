@@ -30,7 +30,7 @@ public class BetterButton extends Button {
             Field f = Label.class.getDeclaredField("text");
             f.setAccessible(true);
             return (TextComponent) (f.get(this));
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("err: ");
             e.printStackTrace();
             throw new RuntimeException("failed to reflect to get the text component. ????");
@@ -57,7 +57,7 @@ public class BetterButton extends Button {
     }
 
     public BetterButton withTextureEnabled(boolean enable) {
-        if(enable) {
+        if (enable) {
             this.setBackground(AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE));
         } else {
             this.setBackground(null);

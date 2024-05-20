@@ -6,5 +6,6 @@ public abstract class EscapableScreen extends Screen {
     }
 
     @Override
-    public void onEscape() {}
+    public void onEscape() {
+    }
 }

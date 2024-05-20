@@ -16,21 +16,26 @@ import java.util.LinkedList;
  */
 public class ScreenHandler {
     private static ScreenHandler instance;
+    private final Lovey app;
+    /**
+     * The hierarchy of screens, in the order they were added.
+     */
+    private final LinkedList<Screen> screenHierarchy;
+
+    private ScreenHandler(Lovey app) {
+        this.app = app;
+        this.screenHierarchy = new LinkedList<>();
+        this.createMainMenu();
+    }
 
     /**
      * Get the instance of the ScreenHandler. Requires that {@link #initialize(Lovey)} has been called.
+     *
      * @return The instance of this object.
      */
     public static ScreenHandler getInstance() {
         return instance;
     }
-
-    private final Lovey app;
-
-    /**
-     * The hierarchy of screens, in the order they were added.
-     */
-    private final LinkedList<Screen> screenHierarchy;
 
     public static void initialize(Lovey app) {
         GuiGlobals.initialize(app);
@@ -41,15 +46,10 @@ public class ScreenHandler {
         instance = new ScreenHandler(app); // gaming
     }
 
-    private ScreenHandler(Lovey app) {
-        this.app = app;
-        this.screenHierarchy = new LinkedList<>();
-        this.createMainMenu();
-    }
-
     /**
      * Shows a screen, hiding the currently shown screen in order to do so.
      * The screen should not be an instance of {@link MainMenuScreen}, and {@link #goToMainMenu()} should be used instead to return to the main menu.
+     *
      * @param screen The screen to show. Should not be an instance of {@link MainMenuScreen}.
      * @throws IllegalArgumentException If screen is an instance of {@link MainMenuScreen}
      */
@@ -107,6 +107,7 @@ public class ScreenHandler {
      * Whether a screen is being shown (i.e. visible) to the user.
      * If no screens exist in the screen hierarchy (shouldn't happen?), returns false.
      * If the most recent screen is instanceof {@link NoScreen}, returns false.
+     *
      * @return Whether a screen is visible to the user.
      */
     public boolean isShowingAScreen() {
