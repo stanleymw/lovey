@@ -34,6 +34,7 @@ public final class FileUtil {
     }
 
 
+    @SneakyThrows
     @Nullable
     private static Object fromFileInputStream(FileInputStream fis) {
         try {
@@ -47,6 +48,8 @@ public final class FileUtil {
             return in.readObject();
         } catch(IOException | ClassNotFoundException e) {
             throw new NonFatalException("Error reading a serialized object from stream " + fis, e);
+        } finally {
+            fis.close();
         }
     }
 
@@ -72,9 +75,5 @@ public final class FileUtil {
 
     public static boolean exists(Path p) {
         return p.toFile().exists();
-    }
-
-    public static String[] getDirectoryNames(Path dir) {
-        return getDirectoryNames(dir, ignored -> true);
     }
 }

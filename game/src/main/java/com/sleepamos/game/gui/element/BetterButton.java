@@ -11,6 +11,7 @@ import com.sleepamos.game.gui.screen.Screen;
 import com.sleepamos.game.util.AssetsUtil;
 
 import java.lang.reflect.Field;
+import java.util.function.Supplier;
 
 public class BetterButton extends Button {
     public BetterButton(String s, ElementId elementId, String style) {
@@ -51,8 +52,8 @@ public class BetterButton extends Button {
         return this;
     }
 
-    public BetterButton toOtherScreen(Screen screen) {
-        return this.withCommand(source -> Lovey.getInstance().getScreenHandler().showScreen(screen));
+    public BetterButton toOtherScreen(Supplier<? extends Screen> screenProvider) {
+        return this.withCommand(source -> Lovey.getInstance().getScreenHandler().showScreen(screenProvider.get()));
     }
 
     public BetterButton withTextureEnabled(boolean enable) {
@@ -74,18 +75,8 @@ public class BetterButton extends Button {
         return this;
     }
 
-    public BetterButton rect() {
-        this.setSize(new Vector3f(80, 80 * 2481f / 6000f, 0));
-        return this;
-    }
-
     public BetterButton withFontSize(float size) {
         this.getTextComponent().setFontSize(size);
-        return this;
-    }
-
-    public BetterButton setMaxTextWidth(float max) {
-        this.getTextComponent().setMaxWidth(max);
         return this;
     }
 }

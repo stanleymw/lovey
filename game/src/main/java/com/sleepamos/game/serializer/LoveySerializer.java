@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -20,21 +21,27 @@ public class LoveySerializer {
 
     public static void serialize(Path p, LoveySerializable obj) {
         LoveySerializedClass serializedClass = new LoveySerializedClass(obj);
-        File f = p.toFile();
+        File f = p.toAbsolutePath().toFile();
 
         if(f.exists()) {
-            File g = new File(f.getName() + ".tmp");
-            try(FileOutputStream fileOutputStream = new FileOutputStream(g)) {
+            Path g = p.toAbsolutePath().resolveSibling(f.getName() + ".tmp");
+            try {
+                Files.copy(f.toPath(), g);
+            } catch(Exception e) {
+                throw new NonFatalException("failed to copy original", e);
+            }
+            try(FileOutputStream fileOutputStream = new FileOutputStream(f)) {
                 ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
                 outputStream.writeObject(serializedClass);
                 outputStream.flush();
                 outputStream.close();
             } catch(Exception e) {
-                throw new NonFatalException(e);
+                throw new NonFatalException("unable to write", e);
             }
-            if(f.delete() && g.renameTo(f)) { // i really just wanna make sure this short circuits correctly.
-            } else {
-                throw new NonFatalException("Unable to write new file " + f.getAbsolutePath());
+            try {
+                Files.delete(g);
+            } catch(Exception e) {
+                throw new NonFatalException("Unable to delete temp", e);
             }
         } else {
             try(FileOutputStream fileOutputStream = new FileOutputStream(f)) {
