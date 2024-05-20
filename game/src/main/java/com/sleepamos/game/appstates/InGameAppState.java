@@ -135,13 +135,12 @@ public class InGameAppState extends BaseAppState {
         groundMaterial.setColor("Color", ColorRGBA.Green);
         groundMaterial.setTexture("ColorMap", assetManager.loadTexture("Textures/RockyTexture.jpg")); // with
                                                                                                       // Unshaded.j3md
-
         groundGeometry.setMaterial(groundMaterial);
 
         Material domeMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         domeMaterial.setTransparent(true);
         domeMaterial.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 100));
+        domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 220));
 
         domeGeometry.setMaterial(domeMaterial);
         domeGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
@@ -232,7 +231,7 @@ public class InGameAppState extends BaseAppState {
             if (clock >= spawners.get(spawnWindowRight).hitTime() - spawners.get(spawnWindowRight).reactionTime()) {
                 Spawn current = spawners.get(spawnWindowRight);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-                mat1.setColor("Color", ColorRGBA.randomColor());
+                mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 255, 255, 255));
                 ((Shootable) current.interactable()).setGameState(this.gameState);
                 current.interactable().setMaterial(mat1);
                 this.shootables.attachChild(current.interactable());
@@ -253,9 +252,15 @@ public class InGameAppState extends BaseAppState {
             double domeRadius = 50.0d; // change this when domeRadius is actually implemented
             double curRadius = domeRadius - (clock - current.hitTime()) * domeRadius;
 
-            ((Shootable) current.interactable()).setLocalTranslation(FastMath.cos(0.3f) * (float) curRadius,
+            Shootable shot = (Shootable) current.interactable();
+
+            if (clock >= current.hitTime())
+                shot.getMaterial().setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 255));
+
+            shot.setLocalTranslation(FastMath.cos(0.3f) * (float) curRadius,
                     FastMath.sin(0.5f) * (float) curRadius,
                     FastMath.sin(0.3f) * (float) curRadius);
+
         }
     }
 
