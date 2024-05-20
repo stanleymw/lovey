@@ -251,9 +251,9 @@ public class InGameAppState extends BaseAppState {
             if (clock >= current.hitTime())
                 shot.getMaterial().setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 255));
 
-            shot.setLocalTranslation(FastMath.cos(0.3f) * (float) curRadius,
-                    FastMath.sin(0.5f) * (float) curRadius,
-                    FastMath.sin(0.3f) * (float) curRadius);
+            shot.setLocalTranslation(FastMath.cos(shot.getAngleX()) * (float) curRadius,
+                    FastMath.sin(shot.getAngleZ()) * (float) curRadius,
+                    FastMath.sin(shot.getAngleX()) * (float) curRadius);
 
         }
     }
@@ -296,21 +296,21 @@ public class InGameAppState extends BaseAppState {
         Lovey.getInstance().getGuiNode().attachChild(crosshair);
     }
 
-    private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
-        Box box = new Box(size_x, size_y, size_z);
-        Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
-        cube.setLocalTranslation(x, y, z);
+//    private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
+//        Box box = new Box(size_x, size_y, size_z);
+//        Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
+//        cube.setLocalTranslation(x, y, z);
+//
+//        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+//        mat1.setColor("Color", ColorRGBA.randomColor());
+//        cube.setMaterial(mat1);
+//
+//        return cube;
+//    }
 
-        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat1.setColor("Color", ColorRGBA.randomColor());
-        cube.setMaterial(mat1);
-
-        return cube;
-    }
-
-    private Interactable makeShootable(String name, float x, float y, float z) {
-        return makeShootable(name, x, y, z, 1, 1, 1);
-    }
+//    private Interactable makeShootable(String name, float x, float y, float z) {
+//        return makeShootable(name, x, y, z, 1, 1, 1);
+//    }
 
     private CollisionResults castRay(Node whitelist) {
         CollisionResults results = new CollisionResults();

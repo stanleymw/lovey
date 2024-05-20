@@ -37,7 +37,7 @@ public class DesktopLauncher {
         appSettings.setResolution(biggest.getWidth(), biggest.getHeight());
         appSettings.setFrequency(biggest.getRefreshRate());
         appSettings.setBitsPerPixel(biggest.getBitDepth());
-        appSettings.setFullscreen(device.isFullScreenSupported());
+//        appSettings.setFullscreen(device.isFullScreenSupported());
 
         appSettings.setGammaCorrection(true);
         appSettings.setTitle("Lovey");
