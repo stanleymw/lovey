@@ -2,6 +2,7 @@ package com.sleepamos.game.util;
 
 import com.sleepamos.game.exceptions.NonFatalException;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.FileSystems;
@@ -33,11 +34,22 @@ public final class FileUtil {
     }
 
 
+    @SneakyThrows
+    @Nullable
     private static Object fromFileInputStream(FileInputStream fis) {
+        try {
+            if(fis.getChannel().size() == 0) {
+                return null;
+            }
+        } catch(Exception e) {
+            throw new NonFatalException("can this even throw an error", e);
+        }
         try(ObjectInputStream in = new ObjectInputStream(fis)) {
             return in.readObject();
         } catch(IOException | ClassNotFoundException e) {
             throw new NonFatalException("Error reading a serialized object from stream " + fis, e);
+        } finally {
+            fis.close();
         }
     }
 
@@ -63,9 +75,5 @@ public final class FileUtil {
 
     public static boolean exists(Path p) {
         return p.toFile().exists();
-    }
-
-    public static String[] getDirectoryNames(Path dir) {
-        return getDirectoryNames(dir, ignored -> true);
     }
 }

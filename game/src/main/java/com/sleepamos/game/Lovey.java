@@ -5,7 +5,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
-import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -109,7 +108,7 @@ public class Lovey extends SimpleApplication {
             Field camField = FlyCamAppState.class.getDeclaredField("flyCam");
             camField.setAccessible(true);
             camField.set(this.getStateManager().getState(FlyCamAppState.class), new SentirCamera(this.getCamera(), 1));
-            System.out.println("camera hijacked!");
+            // System.out.println("camera hijacked!");
         } catch (Exception e) {
             System.out.println("Unable to hijack flycam:");
             e.printStackTrace();
@@ -194,14 +193,13 @@ public class Lovey extends SimpleApplication {
 
     public void launchMap() {
         // this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
-        ArrayList<Spawn> stuff = new ArrayList<Spawn>();
-        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 1.0, 5.0));
-        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 3.0, 5.0));
-        stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0, 5.0));
+        ArrayList<Spawn> stuff = new ArrayList<>();
+        // stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 5.0));
+        // stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 5.0));
+        // stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0));
 
         InteractableSpawner tmp = new InteractableSpawner();
-        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper",
-                100, new InteractableSpawner(stuff))));
+        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
     }
 
     public void exitMap() {

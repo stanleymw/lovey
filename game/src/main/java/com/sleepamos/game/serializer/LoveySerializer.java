@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -17,16 +19,44 @@ import java.util.Map;
 public class LoveySerializer {
     private static final Objenesis objenesis = new ObjenesisSerializer();
 
-    public static void serialize(String fileName, LoveySerializable obj) {
+    public static void serialize(Path p, LoveySerializable obj) {
         LoveySerializedClass serializedClass = new LoveySerializedClass(obj);
-        try(FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-            outputStream.writeObject(serializedClass);
-            outputStream.flush();
-            outputStream.close();
-        } catch(Exception e) {
-            throw new NonFatalException(e);
+        File f = p.toAbsolutePath().toFile();
+
+        if(f.exists()) {
+            Path g = p.toAbsolutePath().resolveSibling(f.getName() + ".tmp");
+            try {
+                Files.copy(f.toPath(), g);
+            } catch(Exception e) {
+                throw new NonFatalException("failed to copy original", e);
+            }
+            try(FileOutputStream fileOutputStream = new FileOutputStream(f)) {
+                ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+                outputStream.writeObject(serializedClass);
+                outputStream.flush();
+                outputStream.close();
+            } catch(Exception e) {
+                throw new NonFatalException("unable to write", e);
+            }
+            try {
+                Files.delete(g);
+            } catch(Exception e) {
+                throw new NonFatalException("Unable to delete temp", e);
+            }
+        } else {
+            try(FileOutputStream fileOutputStream = new FileOutputStream(f)) {
+                ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+                outputStream.writeObject(serializedClass);
+                outputStream.flush();
+                outputStream.close();
+            } catch(Exception e) {
+                throw new NonFatalException(e);
+            }
         }
+    }
+
+    public static void serialize(String fileName, LoveySerializable obj) {
+        serialize(Path.of(fileName), obj);
     }
 
     public static <T> T deserialize(String fileName, Class<T> clazz) {
@@ -50,6 +80,10 @@ public class LoveySerializer {
     }
 
     private static <T> T deserialize(LoveySerializedClass deserialized, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+        if(deserialized == null) {
+            return null;
+        }
+
         if(!clazz.isAssignableFrom(deserialized.getStoredClazz())) {
             throw new NonFatalException("Deserialized class of type " + deserialized.getStoredClazz().getName() + " is not assignable to requested class: " + clazz.getName());
         }
@@ -77,7 +111,11 @@ public class LoveySerializer {
                         System.out.println("attempting to retrieve: " + entry.serializedName() + " from " + toDeserialize);
                         Field f = toDeserialize.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
                         f.setAccessible(true);
-                        f.set(obj, entry.data());
+                        if(entry.data() instanceof LoveySerializedClass loveySerializedClass) {
+                            f.set(obj, deserialize(loveySerializedClass, loveySerializedClass.getStoredClazz(), onVersionMismatch));
+                        } else {
+                            f.set(obj, entry.data());
+                        }
                     }
                 }
 
@@ -105,7 +143,7 @@ public class LoveySerializer {
          * @param o The object that data is being deserialized into.
          * @return Whether further deserialization should be canceled. If true, this method should handle ALL deserialization for all fields included in serialized.
          *         If false, this method should handle NONE of the deserialization for any fields defined in serialized.
-         *         If only new fields were added between version changes, false would be a return option since this method would only need to intiialize the new fields.
+         *         If only new fields were added between version changes, false would be a return option since this method would only need to initialize the new fields.
          *         If fields were deleted or more complex changes were made, this method may need to return true and handle the complex logic.
          */
         boolean deserialize(LoveySerializedClass serialized, byte fileVersion, byte expectedVersion, Class<?> clazz, Object o);
