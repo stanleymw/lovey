@@ -4,7 +4,10 @@ import com.sleepamos.game.exceptions.NonFatalException;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,15 +41,15 @@ public final class FileUtil {
     @Nullable
     private static Object fromFileInputStream(FileInputStream fis) {
         try {
-            if(fis.getChannel().size() == 0) {
+            if (fis.getChannel().size() == 0) {
                 return null;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new NonFatalException("can this even throw an error", e);
         }
-        try(ObjectInputStream in = new ObjectInputStream(fis)) {
+        try (ObjectInputStream in = new ObjectInputStream(fis)) {
             return in.readObject();
-        } catch(IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new NonFatalException("Error reading a serialized object from stream " + fis, e);
         } finally {
             fis.close();
@@ -56,7 +59,7 @@ public final class FileUtil {
     public static void deleteFile(String fileName) {
         try {
             Files.deleteIfExists(new File(fileName).toPath());
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new NonFatalException(e);
         }
     }

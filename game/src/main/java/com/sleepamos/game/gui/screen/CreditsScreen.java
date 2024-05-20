@@ -14,11 +14,11 @@ public class CreditsScreen extends EscapableScreen {
                 Soham Dev
                 Ayushi Mehrotra
                 Stanley Wang
-                
+                               \s
                 APCSA Final Project 2023-24
-                
-                
+                               \s
+                               \s
                 Built with JMonkeyEngine and the Lemur GUI Library for JME.
-                """));
+               \s"""));
     }
 }

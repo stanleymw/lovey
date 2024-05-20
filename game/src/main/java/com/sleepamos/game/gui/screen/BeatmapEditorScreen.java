@@ -33,28 +33,25 @@ import java.nio.file.Path;
  * Responsibility for that is handled by the beatmap via a constant value per map for now due to the relative difficulty of implementing dynamic spawn locations and times.
  */
 public class BeatmapEditorScreen extends Screen {
+    Container bg;
     private Beatmap beatmap = new Beatmap();
     private TrackedAudioNode audioNode = new TrackedAudioNode();
     private boolean isPlaying = false;
-
     private Slider timeSlider;
-
     private Path currentPath;
-
-    Container bg;
 
     private void onBeatmapLoad(Path selected) {
         try {
             currentPath = selected.resolve("beatmap.lovey");
             beatmap = LoveySerializer.deserialize(currentPath.toFile(), Beatmap.class); // load the beatmap
-            if(beatmap == null) {
+            if (beatmap == null) {
                 beatmap = new Beatmap();
             } else {
                 Vector3f scale = bg.getWorldScale();
                 Vector3f dims = bg.getSize().mult(scale);
 
                 beatmap.getSpawner().getTargetsToSpawn().forEach(t -> {
-                    if(t.interactable() instanceof Shootable shootable) {
+                    if (t.interactable() instanceof Shootable shootable) {
                         double x = shootable.getAngleX();
                         double y = shootable.getAngleZ();
 
@@ -81,7 +78,7 @@ public class BeatmapEditorScreen extends Screen {
 
             audioNode = Audio.load(audioPath);
             audioNode.setCallback(() -> timeSlider.getModel().setPercent(audioNode.getPlaybackTime() / audioNode.getAudioData().getDuration()));
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new NonFatalException("An error has occured while loading the beatmap", e);
         }
     }
@@ -104,7 +101,7 @@ public class BeatmapEditorScreen extends Screen {
         })));
 
         rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
-            if(currentPath != null) {
+            if (currentPath != null) {
                 LoveySerializer.serialize(currentPath, beatmap);
             } else {
                 System.out.println("current path null, serializing to default folder for safety.");
@@ -113,10 +110,10 @@ public class BeatmapEditorScreen extends Screen {
         }));
         rightUI.addChild(this.button("New Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(() -> new BeatmapCreationScreen((selected) -> {
             try {
-                if(!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
+                if (!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
                     throw new NonFatalException("File already exists");
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new NonFatalException("Error while creating beatmap file", e);
             }
             onBeatmapLoad(selected);
@@ -124,7 +121,7 @@ public class BeatmapEditorScreen extends Screen {
         })));
 
         bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50,2)));
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50, 2)));
         bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
         bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
 
@@ -140,7 +137,7 @@ public class BeatmapEditorScreen extends Screen {
         Container bottomUi = this.createAndAttachContainer();
         bottomUi.setLocalTranslation(this.getScreenWidth() - 200, 100, 0);
         bottomUi.addChild(this.button("Play").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
-            if(isPlaying) {
+            if (isPlaying) {
                 audioNode.pause();
             } else {
                 audioNode.play();
@@ -151,8 +148,8 @@ public class BeatmapEditorScreen extends Screen {
         bg.addMouseListener(new MouseListener() {
             @Override
             public void mouseButtonEvent(MouseButtonEvent event, Spatial target, Spatial capture) {
-                if(event.getButtonIndex() == MouseInput.BUTTON_LEFT) {
-                    if(event.isReleased()) {
+                if (event.getButtonIndex() == MouseInput.BUTTON_LEFT) {
+                    if (event.isReleased()) {
                         Vector3f offsets = bg.getLocalTranslation();
                         Vector3f scale = bg.getWorldScale();
                         Vector3f dims = bg.getSize().mult(scale);

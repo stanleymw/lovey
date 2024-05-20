@@ -43,6 +43,39 @@ public class LoveySerializedClass implements Serializable {
         this(LoveySerializationUtil.getClassVersion(obj.getClass()), obj.getClass().getSuperclass(), obj.getClass(), getObjectData(obj.getClass(), obj), obj);
     }
 
+    private static List<LoveySerializedClassDataEntry> getObjectData(Class<?> clazz, LoveySerializable obj) {
+        Field[] classFields = clazz.getDeclaredFields();
+        List<LoveySerializedClassDataEntry> variableNameToValue = new ArrayList<>(classFields.length);
+
+        try {
+            for (Field f : classFields) {
+                f.setAccessible(true);
+                if (!ReflectionUtil.isStatic(f)) {
+                    if (LoveySerializable.class.isAssignableFrom(f.getType())) { // if the sub-variable is LoveySerializable, we want to serialize it as such.
+                        variableNameToValue.add(new LoveySerializedClassDataEntry(f.getName(), new LoveySerializedClass((LoveySerializable) f.get(obj))));
+                    } else {
+                        variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new NonFatalException("Failed to get object data from class def " + clazz.getName() + " during serialization", e);
+        }
+
+        return variableNameToValue;
+    }
+
+    private static LoveySerializedClass generateStoredRootObject(Class<?> rootClazz) {
+        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new ArrayList<>(), true);
+    }
+
+    private static LoveySerializedClass createIfLegalClass(Class<?> clazz, LoveySerializable obj) {
+        if (LoveySerializable.class.isAssignableFrom(clazz)) {
+            return new LoveySerializedClass(LoveySerializationUtil.getClassVersion(clazz), clazz.getSuperclass(), clazz, getObjectData(clazz, obj), obj);
+        }
+        return generateStoredRootObject(clazz);
+    }
+
     public byte getVersion() {
         return version;
     }
@@ -63,47 +96,14 @@ public class LoveySerializedClass implements Serializable {
         return this.isRootClass;
     }
 
-    private static List<LoveySerializedClassDataEntry> getObjectData(Class<?> clazz, LoveySerializable obj) {
-        Field[] classFields = clazz.getDeclaredFields();
-        List<LoveySerializedClassDataEntry> variableNameToValue = new ArrayList<>(classFields.length);
-
-        try {
-            for (Field f : classFields) {
-                f.setAccessible(true);
-                if (!ReflectionUtil.isStatic(f)) {
-                    if(LoveySerializable.class.isAssignableFrom(f.getType())) { // if the sub-variable is LoveySerializable, we want to serialize it as such.
-                        variableNameToValue.add(new LoveySerializedClassDataEntry(f.getName(), new LoveySerializedClass((LoveySerializable) f.get(obj))));
-                    } else {
-                        variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
-                    }
-                }
-            }
-        } catch(Exception e) {
-            throw new NonFatalException("Failed to get object data from class def " + clazz.getName() + " during serialization", e);
-        }
-
-        return variableNameToValue;
-    }
-
-    private static LoveySerializedClass generateStoredRootObject(Class<?> rootClazz) {
-        return new LoveySerializedClass(ROOT_VERSION, null, rootClazz, new ArrayList<>(), true);
-    }
-
-    private static LoveySerializedClass createIfLegalClass(Class<?> clazz, LoveySerializable obj) {
-        if(LoveySerializable.class.isAssignableFrom(clazz)) {
-            return new LoveySerializedClass(LoveySerializationUtil.getClassVersion(clazz), clazz.getSuperclass(), clazz, getObjectData(clazz, obj), obj);
-        }
-        return generateStoredRootObject(clazz);
-    }
-
     @Override
     public boolean equals(Object o) {
         return this == o ||
                 (o instanceof LoveySerializedClass other &&
-                this.version == other.version &&
-                this.data.equals(other.data) &&
-                this.isRootClass == other.isRootClass &&
-                this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
-                (this.superclass == other.superclass || this.superclass.equals(other.superclass))); // == implies null
+                        this.version == other.version &&
+                        this.data.equals(other.data) &&
+                        this.isRootClass == other.isRootClass &&
+                        this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
+                        (this.superclass == other.superclass || this.superclass.equals(other.superclass))); // == implies null
     }
 }

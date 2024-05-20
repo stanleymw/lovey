@@ -10,17 +10,8 @@ public class Shootable extends Interactable {
     private static final byte VERSION = 10;
 
     private final long points;
-    private GameState gameState;
-
-    public double getAngleX() {
-        return angleX;
-    }
-
-    public double getAngleZ() {
-        return angleZ;
-    }
-
     private final double angleX, angleZ;
+    private GameState gameState;
 
     public Shootable(String name, Mesh mesh, GameState gs, double angle_x, double angle_z, long pts) {
         super(name, mesh);
@@ -30,6 +21,14 @@ public class Shootable extends Interactable {
 
         this.angleX = angle_x;
         this.angleZ = angle_z;
+    }
+
+    public double getAngleX() {
+        return angleX;
+    }
+
+    public double getAngleZ() {
+        return angleZ;
     }
 
     public void setGameState(GameState gs) {

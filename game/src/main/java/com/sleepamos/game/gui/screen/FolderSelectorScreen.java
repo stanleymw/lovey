@@ -1,7 +1,10 @@
 package com.sleepamos.game.gui.screen;
 
 import com.jme3.math.Vector3f;
-import com.simsilica.lemur.*;
+import com.simsilica.lemur.Button;
+import com.simsilica.lemur.Container;
+import com.simsilica.lemur.HAlignment;
+import com.simsilica.lemur.VAlignment;
 import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.util.AssetsUtil;
 import com.sleepamos.game.util.FileUtil;
@@ -42,10 +45,10 @@ public class FolderSelectorScreen extends EscapableScreen {
 
         openButton.setEnabled(false);
 
-        for(String dirName : dirNames) {
+        for (String dirName : dirNames) {
             beatmapListUI.addChild(this.button(dirName).withFontSize(20).withHAlign(HAlignment.Left).withVAlign(VAlignment.Center).withTextureEnabled(false).withOffset(50, 0, 0).withCommand(source -> {
                 source.setEnabled(false);
-                if(this.selected != null) {
+                if (this.selected != null) {
                     selected.setEnabled(true);
                 }
                 selected = source;
@@ -79,7 +82,7 @@ public class FolderSelectorScreen extends EscapableScreen {
 
     @Nullable
     public Path getSelected() {
-        if(this.selected != null) {
+        if (this.selected != null) {
             return this.rootFolder.resolve(this.selected.getText());
         }
         return null;

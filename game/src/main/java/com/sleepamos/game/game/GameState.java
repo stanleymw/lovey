@@ -13,7 +13,7 @@ public class GameState {
     }
 
     public boolean isInteracting() {
-      return isInteracting;
+        return isInteracting;
     }
 
     public void setInteracting(boolean b) {

@@ -16,6 +16,6 @@ class OtherSerializationClassTest implements LoveySerializable {
         //noinspection ConstantValue
         return this == o ||
                 o instanceof OtherSerializationClassTest other &&
-                other.timbuktu == timbuktu;
+                        other.timbuktu == timbuktu;
     }
 }

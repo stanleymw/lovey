@@ -11,7 +11,6 @@ import java.io.InputStream;
 
 /**
  * Used to launch a jme application in desktop environment
- *
  */
 public class DesktopLauncher {
     public static void main(String[] args) throws IOException {
@@ -23,12 +22,12 @@ public class DesktopLauncher {
         DisplayMode[] modes = device.getDisplayModes();
 
         DisplayMode biggest = modes[0];
-        for(DisplayMode mode : modes) {
-            if(mode.getWidth() > biggest.getWidth()) {
+        for (DisplayMode mode : modes) {
+            if (mode.getWidth() > biggest.getWidth()) {
                 biggest = mode;
-            } else if(mode.getWidth() == biggest.getWidth() && mode.getHeight() > biggest.getHeight()) {
+            } else if (mode.getWidth() == biggest.getWidth() && mode.getHeight() > biggest.getHeight()) {
                 biggest = mode;
-            } else if(mode.getWidth() == biggest.getWidth() && mode.getHeight() == biggest.getHeight() && mode.getRefreshRate() > biggest.getRefreshRate()) {
+            } else if (mode.getWidth() == biggest.getWidth() && mode.getHeight() == biggest.getHeight() && mode.getRefreshRate() > biggest.getRefreshRate()) {
                 biggest = mode;
             }
         }
@@ -44,7 +43,7 @@ public class DesktopLauncher {
         appSettings.setTitle("Lovey");
         appSettings.setVSync(false);
 
-        try(InputStream icon = DesktopLauncher.class.getResourceAsStream("/Textures/icon.png")) {
+        try (InputStream icon = DesktopLauncher.class.getResourceAsStream("/Textures/icon.png")) {
             if (icon != null) {
                 appSettings.setIcons(new BufferedImage[]{ImageIO.read(icon)});
             }

@@ -14,6 +14,7 @@ public class MainMenuScreen extends Screen {
             Lovey.getInstance().getScreenHandler().showScreen(new NoScreen());
             Lovey.getInstance().useGUIBehavior(false);
         }));
+
         window.addChild(this.button("Settings").withVAlign(VAlignment.Center).toOtherScreen(SettingsScreen::new));
         window.addChild(this.button("Credits").withVAlign(VAlignment.Center).toOtherScreen(CreditsScreen::new));
         window.addChild(this.button("Beatmap Editor").withVAlign(VAlignment.Center).toOtherScreen(BeatmapEditorScreen::new));
