@@ -126,7 +126,7 @@ public class LoveySerializer {
          * @param o The object that data is being deserialized into.
          * @return Whether further deserialization should be canceled. If true, this method should handle ALL deserialization for all fields included in serialized.
          *         If false, this method should handle NONE of the deserialization for any fields defined in serialized.
-         *         If only new fields were added between version changes, false would be a return option since this method would only need to intiialize the new fields.
+         *         If only new fields were added between version changes, false would be a return option since this method would only need to initialize the new fields.
          *         If fields were deleted or more complex changes were made, this method may need to return true and handle the complex logic.
          */
         boolean deserialize(LoveySerializedClass serialized, byte fileVersion, byte expectedVersion, Class<?> clazz, Object o);

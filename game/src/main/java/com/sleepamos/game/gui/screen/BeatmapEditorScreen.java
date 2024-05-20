@@ -35,6 +35,7 @@ import java.nio.file.Path;
 public class BeatmapEditorScreen extends Screen {
     private Beatmap beatmap = new Beatmap();
     private AudioNode audioNode = new AudioNode();
+    private boolean isPlaying = false;
 
     @Override
     protected void initialize() {
@@ -59,6 +60,7 @@ public class BeatmapEditorScreen extends Screen {
                 AudioKey key = new AudioKey("audio.wav");
                 AudioData a = Lovey.getInstance().getAssetManager().loadAssetFromStream(key, new FileInputStream(audioPath.toFile()));
                 audioNode = new AudioNode(a, key); // im such a cool programmer this is so cool guys !!!
+                audioNode.setPositional(false);
             } catch(Exception e) {
                 throw new NonFatalException("An error has occured while loading the beatmap", e);
             }
@@ -91,6 +93,17 @@ public class BeatmapEditorScreen extends Screen {
         timeSlider.getThumbButton().setText("");
         this.elements.attachChild(timeSlider);
         timeSlider.setLocalTranslation(110, 50, 0);
+
+        Container bottomUi = this.createAndAttachContainer();
+        bottomUi.setLocalTranslation(this.getScreenWidth() - 200, 100, 0);
+        bottomUi.addChild(this.button("Play").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            if(isPlaying) {
+                audioNode.pause();
+            } else {
+                audioNode.play();
+            }
+            isPlaying = !isPlaying;
+        }));
 
         bg.addMouseListener(new MouseListener() {
             @Override
