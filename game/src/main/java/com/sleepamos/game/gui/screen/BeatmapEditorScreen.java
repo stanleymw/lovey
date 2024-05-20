@@ -17,12 +17,12 @@ import com.simsilica.lemur.*;
 import com.simsilica.lemur.component.QuadBackgroundComponent;
 import com.simsilica.lemur.event.MouseListener;
 import com.sleepamos.game.Lovey;
+import com.sleepamos.game.audio.Audio;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.serializer.LoveySerializer;
 import com.sleepamos.game.util.FileUtil;
 
-import java.io.FileInputStream;
 import java.nio.file.Path;
 
 /**
@@ -57,10 +57,7 @@ public class BeatmapEditorScreen extends Screen {
                     throw new NonFatalException("No audio file found for the beatmap");
                 }
 
-                AudioKey key = new AudioKey("audio.wav");
-                AudioData a = Lovey.getInstance().getAssetManager().loadAssetFromStream(key, new FileInputStream(audioPath.toFile()));
-                audioNode = new AudioNode(a, key); // im such a cool programmer this is so cool guys !!!
-                audioNode.setPositional(false);
+                audioNode = Audio.load(audioPath);
             } catch(Exception e) {
                 throw new NonFatalException("An error has occured while loading the beatmap", e);
             }
