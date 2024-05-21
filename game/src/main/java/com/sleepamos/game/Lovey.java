@@ -13,6 +13,7 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
+import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
@@ -23,7 +24,9 @@ import com.sleepamos.game.beatmap.InteractableSpawner;
 import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.gui.ScreenHandler;
+import com.sleepamos.game.gui.screen.NoScreen;
 import com.sleepamos.game.gui.screen.PauseScreen;
+import com.sleepamos.game.interactables.Shootable;
 import com.sleepamos.game.util.SentirCamera;
 
 import java.lang.reflect.Field;
@@ -50,6 +53,7 @@ public class Lovey extends SimpleApplication {
                     if (inGame != null && inGame.isEnabled()) {
                         this.useGUIBehavior(true);
                         this.pauseGame(true);
+
                         this.getScreenHandler().showScreen(new PauseScreen());
                     } else if (this.getStateManager().getState(ScreenAppState.class).isEnabled()) {
                         this.getScreenHandler().onEscape();
@@ -185,15 +189,28 @@ public class Lovey extends SimpleApplication {
         this.getStateManager().getState(InGameAppState.class).setEnabled(!paused);
     }
 
-    public void launchMap() {
+    public void launchMap(Beatmap map) {
         // this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
-        ArrayList<Spawn> stuff = new ArrayList<>();
+//        ArrayList<Spawn> stuff = new ArrayList<>();
         // stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 5.0));
         // stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 5.0));
         // stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0));
 
+//        InteractableSpawner tmp = new InteractableSpawner();
+//        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
+        Lovey.getInstance().getScreenHandler().showScreen(new NoScreen());
+        Lovey.getInstance().useGUIBehavior(false);
+        this.getStateManager().attach(new InGameAppState(map));
+    }
+
+    public Beatmap getDemoMap() {
+         ArrayList<Spawn> stuff = new ArrayList<>();
+         stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.15f, 0.2f, 1), 3.0, 1));
+         stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.2f, 0.15f, 2), 5.0, 1));
+         stuff.add(new Spawn(new Shootable("ez", new Box(1, 1, 1), null, 0.3f, 0.2f, 3), 7.0, 1));
+
         InteractableSpawner tmp = new InteractableSpawner();
-        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
+        return new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff));
     }
 
     public void exitMap() {
