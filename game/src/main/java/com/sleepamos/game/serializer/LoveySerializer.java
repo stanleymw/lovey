@@ -79,7 +79,7 @@ public class LoveySerializer {
         return deserialize(FileUtil.readSerializedObjectFromFile(file, LoveySerializedClass.class), clazz, onVersionMismatch);
     }
 
-    private static <T> T deserialize(LoveySerializedClass deserialized, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
+    public static <T> T deserialize(LoveySerializedClass deserialized, Class<T> clazz, VersionMismatchedDeserializer onVersionMismatch) {
         if (deserialized == null) {
             return null;
         }

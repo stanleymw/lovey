@@ -51,9 +51,12 @@ public class LoveySerializedClass implements Serializable {
             for (Field f : classFields) {
                 f.setAccessible(true);
                 if (!ReflectionUtil.isStatic(f)) {
+                    System.out.println("Serializing: " + f.getType());
                     if (LoveySerializable.class.isAssignableFrom(f.getType())) { // if the sub-variable is LoveySerializable, we want to serialize it as such.
+                        System.out.println("recursing on serialization");
                         variableNameToValue.add(new LoveySerializedClassDataEntry(f.getName(), new LoveySerializedClass((LoveySerializable) f.get(obj))));
                     } else {
+                        System.out.println("no recurse");
                         variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
                     }
                 }

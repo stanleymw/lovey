@@ -1,6 +1,5 @@
 package com.sleepamos.game.serializer;
 
-import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
 
 import java.io.*;
@@ -14,13 +13,4 @@ import java.io.*;
  */
 
 public interface LoveySerializable extends Serializable {
-    @Serial
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        throw new NonFatalException("Attempted to serialize class " + this.getClass().getSimpleName() + ", which extends LoveySerializable and should be serialized with the LoveySerializer.");
-    }
-
-    @Serial
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        throw new NonFatalException("Attempted to deserialize class " + this.getClass().getSimpleName() + ", which extends LoveySerializable and should be serialized with the LoveySerializer.");
-    }
 }

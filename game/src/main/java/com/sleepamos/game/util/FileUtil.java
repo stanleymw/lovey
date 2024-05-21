@@ -4,10 +4,7 @@ import com.sleepamos.game.exceptions.NonFatalException;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +33,27 @@ public final class FileUtil {
         return fromFileInputStream(new FileInputStream(file));
     }
 
+    /**
+     * If this crashes, it's your fault not mine
+     */
+    public static <T> T readSerializedObjectFromInputStream(InputStream inputStream, Class<T> clazz) {
+        return clazz.cast(readSerializedObjectFromInputStream(inputStream));
+    }
+
+    /**
+     * If this crashes, it's your fault not mine
+     */
+    @SneakyThrows
+    @Nullable
+    public static Object readSerializedObjectFromInputStream(InputStream is) {
+        try (ObjectInputStream in = new ObjectInputStream(is)) {
+            return in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new NonFatalException("Error reading a serialized object from stream " + is, e);
+        } finally {
+            is.close();
+        }
+    }
 
     @SneakyThrows
     @Nullable
@@ -78,5 +96,21 @@ public final class FileUtil {
 
     public static boolean exists(Path p) {
         return p.toFile().exists();
+    }
+
+    public static String getFromResources(String path) {
+        try(InputStream stream = getInputStreamFromResources(path)) {
+            if(stream == null) {
+                return "";
+            }
+            return new String(stream.readAllBytes());
+        } catch(Exception e) {
+            throw new NonFatalException("error loading from resources folder", e);
+        }
+    }
+
+    public static InputStream getInputStreamFromResources(String path) {
+        System.out.println("reading from: " + path);
+        return FileUtil.class.getResourceAsStream(path);
     }
 }

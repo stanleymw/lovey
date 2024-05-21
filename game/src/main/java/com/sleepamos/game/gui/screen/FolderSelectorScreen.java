@@ -33,13 +33,17 @@ public class FolderSelectorScreen extends EscapableScreen {
         return f.toPath().resolve("beatmap.lovey").toFile().exists();
     }
 
+    protected String[] dirNamesProvider() {
+        return FileUtil.getDirectoryNames(this.rootFolder, this::selectionRequirements); // wonderful code
+    }
+
     @Override
     protected void initialize() {
         Container beatmapListUI = this.createAndAttachContainer();
         beatmapListUI.setLocalTranslation(this.getScreenWidth() / 3.5f, this.getScreenHeight() - 20, 0);
         beatmapListUI.setPreferredSize(new Vector3f(this.getScreenWidth() / 4f, this.getScreenHeight() / 5f, 0));
         beatmapListUI.setBackground(AssetsUtil.asQBC(Assets.BUTTON_BG_TEXTURE));
-        String[] dirNames = FileUtil.getDirectoryNames(this.rootFolder, this::selectionRequirements); // wonderful code
+        String[] dirNames = this.dirNamesProvider();
 
         Button openButton = this.button("Open").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> this.callback.onSelect(this.getSelected()));
 
