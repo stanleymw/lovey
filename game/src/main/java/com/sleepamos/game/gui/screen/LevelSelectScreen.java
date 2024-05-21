@@ -12,8 +12,8 @@ public class LevelSelectScreen extends FolderSelectorScreen {
 
     private final String[] fileNames;
 
-    public LevelSelectScreen(String[] fileNames, OnSelectionCallback callback) {
-        super(callback);
+    public LevelSelectScreen(String rootFolder, String[] fileNames, OnSelectionCallback callback) {
+        super(Path.of(rootFolder), callback);
 
         this.fileNames = fileNames;
     }

@@ -34,13 +34,18 @@ public final class FileUtil {
     }
 
     /**
-     * If this crashes, it's your fault.
-     * @param is Input stream
-     * @return object
+     * If this crashes, it's your fault not mine
+     */
+    public static <T> T readSerializedObjectFromInputStream(InputStream inputStream, Class<T> clazz) {
+        return clazz.cast(readSerializedObjectFromInputStream(inputStream));
+    }
+
+    /**
+     * If this crashes, it's your fault not mine
      */
     @SneakyThrows
     @Nullable
-    public static Object fromInputStream(InputStream is) {
+    public static Object readSerializedObjectFromInputStream(InputStream is) {
         try (ObjectInputStream in = new ObjectInputStream(is)) {
             return in.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -94,7 +99,7 @@ public final class FileUtil {
     }
 
     public static String getFromResources(String path) {
-        try(InputStream stream = FileUtil.class.getResourceAsStream(path)) {
+        try(InputStream stream = getInputStreamFromResources(path)) {
             if(stream == null) {
                 return "";
             }
@@ -102,5 +107,10 @@ public final class FileUtil {
         } catch(Exception e) {
             throw new NonFatalException("error loading from resources folder", e);
         }
+    }
+
+    public static InputStream getInputStreamFromResources(String path) {
+        System.out.println("reading from: " + path);
+        return FileUtil.class.getResourceAsStream(path);
     }
 }
