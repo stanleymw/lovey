@@ -26,7 +26,14 @@ public class MainMenuScreen extends Screen {
                     Beatmap beatmap = LoveySerializer.deserialize(FileUtil.readSerializedObjectFromInputStream(is, LoveySerializedClass.class), Beatmap.class, (serialized, fileVersion, eVersion, c, obj) -> {
                         throw new NonFatalException("Unexpected version mismatch, stored file version: " + fileVersion + ", class defined version: " + eVersion);
                     });
+
+//                    System.out.println("SENTIR");
+                    System.out.println(beatmap.getSpawner().getTargetsToSpawn().get(0));
+
                     TrackedAudioNode audio = Audio.load(FileUtil.getInputStreamFromResources(selected.resolve("audio.wav").toString().replace("\\", "/")));
+
+//                    Lovey.getInstance().launchMap(beatmap);
+                    Lovey.getInstance().launchMap(Lovey.getInstance().getDemoMap());
                 }));
             } catch (Exception e) {
                 throw new RuntimeException(e);

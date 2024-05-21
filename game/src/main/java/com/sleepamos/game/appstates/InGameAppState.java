@@ -26,6 +26,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Dome;
+import com.jme3.scene.shape.Sphere;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.beatmap.Spawn;
@@ -33,6 +34,7 @@ import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class InGameAppState extends BaseAppState {
@@ -46,6 +48,8 @@ public class InGameAppState extends BaseAppState {
     private BitmapText hud;
     private BitmapText crosshair;
     private Node shootables;
+
+    private HashMap<Spawn, Interactable> interactables = new HashMap<>();
     private final ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
@@ -224,11 +228,15 @@ public class InGameAppState extends BaseAppState {
         if (spawnWindowRight < spawners.size()) {
             if (clock >= spawners.get(spawnWindowRight).hitTime() - spawners.get(spawnWindowRight).reactionTime()) {
                 Spawn current = spawners.get(spawnWindowRight);
+
+                Sphere sph = new Sphere(20, 20, 5);
+                Shootable shot = new Shootable("Target", sph, this.gameState,  current.xAngleRad(), current.zAngleRad(), 10);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
                 mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 255, 255, 255));
-                ((Shootable) current.interactable()).setGameState(this.gameState);
-                current.interactable().setMaterial(mat1);
-                this.shootables.attachChild(current.interactable());
+                shot.setMaterial(mat1);
+
+                interactables.put(current, shot);
+                this.shootables.attachChild(shot);
 
                 // we must spawn this
                 spawnWindowRight++;
@@ -237,6 +245,7 @@ public class InGameAppState extends BaseAppState {
 
         Spawn left = spawners.get(spawnWindowLeft);
         if (clock >= left.hitTime() + left.reactionTime() * 2) {
+            (interactables.get(left)).removeFromParent();
             spawnWindowLeft++;
         }
 
@@ -246,7 +255,7 @@ public class InGameAppState extends BaseAppState {
             double domeRadius = 50.0d; // change this when domeRadius is actually implemented
             double curRadius = domeRadius - (clock - current.hitTime()) * domeRadius;
 
-            Shootable shot = (Shootable) current.interactable();
+            Shootable shot = (Shootable) interactables.get(current);
 
             if (clock >= current.hitTime())
                 shot.getMaterial().setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 255));

@@ -50,26 +50,26 @@ public class BeatmapEditorScreen extends Screen {
                 Vector3f scale = bg.getWorldScale();
                 Vector3f dims = bg.getSize().mult(scale);
 
-                beatmap.getSpawner().getTargetsToSpawn().forEach(t -> {
-                    if (t.interactable() instanceof Shootable shootable) {
-                        double x = shootable.getAngleX();
-                        double y = shootable.getAngleZ();
-
-                        final float xRel = ((float) (x * dims.x / FastMath.PI) + dims.x / 2) / scale.x;
-                        final float yRel = -(dims.y - ((float) (y * dims.y / FastMath.HALF_PI))) / scale.y; // this is some good code once again
-
-                        System.out.println("x/yrel: " + xRel + " " + yRel);
-                        // now we re-add them in as a debug mode
-                        Sphere s = new Sphere(10, 10, 5);
-                        Geometry g = new Geometry("s", s);
-                        Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-                        g.setMaterial(mat);
-                        mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
-                        bg.attachChild(g);
-                        g.setLocalTranslation(xRel, yRel, 0);
-                        System.out.println("at: " + g.getWorldTranslation());
-                    }
-                });
+//                beatmap.getSpawner().getTargetsToSpawn().forEach(t -> {
+//                    if (t.interactable() instanceof Shootable shootable) {
+//                        double x = shootable.getAngleX();
+//                        double y = shootable.getAngleZ();
+//
+//                        final float xRel = ((float) (x * dims.x / FastMath.PI) + dims.x / 2) / scale.x;
+//                        final float yRel = -(dims.y - ((float) (y * dims.y / FastMath.HALF_PI))) / scale.y; // this is some good code once again
+//
+//                        System.out.println("x/yrel: " + xRel + " " + yRel);
+//                        // now we re-add them in as a debug mode
+//                        Sphere s = new Sphere(10, 10, 5);
+//                        Geometry g = new Geometry("s", s);
+//                        Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+//                        g.setMaterial(mat);
+//                        mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
+//                        bg.attachChild(g);
+//                        g.setLocalTranslation(xRel, yRel, 0);
+//                        System.out.println("at: " + g.getWorldTranslation());
+//                    }
+//                });
             }
             Path audioPath = selected.resolve("audio.wav").toAbsolutePath();
             if (!FileUtil.exists(audioPath)) {
@@ -180,7 +180,7 @@ public class BeatmapEditorScreen extends Screen {
                         final float yAngleRad = FastMath.HALF_PI * yRel / dims.y;
 
                         System.out.println("storing at: " + xAngleRad + " " + yAngleRad);
-                        beatmap.getSpawner().getTargetsToSpawn().add(new Spawn(new Shootable("", new Sphere(10, 10, 1), null, xAngleRad, yAngleRad, 10), audioNode.getPlaybackTime(), 2));
+                        beatmap.getSpawner().getTargetsToSpawn().add(new Spawn(xAngleRad, yAngleRad, audioNode.getPlaybackTime(), 2));
 
                         // make sure we don't accidentally continue to propagate anything (though it shouldn't happen)
                         event.setConsumed();
