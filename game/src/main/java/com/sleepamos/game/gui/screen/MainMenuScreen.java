@@ -13,6 +13,7 @@ import com.sleepamos.game.serializer.LoveySerializer;
 import com.sleepamos.game.util.FileUtil;
 
 import java.io.InputStream;
+import java.nio.file.Path;
 
 public class MainMenuScreen extends Screen {
     @Override
@@ -42,6 +43,21 @@ public class MainMenuScreen extends Screen {
         }));
 
         // window.addChild(this.button("Settings").withVAlign(VAlignment.Center).toOtherScreen(SettingsScreen::new));
+        window.addChild(this.button("Custom Beatmaps").withVAlign(VAlignment.Center).toOtherScreen(() -> new CustomBeatmapSelectScreen((selected) -> {
+            Path beatmapPath = selected.resolve("beatmap.lovey");
+            if(!FileUtil.exists(beatmapPath)) {
+                throw new NonFatalException("no beatmap file found for the beatmap");
+            }
+            Beatmap beatmap = LoveySerializer.deserialize(selected.resolve("beatmap.lovey").toFile(), Beatmap.class); // load the beatmap
+            Path audioPath = selected.resolve("audio.wav").toAbsolutePath();
+            if (!FileUtil.exists(audioPath)) {
+                throw new NonFatalException("No audio file found for the beatmap");
+            }
+
+            TrackedAudioNode audioNode = Audio.load(audioPath);
+
+            Lovey.getInstance().launchMap(beatmap, audioNode);
+        })));
         window.addChild(this.button("Credits").withVAlign(VAlignment.Center).toOtherScreen(CreditsScreen::new));
         window.addChild(this.button("Beatmap Editor").withVAlign(VAlignment.Center).toOtherScreen(BeatmapEditorScreen::new));
         window.addChild(this.button("Quit").withVAlign(VAlignment.Center).withCommand(source -> Lovey.getInstance().stop()));
