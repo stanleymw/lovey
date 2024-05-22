@@ -1,6 +1,5 @@
 package com.sleepamos.game.beatmap;
 
-import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.serializer.LoveySerializable;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
 

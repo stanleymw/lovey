@@ -1,6 +1,5 @@
 package com.sleepamos.game.interactables;
 
-import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Mesh;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
@@ -47,7 +46,7 @@ public class Shootable extends Interactable {
     public void onInteract() {
         if (this.willGivePointsIfShot) {
             this.gameState.addPoints(this.points);
-            // System.out.println("add " + this.points + " pts");
+            // // System.out.println("add " + this.points + " pts");
         }
 
         this.removeFromParent(); // destroy
@@ -55,6 +54,6 @@ public class Shootable extends Interactable {
 
     @Override
     public void onInteractStop() {
-        System.out.println("STOPPED ITERACT");
+        // System.out.println("STOPPED ITERACT");
     }
 }

@@ -99,18 +99,18 @@ public final class FileUtil {
     }
 
     public static String getFromResources(String path) {
-        try(InputStream stream = getInputStreamFromResources(path)) {
-            if(stream == null) {
+        try (InputStream stream = getInputStreamFromResources(path)) {
+            if (stream == null) {
                 return "";
             }
             return new String(stream.readAllBytes());
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new NonFatalException("error loading from resources folder", e);
         }
     }
 
     public static InputStream getInputStreamFromResources(String path) {
-        System.out.println("reading from: " + path);
+        // System.out.println("reading from: " + path);
         return FileUtil.class.getResourceAsStream(path);
     }
 }

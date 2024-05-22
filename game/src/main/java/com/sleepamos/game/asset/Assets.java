@@ -11,6 +11,7 @@ public final class Assets {
     public static final String INHOUSE_BEATMAPS_RESOURCE_PATH = "/Maps";
 
     public static final Texture BUTTON_BG_TEXTURE = Lovey.getInstance().getAssetManager().loadTexture("Textures/button.png");
+    public static final Texture MAIN_MENU_BG_TEXTURE = Lovey.getInstance().getAssetManager().loadTexture("Textures/background.png");
     public static final BitmapFont FONT = Lovey.getInstance().getAssetManager().loadFont("Interface/Fonts/uwu2.fnt");
     public static final BitmapFont DEFAULT_FONT = Lovey.getInstance().getAssetManager().loadFont("Interface/Fonts/Default.fnt");
 

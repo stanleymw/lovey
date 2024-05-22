@@ -14,11 +14,11 @@ public class Slider extends Interactable {
 
     @Override
     public void onInteract() {
-        System.out.println("GETTING POINTS");
+        // System.out.println("GETTING POINTS");
     }
 
     @Override
     public void onInteractStop() {
-        System.out.println("NO MAS PUNTOS");
+        // System.out.println("NO MAS PUNTOS");
     }
 }
