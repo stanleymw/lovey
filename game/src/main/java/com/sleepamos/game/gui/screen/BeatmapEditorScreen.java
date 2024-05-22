@@ -37,12 +37,14 @@ import java.nio.file.Path;
  * locations and times.
  */
 public class BeatmapEditorScreen extends Screen {
-    Container bg;
+    private Container bg;
     private Beatmap beatmap = new Beatmap();
     private TrackedAudioNode audioNode = new TrackedAudioNode();
     private boolean isPlaying = false;
     private Slider timeSlider;
     private Path currentPath;
+
+    private boolean hasLoaded = false;
 
     private void onBeatmapLoad(Path selected) {
         try {
@@ -53,6 +55,8 @@ public class BeatmapEditorScreen extends Screen {
             } else {
                 Vector3f scale = bg.getWorldScale();
                 Vector3f dims = bg.getSize().mult(scale);
+
+                resetBGContainer();
 
                 beatmap.getSpawner().getTargetsToSpawn().forEach(t -> {
                     double x = t.xAngleRad();
@@ -89,6 +93,13 @@ public class BeatmapEditorScreen extends Screen {
         }
     }
 
+    private void resetBGContainer() {
+        bg = this.createAndAttachContainer();
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50, 2)));
+        bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
+        bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
+    }
+
     @Override
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
@@ -104,6 +115,7 @@ public class BeatmapEditorScreen extends Screen {
 
         rightUI.addChild(this.button("Load Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center)
                 .toOtherScreen(() -> new FolderSelectorScreen((selected) -> {
+                    hasLoaded = true;
                     onBeatmapLoad(selected);
                     Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
                                                                                   // kicking us back to the beatmap
@@ -112,6 +124,7 @@ public class BeatmapEditorScreen extends Screen {
 
         rightUI.addChild(
                 this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+                    if(!hasLoaded) return;
                     beatmap.getSpawner().getTargetsToSpawn().sort(
                             (a, b) -> (int) ((a.hitTime() - a.reactionTime()) - (b.hitTime() - b.reactionTime())));
 
@@ -131,16 +144,14 @@ public class BeatmapEditorScreen extends Screen {
                     } catch (Exception e) {
                         throw new NonFatalException("Error while creating beatmap file", e);
                     }
+                    hasLoaded = true;
                     onBeatmapLoad(selected);
                     Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
                                                                                   // kicking us back to the beatmap
                                                                                   // editor.
                 })));
 
-        bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50, 2)));
-        bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
-        bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
+        resetBGContainer();
 
         timeSlider = new Slider(Axis.X);
         timeSlider.getIncrementButton().removeFromParent();
