@@ -5,6 +5,7 @@ import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
@@ -31,6 +32,7 @@ import com.sleepamos.game.Lovey;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.game.GameState;
+import com.sleepamos.game.gui.screen.GameEndScreen;
 import com.sleepamos.game.interactables.Interactable;
 import com.sleepamos.game.interactables.Shootable;
 
@@ -38,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InGameAppState extends BaseAppState {
-    private final double nextSpawnTime = 0;
     private GameState gameState;
     private AssetManager assetManager;
     private InputManager inputManager;
@@ -48,8 +49,14 @@ public class InGameAppState extends BaseAppState {
     private BitmapText hud;
     private BitmapText crosshair;
     private Node shootables;
+    private AudioNode audioNode;
+
+    private final double graceTime = 0.5; // if the target isn't shot within graceTime seconds after it becomes Red, it
+    // will be destroyed and user will get no points
 
     private HashMap<Spawn, Interactable> interactables = new HashMap<>();
+    private HashMap<Interactable, Spawn> interactables_reverse = new HashMap<>();
+
     private final ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
@@ -85,6 +92,12 @@ public class InGameAppState extends BaseAppState {
         this.spawners = this.map.getSpawner().getTargetsToSpawn();
     }
 
+    public InGameAppState(Beatmap m, AudioNode aud) {
+        this(m);
+
+        this.audioNode = aud;
+    }
+
     @Override
     protected void initialize(Application app) {
         System.out.println("INITIALIZING");
@@ -94,10 +107,14 @@ public class InGameAppState extends BaseAppState {
         this.rootNode = ((SimpleApplication) this.getApplication()).getRootNode();
 
         this.setupGameNode();
+        this.gameNode.attachChild(this.audioNode);
         // this.setEnabled(true);
         this.rootNode.attachChild(this.gameNode);
 
         this.initCrossHairs();
+
+        // set camera position to 0 xAngle, elevated zAngle
+        this.getApplication().getCamera().lookAtDirection(new Vector3f(1f, 0.3f, 0f), new Vector3f(0, 1, 0));
 
         this.inputManager.addMapping("Interact", // Declare...
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
@@ -111,6 +128,8 @@ public class InGameAppState extends BaseAppState {
         System.out.println("Cleanup called");
         destroyBinds();
 
+        this.audioNode.stop();
+
         Lovey.getInstance().getGuiNode().detachChild(crosshair);
         this.rootNode.detachChild(this.gameNode);
     }
@@ -122,8 +141,8 @@ public class InGameAppState extends BaseAppState {
         this.gameNode = new Node("game_node");
         this.shootables = new Node("shootables");
 
-        Dome dome = new Dome(1 << 8, 1 << 8, 50.0f);
-        Geometry domeGeometry = new Geometry("Ring", dome);
+        // Dome dome = new Dome(1 << 8, 1 << 8, 50.0f);
+        // Geometry domeGeometry = new Geometry("Ring", dome);
 
         Box ground = new Box(50.0f, 1.0f, 50.0f);
         Geometry groundGeometry = new Geometry("Ground", ground);
@@ -135,15 +154,16 @@ public class InGameAppState extends BaseAppState {
         // Unshaded.j3md
         groundGeometry.setMaterial(groundMaterial);
 
-        Material domeMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        domeMaterial.setTransparent(true);
-        domeMaterial.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 220));
+        // Material domeMaterial = new Material(assetManager,
+        // "Common/MatDefs/Misc/Unshaded.j3md");
+        // domeMaterial.setTransparent(true);
+        // domeMaterial.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        // domeMaterial.setColor("Color", ColorRGBA.fromRGBA255(10, 10, 10, 220));
+        //
+        // domeGeometry.setMaterial(domeMaterial);
+        // domeGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
 
-        domeGeometry.setMaterial(domeMaterial);
-        domeGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
-
-        this.gameNode.attachChild(domeGeometry);
+        // this.gameNode.attachChild(domeGeometry);
         this.gameNode.attachChild(groundGeometry);
 
         //
@@ -185,6 +205,9 @@ public class InGameAppState extends BaseAppState {
         this.getStateManager().getState(FlyCamAppState.class).setEnabled(true);
 
         createBinds();
+        if (this.audioNode != null) {
+            this.audioNode.play();
+        }
     }
 
     @Override
@@ -193,6 +216,10 @@ public class InGameAppState extends BaseAppState {
 
         this.getStateManager().getState(FlyCamAppState.class).setEnabled(false);
         destroyBinds();
+
+        if (this.audioNode != null) {
+            this.audioNode.pause();
+        }
     }
 
     private void createBinds() {
@@ -216,26 +243,33 @@ public class InGameAppState extends BaseAppState {
 
     private void handleSpawns() {
         if (spawnWindowLeft >= spawners.size()) {
-            System.out.println("BEATMAP FINISHED: NOTHING TO SPAWN");
+            // quit
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen();
+
+            Lovey.getInstance().useGUIBehavior(true);
+            Lovey.getInstance().getScreenHandler()
+                    .showScreen(new GameEndScreen(this.gameState.getPoints(), this.map, this.audioNode));
+            Lovey.getInstance().exitMap();
             return;
         }
         // ensure that things targets are spawned properly
         // maintain a sliding window of alive objects
         // private int spawnWindowRight = 1;
         // private int spanWindowLeft = 0;
-        // private double nextSpawnTime = 0;
         // private List<Spawn> spawners;
         if (spawnWindowRight < spawners.size()) {
             if (clock >= spawners.get(spawnWindowRight).hitTime() - spawners.get(spawnWindowRight).reactionTime()) {
                 Spawn current = spawners.get(spawnWindowRight);
 
-                Sphere sph = new Sphere(20, 20, 5);
-                Shootable shot = new Shootable("Target", sph, this.gameState,  current.xAngleRad(), current.zAngleRad(), 10);
+                Sphere sph = new Sphere(20, 20, 1);
+                Shootable shot = new Shootable("Target", sph, this.gameState, current.xAngleRad(), current.zAngleRad(),
+                        10);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
                 mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 255, 255, 255));
                 shot.setMaterial(mat1);
 
                 interactables.put(current, shot);
+                interactables_reverse.put(shot, current);
                 this.shootables.attachChild(shot);
 
                 // we must spawn this
@@ -244,7 +278,7 @@ public class InGameAppState extends BaseAppState {
         }
 
         Spawn left = spawners.get(spawnWindowLeft);
-        if (clock >= left.hitTime() + left.reactionTime() * 2) {
+        if (clock >= left.hitTime() + graceTime) {
             (interactables.get(left)).removeFromParent();
             spawnWindowLeft++;
         }
@@ -257,8 +291,10 @@ public class InGameAppState extends BaseAppState {
 
             Shootable shot = (Shootable) interactables.get(current);
 
-            if (clock >= current.hitTime())
-                shot.getMaterial().setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 255));
+            if (clock >= current.hitTime()) {
+                shot.getMaterial().setColor("Color", ColorRGBA.Red);
+                shot.setIfWillGivePoints(true);
+            }
 
             shot.setLocalTranslation(FastMath.cos(shot.getAngleX()) * (float) curRadius,
                     FastMath.sin(shot.getAngleZ()) * (float) curRadius,
@@ -305,21 +341,23 @@ public class InGameAppState extends BaseAppState {
         Lovey.getInstance().getGuiNode().attachChild(crosshair);
     }
 
-//    private Interactable makeShootable(String name, float x, float y, float z, int size_x, int size_y, int size_z) {
-//        Box box = new Box(size_x, size_y, size_z);
-//        Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
-//        cube.setLocalTranslation(x, y, z);
-//
-//        Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-//        mat1.setColor("Color", ColorRGBA.randomColor());
-//        cube.setMaterial(mat1);
-//
-//        return cube;
-//    }
+    // private Interactable makeShootable(String name, float x, float y, float z,
+    // int size_x, int size_y, int size_z) {
+    // Box box = new Box(size_x, size_y, size_z);
+    // Shootable cube = new Shootable(name, box, this.gameState, 0.1, 0.1, 10);
+    // cube.setLocalTranslation(x, y, z);
+    //
+    // Material mat1 = new Material(assetManager,
+    // "Common/MatDefs/Misc/Unshaded.j3md");
+    // mat1.setColor("Color", ColorRGBA.randomColor());
+    // cube.setMaterial(mat1);
+    //
+    // return cube;
+    // }
 
-//    private Interactable makeShootable(String name, float x, float y, float z) {
-//        return makeShootable(name, x, y, z, 1, 1, 1);
-//    }
+    // private Interactable makeShootable(String name, float x, float y, float z) {
+    // return makeShootable(name, x, y, z, 1, 1, 1);
+    // }
 
     private CollisionResults castRay(Node whitelist) {
         CollisionResults results = new CollisionResults();

@@ -5,6 +5,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.audio.AudioListenerState;
+import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -189,30 +190,38 @@ public class Lovey extends SimpleApplication {
         this.getStateManager().getState(InGameAppState.class).setEnabled(!paused);
     }
 
-    public void launchMap(Beatmap map) {
+    public void launchMap(Beatmap map, AudioNode aud) {
         // this.getStateManager().getState(ScreenAppState.class).setEnabled(false);
-//        ArrayList<Spawn> stuff = new ArrayList<>();
-        // stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15, 0.2, 1), 5.0));
-        // stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2, 0.15, 2), 5.0));
-        // stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3, 0.2, 3), 5.0));
+        // ArrayList<Spawn> stuff = new ArrayList<>();
+        // stuff.add(new Spawn(1.0, new Shootable("ez", new Box(1, 1, 1), null, 0.15,
+        // 0.2, 1), 5.0));
+        // stuff.add(new Spawn(3.0, new Shootable("ez", new Box(1, 1, 1), null, 0.2,
+        // 0.15, 2), 5.0));
+        // stuff.add(new Spawn(5.0, new Shootable("ez", new Box(1, 1, 1), null, 0.3,
+        // 0.2, 3), 5.0));
 
-//        InteractableSpawner tmp = new InteractableSpawner();
-//        this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
+        // InteractableSpawner tmp = new InteractableSpawner();
+        // this.getStateManager().attach(new InGameAppState(new Beatmap("Sentir",
+        // "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff))));
         Lovey.getInstance().getScreenHandler().showScreen(new NoScreen());
         Lovey.getInstance().useGUIBehavior(false);
 
-        this.getStateManager().attach(new InGameAppState(map));
+        this.getStateManager().attach(new InGameAppState(map, aud));
+    }
+
+    public void launchMap(Beatmap map) {
+        launchMap(map, null);
     }
 
     public Beatmap getDemoMap() {
-         ArrayList<Spawn> stuff = new ArrayList<>();
-         stuff.add(new Spawn(0.15f, 0.12f, 3.0, 1));
-         stuff.add(new Spawn(0.3f, 0.49f, 5.0, 1));
-         stuff.add(new Spawn(0.4f, 0.12f, 7.0, 1));
+        ArrayList<Spawn> stuff = new ArrayList<>();
+        stuff.add(new Spawn(0.15f, 0.12f, 3.0, 1));
+        stuff.add(new Spawn(0.3f, 0.49f, 5.0, 1));
+        stuff.add(new Spawn(0.4f, 0.12f, 7.0, 1));
 
-         InteractableSpawner tmp = new InteractableSpawner();
+        InteractableSpawner tmp = new InteractableSpawner();
 
-         return new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff));
+        return new Beatmap("Sentir", "Sentir Music", "Sentir Mapper", new InteractableSpawner(stuff));
     }
 
     public void exitMap() {

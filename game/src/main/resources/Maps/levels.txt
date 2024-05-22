@@ -1,2 +1,5 @@
+StanleyMap1
+StanleyMap2
+shortMap
 lvl1
 testmap2

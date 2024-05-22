@@ -1,5 +1,6 @@
 package com.sleepamos.game.interactables;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Mesh;
 import com.sleepamos.game.game.GameState;
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
@@ -12,6 +13,8 @@ public class Shootable extends Interactable {
     private final long points;
     private final float angleX;
     private final float angleZ;
+
+    private boolean willGivePointsIfShot = false;
     private GameState gameState;
 
     public Shootable(String name, Mesh mesh, GameState gs, float angle_x, float angle_z, long pts) {
@@ -28,6 +31,10 @@ public class Shootable extends Interactable {
         return angleX;
     }
 
+    public void setIfWillGivePoints(boolean n) {
+        this.willGivePointsIfShot = n;
+    }
+
     public float getAngleZ() {
         return angleZ;
     }
@@ -38,8 +45,10 @@ public class Shootable extends Interactable {
 
     @Override
     public void onInteract() {
-        System.out.println("add " + this.points + " pts");
-        this.gameState.addPoints(this.points);
+        if (this.willGivePointsIfShot) {
+            this.gameState.addPoints(this.points);
+            System.out.println("add " + this.points + " pts");
+        }
 
         this.removeFromParent(); // destroy
     }
