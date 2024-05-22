@@ -131,6 +131,8 @@ public class InGameAppState extends BaseAppState {
         this.audioNode.stop();
 
         Lovey.getInstance().getGuiNode().detachChild(crosshair);
+
+        this.inputManager.deleteMapping("Interact");
         this.rootNode.detachChild(this.gameNode);
     }
 
@@ -265,8 +267,10 @@ public class InGameAppState extends BaseAppState {
                 Shootable shot = new Shootable("Target", sph, this.gameState, current.xAngleRad(), current.zAngleRad(),
                         10);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-                mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 255, 255, 255));
+                mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 20));
+                mat1.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
                 shot.setMaterial(mat1);
+                shot.setQueueBucket(RenderQueue.Bucket.Transparent);
 
                 interactables.put(current, shot);
                 interactables_reverse.put(shot, current);
@@ -292,7 +296,7 @@ public class InGameAppState extends BaseAppState {
             Shootable shot = (Shootable) interactables.get(current);
 
             if (clock >= current.hitTime()) {
-                shot.getMaterial().setColor("Color", ColorRGBA.Red);
+                shot.getMaterial().setColor("Color", ColorRGBA.Green);
                 shot.setIfWillGivePoints(true);
             }
 
