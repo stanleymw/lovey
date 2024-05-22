@@ -12,8 +12,7 @@ public class PauseScreen extends Screen {
 
         // Put it somewhere that we will see it.
         // Note: Lemur GUI elements grow down from the upper left corner.
-        window.setLocalTranslation(this.getScreenWidth() / 3f, this.getScreenHeight(), 0);
-        window.scale(6);
+        window.scale(3);
 
         window.addChild(this.button("Resume").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove ourselves
