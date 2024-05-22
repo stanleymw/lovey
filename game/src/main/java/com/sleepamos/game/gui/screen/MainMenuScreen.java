@@ -40,7 +40,8 @@ public class MainMenuScreen extends Screen {
                                                     LoveySerializedClass.class),
                                             Beatmap.class,
                                             (serialized, fileVersion,
-                                                    eVersion, c,
+                                                    eVersion,
+                                                    c,
                                                     obj) -> {
                                                 throw new NonFatalException(
                                                         "Unexpected version mismatch, stored file version: "
@@ -48,10 +49,6 @@ public class MainMenuScreen extends Screen {
                                                                 + ", class defined version: "
                                                                 + eVersion);
                                             });
-
-                                    // System.out.println("SENTIR");
-                                    System.out.println(beatmap.getSpawner()
-                                            .getTargetsToSpawn().get(0));
 
                                     TrackedAudioNode audio = Audio.load(FileUtil
                                             .getInputStreamFromResources(

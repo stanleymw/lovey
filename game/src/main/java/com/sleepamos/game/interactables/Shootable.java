@@ -47,7 +47,7 @@ public class Shootable extends Interactable {
     public void onInteract() {
         if (this.willGivePointsIfShot) {
             this.gameState.addPoints(this.points);
-            System.out.println("add " + this.points + " pts");
+            // System.out.println("add " + this.points + " pts");
         }
 
         this.removeFromParent(); // destroy
