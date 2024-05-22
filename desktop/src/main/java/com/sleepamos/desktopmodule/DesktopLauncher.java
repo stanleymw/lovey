@@ -32,7 +32,7 @@ public class DesktopLauncher {
             }
         }
 
-        System.out.println("using mode " + biggest);
+        // System.out.println("using mode " + biggest);
 
         appSettings.setResolution(biggest.getWidth(), biggest.getHeight());
         appSettings.setFrequency(biggest.getRefreshRate());

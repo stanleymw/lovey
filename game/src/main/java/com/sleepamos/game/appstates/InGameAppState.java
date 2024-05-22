@@ -26,7 +26,6 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Sphere;
 import com.sleepamos.game.Lovey;
 import com.sleepamos.game.beatmap.Beatmap;
@@ -40,27 +39,22 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InGameAppState extends BaseAppState {
+    private final double graceTime = 0.5; // if the target isn't shot within graceTime seconds after it becomes Red, it
+    private final Beatmap map;
+    private final HashMap<Spawn, Interactable> interactables = new HashMap<>();
+    private final List<Spawn> spawners;
     private GameState gameState;
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
     private Node gameNode;
-    private Beatmap map;
-    private BitmapText hud;
     private BitmapText crosshair;
     private Node shootables;
-    private AudioNode audioNode;
-
-    private final double graceTime = 0.5; // if the target isn't shot within graceTime seconds after it becomes Red, it
-    // will be destroyed and user will get no points
-
-    private HashMap<Spawn, Interactable> interactables = new HashMap<>();
-    private HashMap<Interactable, Spawn> interactables_reverse = new HashMap<>();
-
     private final ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            // System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
+            // // System.out.println("ACTION:" + name+ " | " + keyPressed+ " | " +tpf);
+            //noinspection SwitchStatementWithTooFewBranches
             switch (name) {
                 case "Interact" -> {
                     gameState.setInteracting(keyPressed);
@@ -76,14 +70,11 @@ public class InGameAppState extends BaseAppState {
             }
         }
     };
+    // will be destroyed and user will get no points
+    private AudioNode audioNode;
     private double clock = 0;
     private int spawnWindowLeft = 0;
     private int spawnWindowRight = 0;
-    private List<Spawn> spawners;
-
-    public InGameAppState() {
-        super();
-    }
 
     public InGameAppState(Beatmap m) {
         super();
@@ -100,7 +91,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
-        System.out.println("INITIALIZING");
+        // System.out.println("INITIALIZING");
         this.assetManager = this.getApplication().getAssetManager();
         this.inputManager = this.getApplication().getInputManager();
         this.gameState = new GameState();
@@ -120,12 +111,12 @@ public class InGameAppState extends BaseAppState {
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar, or
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
 
-        System.out.println("DONE INITIALIZING");
+        // System.out.println("DONE INITIALIZING");
     }
 
     @Override
     protected void cleanup(Application app) {
-        System.out.println("Cleanup called");
+        // System.out.println("Cleanup called");
         destroyBinds();
 
         this.audioNode.stop();
@@ -203,7 +194,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        System.out.println("onEnable Called");
+        // System.out.println("onEnable Called");
         this.getStateManager().getState(FlyCamAppState.class).setEnabled(true);
 
         createBinds();
@@ -214,7 +205,7 @@ public class InGameAppState extends BaseAppState {
 
     @Override
     protected void onDisable() {
-        System.out.println("onDisable Called");
+        // System.out.println("onDisable Called");
 
         this.getStateManager().getState(FlyCamAppState.class).setEnabled(false);
         destroyBinds();
@@ -249,8 +240,7 @@ public class InGameAppState extends BaseAppState {
             Lovey.getInstance().getScreenHandler().hideLastShownScreen();
 
             Lovey.getInstance().useGUIBehavior(true);
-            Lovey.getInstance().getScreenHandler()
-                    .showScreen(new GameEndScreen(this.gameState.getPoints(), this.map, this.audioNode));
+            Lovey.getInstance().getScreenHandler().showScreen(new GameEndScreen(this.gameState.getPoints(), this.map, this.audioNode));
             Lovey.getInstance().exitMap();
             return;
         }
@@ -264,8 +254,7 @@ public class InGameAppState extends BaseAppState {
                 Spawn current = spawners.get(spawnWindowRight);
 
                 Sphere sph = new Sphere(20, 20, 1);
-                Shootable shot = new Shootable("Target", sph, this.gameState, current.xAngleRad(), current.zAngleRad(),
-                        10);
+                Shootable shot = new Shootable("Target", sph, this.gameState, current.xAngleRad(), current.zAngleRad(), 10);
                 Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
                 mat1.setColor("Color", ColorRGBA.fromRGBA255(255, 0, 0, 20));
                 mat1.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
@@ -273,7 +262,6 @@ public class InGameAppState extends BaseAppState {
                 shot.setQueueBucket(RenderQueue.Bucket.Transparent);
 
                 interactables.put(current, shot);
-                interactables_reverse.put(shot, current);
                 this.shootables.attachChild(shot);
 
                 // we must spawn this
@@ -300,9 +288,7 @@ public class InGameAppState extends BaseAppState {
                 shot.setIfWillGivePoints(true);
             }
 
-            shot.setLocalTranslation(FastMath.cos(shot.getAngleX()) * (float) curRadius,
-                    FastMath.sin(shot.getAngleZ()) * (float) curRadius,
-                    FastMath.sin(shot.getAngleX()) * (float) curRadius);
+            shot.setLocalTranslation(FastMath.cos(shot.getAngleX()) * (float) curRadius, FastMath.sin(shot.getAngleZ()) * (float) curRadius, FastMath.sin(shot.getAngleX()) * (float) curRadius);
 
         }
     }
@@ -330,18 +316,13 @@ public class InGameAppState extends BaseAppState {
         }
     }
 
-    private void updateHUDText() {
-
-    }
-
     private void initCrossHairs() {
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         this.crosshair = new BitmapText(guiFont);
         crosshair.setSize(guiFont.getCharSet().getRenderedSize() * 2);
         crosshair.setText("+"); // crosshair
         crosshair.setLocalTranslation( // center
-                Lovey.getInstance().getSettings().getWidth() / 2 - crosshair.getLineWidth() / 2,
-                Lovey.getInstance().getSettings().getHeight() / 2 + crosshair.getLineHeight() / 2, 0);
+                (float) Lovey.getInstance().getSettings().getWidth() / 2 - crosshair.getLineWidth() / 2, (float) Lovey.getInstance().getSettings().getHeight() / 2 + crosshair.getLineHeight() / 2, 0);
         Lovey.getInstance().getGuiNode().attachChild(crosshair);
     }
 

@@ -2,7 +2,7 @@ package com.sleepamos.game.serializer;
 
 import com.sleepamos.game.serializer.annotations.LoveySerializableClassVersion;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * A value serializable by the {@link LoveySerializer}. Extending classes should declare a VERSION value annotated with {@link LoveySerializableClassVersion LoveySerializableClassVersion}, otherwise the version defaults to 0.

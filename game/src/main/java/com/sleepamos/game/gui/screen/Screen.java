@@ -1,10 +1,13 @@
 package com.sleepamos.game.gui.screen;
 
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.style.ElementId;
 import com.sleepamos.game.Lovey;
+import com.sleepamos.game.asset.Assets;
 import com.sleepamos.game.gui.element.BetterButton;
+import com.sleepamos.game.util.AssetsUtil;
 
 public abstract class Screen {
     protected final Node elements;
@@ -36,6 +39,14 @@ public abstract class Screen {
      * Initialize the {@link #elements} with this screen's sub-elements.
      */
     protected abstract void initialize();
+
+    protected void bigBackgroundMakerMethodThatWeDidntAddAtTheLastMinute() {
+        Container bg = this.createAndAttachContainer();
+        bg.setLocalScale(1);
+        bg.setLocalTranslation(0, this.getScreenHeight(), 0);
+        bg.setPreferredSize(new Vector3f(this.getScreenWidth(), this.getScreenHeight(), 0));
+        bg.setBackground(AssetsUtil.asQBC(Assets.MAIN_MENU_BG_TEXTURE));
+    }
 
     /**
      * Attach all parts of this Screen onto the given node.

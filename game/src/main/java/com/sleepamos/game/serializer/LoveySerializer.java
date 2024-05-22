@@ -100,7 +100,7 @@ public class LoveySerializer {
                 byte serializedVer = currentDeserializeCandidate.getVersion();
                 byte definedVer = LoveySerializationUtil.getClassVersion(toDeserialize);
 
-                // System.out.println("serialized version: " + serializedVer + ", defined version: " + definedVer + ", equal? " + (serializedVer == definedVer));
+                // // System.out.println("serialized version: " + serializedVer + ", defined version: " + definedVer + ", equal? " + (serializedVer == definedVer));
 
                 // if serializedVer == definedVer then run
                 // if serializedVer != definedVer and deserialize decides not to cancel (returns false) then run
@@ -108,7 +108,7 @@ public class LoveySerializer {
                     Map<String, String> serializedNameToClassName = LoveySerializationUtil.serializedNameToClassName(toDeserialize);
                     // iterate over all values in the deserialized class and put them into obj
                     for (LoveySerializedClassDataEntry entry : currentDeserializeCandidate.getData()) {
-                        System.out.println("attempting to retrieve: " + entry.serializedName() + " from " + toDeserialize);
+                        // System.out.println("attempting to retrieve: " + entry.serializedName() + " from " + toDeserialize);
                         Field f = toDeserialize.getDeclaredField(serializedNameToClassName.get(entry.serializedName()));
                         f.setAccessible(true);
                         if (entry.data() instanceof LoveySerializedClass loveySerializedClass) {

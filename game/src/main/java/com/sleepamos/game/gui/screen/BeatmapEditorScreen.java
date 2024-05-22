@@ -19,7 +19,6 @@ import com.sleepamos.game.audio.TrackedAudioNode;
 import com.sleepamos.game.beatmap.Beatmap;
 import com.sleepamos.game.beatmap.Spawn;
 import com.sleepamos.game.exceptions.NonFatalException;
-import com.sleepamos.game.interactables.Shootable;
 import com.sleepamos.game.serializer.LoveySerializer;
 import com.sleepamos.game.util.FileUtil;
 
@@ -37,12 +36,14 @@ import java.nio.file.Path;
  * locations and times.
  */
 public class BeatmapEditorScreen extends Screen {
-    Container bg;
+    private Container bg;
     private Beatmap beatmap = new Beatmap();
     private TrackedAudioNode audioNode = new TrackedAudioNode();
     private boolean isPlaying = false;
     private Slider timeSlider;
     private Path currentPath;
+
+    private boolean hasLoaded = false;
 
     private void onBeatmapLoad(Path selected) {
         try {
@@ -54,26 +55,25 @@ public class BeatmapEditorScreen extends Screen {
                 Vector3f scale = bg.getWorldScale();
                 Vector3f dims = bg.getSize().mult(scale);
 
+                resetBGContainer();
+
                 beatmap.getSpawner().getTargetsToSpawn().forEach(t -> {
                     double x = t.xAngleRad();
                     double y = t.zAngleRad();
 
-                    final float xRel = ((float) (x * dims.x / FastMath.PI) + dims.x / 2) /
-                            scale.x;
-                    final float yRel = -(dims.y - ((float) (y * dims.y / FastMath.HALF_PI))) /
-                            scale.y; // this is some good code once again
+                    final float xRel = ((float) (x * dims.x / FastMath.PI) + dims.x / 2) / scale.x;
+                    final float yRel = -(dims.y - ((float) (y * dims.y / FastMath.HALF_PI))) / scale.y; // this is some good code once again
 
-                    System.out.println("x/yrel: " + xRel + " " + yRel);
+                    // System.out.println("x/yrel: " + xRel + " " + yRel);
                     // now we re-add them in as a debug mode
                     Sphere s = new Sphere(10, 10, 5);
                     Geometry g = new Geometry("s", s);
-                    Material mat = new Material(Lovey.getInstance().getAssetManager(),
-                            "Common/MatDefs/Misc/Unshaded.j3md");
+                    Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
                     g.setMaterial(mat);
                     mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
                     bg.attachChild(g);
                     g.setLocalTranslation(xRel, yRel, 0);
-                    System.out.println("at: " + g.getWorldTranslation());
+                    // System.out.println("at: " + g.getWorldTranslation());
                 });
             }
             Path audioPath = selected.resolve("audio.wav").toAbsolutePath();
@@ -82,65 +82,66 @@ public class BeatmapEditorScreen extends Screen {
             }
 
             audioNode = Audio.load(audioPath);
-            audioNode.setCallback(() -> timeSlider.getModel()
-                    .setPercent(audioNode.getPlaybackTime() / audioNode.getAudioData().getDuration()));
+            audioNode.setCallback(() -> timeSlider.getModel().setPercent(audioNode.getPlaybackTime() / audioNode.getAudioData().getDuration()));
         } catch (Exception e) {
             throw new NonFatalException("An error has occured while loading the beatmap", e);
         }
+    }
+
+    private void resetBGContainer() {
+        bg = this.createAndAttachContainer();
+        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50, 90)));
+        bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
+        bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
     }
 
     @Override
     protected void initialize() {
         Container leftUI = this.createAndAttachContainer();
 
-        leftUI.addChild(
-                this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
-                    this.audioNode.stop();
-                    Lovey.getInstance().getScreenHandler().hideLastShownScreen();
-                }));
+        leftUI.addChild(this.button("Quit").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            this.audioNode.stop();
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen();
+        }));
 
         Container rightUI = this.createAndAttachContainer();
         rightUI.setLocalTranslation(this.getScreenWidth() - 135, this.getScreenHeight(), 0);
 
-        rightUI.addChild(this.button("Load Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center)
-                .toOtherScreen(() -> new FolderSelectorScreen((selected) -> {
-                    onBeatmapLoad(selected);
-                    Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
-                                                                                  // kicking us back to the beatmap
-                                                                                  // editor.
-                })));
+        rightUI.addChild(this.button("Load Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(() -> new FolderSelectorScreen((selected) -> {
+            hasLoaded = true;
+            onBeatmapLoad(selected);
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
+            // kicking us back to the beatmap
+            // editor.
+        })));
 
-        rightUI.addChild(
-                this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
-                    beatmap.getSpawner().getTargetsToSpawn().sort(
-                            (a, b) -> (int) ((a.hitTime() - a.reactionTime()) - (b.hitTime() - b.reactionTime())));
+        rightUI.addChild(this.button("Save").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            if (!hasLoaded) return;
+            beatmap.getSpawner().getTargetsToSpawn().sort((a, b) -> (int) ((a.hitTime() - a.reactionTime()) - (b.hitTime() - b.reactionTime())));
 
-                    if (currentPath != null) {
-                        LoveySerializer.serialize(currentPath, beatmap);
-                    } else {
-                        System.out.println("current path null, serializing to default folder for safety.");
-                        LoveySerializer.serialize("beatmap.lovey", beatmap);
-                    }
-                }));
-        rightUI.addChild(this.button("New Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center)
-                .toOtherScreen(() -> new BeatmapCreationScreen((selected) -> {
-                    try {
-                        if (!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
-                            throw new NonFatalException("File already exists");
-                        }
-                    } catch (Exception e) {
-                        throw new NonFatalException("Error while creating beatmap file", e);
-                    }
-                    onBeatmapLoad(selected);
-                    Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
-                                                                                  // kicking us back to the beatmap
-                                                                                  // editor.
-                })));
+            if (currentPath != null) {
+                LoveySerializer.serialize(currentPath, beatmap);
+            } else {
+                // System.out.println("current path null, serializing to default folder for safety.");
+                LoveySerializer.serialize("beatmap.lovey", beatmap);
+            }
+        }));
+        rightUI.addChild(this.button("New Beatmap").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).toOtherScreen(() -> new BeatmapCreationScreen((selected) -> {
+            try {
+                if (!selected.resolve("beatmap.lovey").toFile().createNewFile()) {
+                    throw new NonFatalException("File already exists");
+                }
+            } catch (Exception e) {
+                throw new NonFatalException("Error while creating beatmap file", e);
+            }
+            hasLoaded = true;
+            onBeatmapLoad(selected);
+            Lovey.getInstance().getScreenHandler().hideLastShownScreen(); // remove the folder selector screen,
+            // kicking us back to the beatmap
+            // editor.
+        })));
 
-        bg = this.createAndAttachContainer();
-        bg.setBackground(new QuadBackgroundComponent(ColorRGBA.fromRGBA255(50, 50, 50, 2)));
-        bg.setPreferredSize(new Vector3f(this.getScreenWidth() * 0.56f, this.getScreenHeight() * 0.4f, 0));
-        bg.setLocalTranslation(30, this.getScreenHeight() - 170, 0);
+        resetBGContainer();
 
         timeSlider = new Slider(Axis.X);
         timeSlider.getIncrementButton().removeFromParent();
@@ -153,15 +154,14 @@ public class BeatmapEditorScreen extends Screen {
 
         Container bottomUi = this.createAndAttachContainer();
         bottomUi.setLocalTranslation(this.getScreenWidth() - 200, 100, 0);
-        bottomUi.addChild(
-                this.button("Play").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
-                    if (isPlaying) {
-                        audioNode.pause();
-                    } else {
-                        audioNode.play();
-                    }
-                    isPlaying = !isPlaying;
-                }));
+        bottomUi.addChild(this.button("Play").withHAlign(HAlignment.Center).withVAlign(VAlignment.Center).withCommand(source -> {
+            if (isPlaying) {
+                audioNode.pause();
+            } else {
+                audioNode.play();
+            }
+            isPlaying = !isPlaying;
+        }));
 
         bg.addMouseListener(new MouseListener() {
             @Override
@@ -174,20 +174,17 @@ public class BeatmapEditorScreen extends Screen {
 
                         // xRel and yRel originate from the bottom-center and are relative to the
                         // beatmap creation area
-                        final float xRel = (event.getX() - offsets.x) - dims.x / 2,
-                                yRel = dims.y - (offsets.y - event.getY());
+                        final float xRel = (event.getX() - offsets.x) - dims.x / 2, yRel = dims.y - (offsets.y - event.getY());
 
                         Sphere s = new Sphere(10, 10, 5);
                         Geometry g = new Geometry("s", s);
-                        Material mat = new Material(Lovey.getInstance().getAssetManager(),
-                                "Common/MatDefs/Misc/Unshaded.j3md");
+                        Material mat = new Material(Lovey.getInstance().getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
                         g.setMaterial(mat);
                         mat.setColor("Color", ColorRGBA.fromRGBA255(0, 255, 0, 255));
                         bg.attachChild(g);
-                        g.setLocalTranslation((event.getX() - offsets.x) / scale.x,
-                                (event.getY() - offsets.y) / scale.y, 0);
+                        g.setLocalTranslation((event.getX() - offsets.x) / scale.x, (event.getY() - offsets.y) / scale.y, 0);
 
-                        System.out.println("click at: " + xRel + " " + yRel);
+                        // System.out.println("click at: " + xRel + " " + yRel);
 
                         // we now need to convert these coordinates into angles
 
@@ -200,9 +197,8 @@ public class BeatmapEditorScreen extends Screen {
                         // the y-angle can similarly be found, but with pi / 2 instead.
                         final float yAngleRad = FastMath.HALF_PI * yRel / dims.y;
 
-                        System.out.println("storing at: " + xAngleRad + " " + yAngleRad);
-                        beatmap.getSpawner().getTargetsToSpawn()
-                                .add(new Spawn(xAngleRad, yAngleRad, audioNode.getPlaybackTime(), 2));
+                        // System.out.println("storing at: " + xAngleRad + " " + yAngleRad);
+                        beatmap.getSpawner().getTargetsToSpawn().add(new Spawn(xAngleRad, yAngleRad, audioNode.getPlaybackTime(), 2));
 
                         // make sure we don't accidentally continue to propagate anything (though it
                         // shouldn't happen)

@@ -1,21 +1,26 @@
 package com.sleepamos.game.gui.screen;
 
-import com.sleepamos.game.util.FileUtil;
-
 import java.io.File;
 import java.nio.file.Path;
 
 public class LevelSelectScreen extends FolderSelectorScreen {
-    public static String[] parseData(String data) {
-        return data.split("\n");
-    }
-
     private final String[] fileNames;
 
     public LevelSelectScreen(String rootFolder, String[] fileNames, OnSelectionCallback callback) {
         super(Path.of(rootFolder), callback);
 
         this.fileNames = fileNames;
+    }
+
+    public static String[] parseData(String data) {
+        data = data.replace("\r", ""); // i hate windows (this bug took me a solid hour to figure out) (and the night before it was due)
+        return data.split("\n");
+    }
+
+    @Override
+    protected void initialize() {
+        this.bigBackgroundMakerMethodThatWeDidntAddAtTheLastMinute();
+        super.initialize();
     }
 
     @Override

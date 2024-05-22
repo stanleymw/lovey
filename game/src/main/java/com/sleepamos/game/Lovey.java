@@ -14,7 +14,6 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.AbstractControl;
-import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.sleepamos.game.appstates.InGameAppState;
 import com.sleepamos.game.appstates.ScreenAppState;
@@ -27,7 +26,6 @@ import com.sleepamos.game.exceptions.NonFatalException;
 import com.sleepamos.game.gui.ScreenHandler;
 import com.sleepamos.game.gui.screen.NoScreen;
 import com.sleepamos.game.gui.screen.PauseScreen;
-import com.sleepamos.game.interactables.Shootable;
 import com.sleepamos.game.util.SentirCamera;
 
 import java.lang.reflect.Field;
@@ -101,7 +99,7 @@ public class Lovey extends SimpleApplication {
             return ((HashMap<String, ?>) (mappingField.get(mgrInstance))).keySet().toArray(new String[0]); // trust me
             // bro
         } catch (Exception e) {
-            System.out.println("Unable to get the mappings list");
+            // System.out.println("Unable to get the mappings list");
             e.printStackTrace();
             throw new AssertionError("Closing game due to error in startup.");
         }
@@ -130,9 +128,9 @@ public class Lovey extends SimpleApplication {
             Field camField = FlyCamAppState.class.getDeclaredField("flyCam");
             camField.setAccessible(true);
             camField.set(this.getStateManager().getState(FlyCamAppState.class), new SentirCamera(this.getCamera(), 1));
-            // System.out.println("camera hijacked!");
+            // // System.out.println("camera hijacked!");
         } catch (Exception e) {
-            System.out.println("Unable to hijack flycam:");
+            // System.out.println("Unable to hijack flycam:");
             e.printStackTrace();
             throw new AssertionError("Closing game due to error in startup.");
         }
@@ -150,7 +148,7 @@ public class Lovey extends SimpleApplication {
         try {
             super.update();
         } catch (NonFatalException e) {
-            System.out.println("A non-fatal exception was thrown");
+            // System.out.println("A non-fatal exception was thrown");
             e.printStackTrace();
             // TODO: Write error handling code (and make sure this even works)
         }

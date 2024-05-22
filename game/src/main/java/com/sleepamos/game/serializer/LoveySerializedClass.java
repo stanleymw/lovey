@@ -51,12 +51,12 @@ public class LoveySerializedClass implements Serializable {
             for (Field f : classFields) {
                 f.setAccessible(true);
                 if (!ReflectionUtil.isStatic(f)) {
-                    System.out.println("Serializing: " + f.getType());
+                    // System.out.println("Serializing: " + f.getType());
                     if (LoveySerializable.class.isAssignableFrom(f.getType())) { // if the sub-variable is LoveySerializable, we want to serialize it as such.
-                        System.out.println("recursing on serialization");
+                        // System.out.println("recursing on serialization");
                         variableNameToValue.add(new LoveySerializedClassDataEntry(f.getName(), new LoveySerializedClass((LoveySerializable) f.get(obj))));
                     } else {
-                        System.out.println("no recurse");
+                        // System.out.println("no recurse");
                         variableNameToValue.add(new LoveySerializedClassDataEntry(LoveySerializationUtil.getSerializationName(f), f.get(obj)));
                     }
                 }
@@ -101,12 +101,7 @@ public class LoveySerializedClass implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return this == o ||
-                (o instanceof LoveySerializedClass other &&
-                        this.version == other.version &&
-                        this.data.equals(other.data) &&
-                        this.isRootClass == other.isRootClass &&
-                        this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
-                        (this.superclass == other.superclass || this.superclass.equals(other.superclass))); // == implies null
+        return this == o || (o instanceof LoveySerializedClass other && this.version == other.version && this.data.equals(other.data) && this.isRootClass == other.isRootClass && this.storedClazz == other.storedClazz && // note: Class.equals() is just ==
+                (this.superclass == other.superclass || this.superclass.equals(other.superclass))); // == implies null
     }
 }

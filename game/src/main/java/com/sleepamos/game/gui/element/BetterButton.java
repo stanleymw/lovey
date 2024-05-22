@@ -31,7 +31,7 @@ public class BetterButton extends Button {
             f.setAccessible(true);
             return (TextComponent) (f.get(this));
         } catch (Exception e) {
-            System.out.println("err: ");
+            // System.out.println("err: ");
             e.printStackTrace();
             throw new RuntimeException("failed to reflect to get the text component. ????");
         }

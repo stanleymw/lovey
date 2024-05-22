@@ -41,7 +41,7 @@ distZip {
 }
 
 //See https://api.adoptium.net/v3/assets/feature_releases/11/ga?image_type=jre for jre urls
-def windowsJreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-debugimage_x64_windows_hotspot_21.0.3_9.zip"
+def windowsJreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jdk_x64_windows_hotspot_21.0.3_9.zip"
 def linuxJreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jdk_x64_linux_hotspot_21.0.3_9.tar.gz"
 
 
